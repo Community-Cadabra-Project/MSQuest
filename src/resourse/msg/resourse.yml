@@ -1,0 +1,8 @@
+---
+name: resourse.ms
+msg: 
+  incor_characters: "MSQuest: [FATAL] directory %s of characters doesn't exists."
+  incor_dialogs: "MSQuest: [FATAL] directory %s of dialogs doesn't exists."
+  incor_scripts: "MSQuest: [FATAL] directory %s of scripts doesn't exists."
+
+  

@@ -1,0 +1,16 @@
+--- 
+paths: 
+  characters: characters
+  dialogs: dialogs
+  extension: extension/main.ms
+  ms: src/ms
+  resourse: 
+    msg: src/resourse/msg
+    templates: src/resourse/templates
+  scripts: scripts
+syntax: 
+  full: 
+    register: _quest_script_register_as
+  head_part: 
+    run: _quest_script_run
+  tail_part: ~
