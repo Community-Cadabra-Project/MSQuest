@@ -1,0 +1,6 @@
+id: wither_skull
+spec:
+  charged:
+    check: boolean
+  direction:
+    check: vector

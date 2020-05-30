@@ -1,0 +1,96 @@
+id: area_effect_cloud
+spec:
+  color:
+    check: \*
+  duration:
+    check: int
+  durationonuse:
+    check: \*
+  particle:
+    check: list
+    data:
+      - tsmoke_normal
+      - enchantment_table
+      - redstone
+      - snow_shovel
+      - bubble_column_up
+      - spell_mob
+      - campfire_signal_smoke
+      - block_dust
+      - falling_honey
+      - sweep_attack
+      - water_splash
+      - landing_lava
+      - slime
+      - falling_lava
+      - dragon_breath
+      - current_down
+      - dripping_honey
+      - item_crack
+      - falling_dust
+      - sneeze
+      - water_bubble
+      - flash
+      - villager_angry
+      - heart
+      - landing_honey
+      - end_rod
+      - falling_nectar
+      - crit_magic
+      - suspended
+      - water_drop
+      - spell
+      - falling_water
+      - spell_instant
+      - lava
+      - villager_happy
+      - squid_ink
+      - crit
+      - cloud
+      - bubble_pop
+      - composter
+      - nautilus
+      - explosion_large
+      - town_aura
+      - suspended_depth
+      - campfire_cosy_smoke
+      - note
+      - snowball
+      - spell_mob_ambient
+      - damage_indicator
+      - smoke_large
+      - totem
+      - barrier
+      - explosion_normal
+      - flame
+      - spit
+      - portal
+      - mob_appearance
+      - dolphin
+      - spell_witch
+      - drip_water
+      - explosion_huge
+      - water_wake
+      - unknown
+      - fireworks_spark
+      - drip_lava
+      - block_crack
+  potionmeta:
+    check: \*
+  radius:
+    check: double
+  radiusonuse:
+    check: double
+  radiuspertick:
+    check: int
+  reapplicationdelay:
+    check: int
+  source:
+    check: 
+      mode: or
+      data:
+        - uuid
+        - local
+        - "null"
+  waittime:
+    check: int

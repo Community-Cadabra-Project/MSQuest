@@ -1,0 +1,14 @@
+id: panda
+spec:
+  maingene:
+    check: list
+    data:
+      - aggressive
+      - brown
+      - lazy
+      - normal
+      - playful
+      - weak
+      - worried
+  hiddengene:
+    check: boolean

@@ -1,0 +1,8 @@
+id: falling_block
+spec:
+  block:
+    check: \*
+  dropitem:
+    check: \*
+  damage:
+    check: double

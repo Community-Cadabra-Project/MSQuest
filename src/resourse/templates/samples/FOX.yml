@@ -1,0 +1,11 @@
+id: fox
+spec:
+  sitting:
+    check: boolean
+  crouching:
+    check: boolean
+  type:
+    check: list
+    data:
+      - red
+      - snow

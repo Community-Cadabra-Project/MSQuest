@@ -1,0 +1,4 @@
+id: splash_potion
+spec:
+  item:
+    check: \*

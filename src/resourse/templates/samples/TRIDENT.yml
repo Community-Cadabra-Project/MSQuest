@@ -1,0 +1,8 @@
+id: trident
+spec:
+  critical:
+    check: boolean
+  knockback:
+    check: double
+  damage:
+    check: double

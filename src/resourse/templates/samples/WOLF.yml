@@ -1,0 +1,25 @@
+id: wolf
+spec:
+  angry:
+    check: boolean
+  color:
+    check: list
+    data:
+      - white
+      - orange
+      - magenta
+      - light_blue
+      - yellow
+      - lime
+      - pink
+      - gray
+      - light_gray
+      - cyan
+      - purple
+      - blue
+      - brown
+      - green
+      - red
+      - black
+  sitting:
+    check: boolean

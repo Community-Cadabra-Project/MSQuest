@@ -1,0 +1,18 @@
+id: donkey
+spec:
+  chest:
+    check: boolean
+  domestication:
+    check: int
+    data:
+      less: spec.maxdomestication
+  jump:
+    check: double
+    data:
+      range:
+        - 1.0
+        - 2.0
+  maxdomestication:
+    check: int
+  saddle:
+    check: \*

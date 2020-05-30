@@ -1,0 +1,4 @@
+id: experience_orb
+spec:
+  amount:
+    check: int

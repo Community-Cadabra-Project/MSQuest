@@ -1,0 +1,11 @@
+id: boat
+spec:
+  type:
+    check: list
+    data:
+      - acacia
+      - birch
+      - dark_oak
+      - jungle
+      - oak
+      - spruce

@@ -1,0 +1,4 @@
+id: drowned
+spec:
+  baby:
+    check: boolean

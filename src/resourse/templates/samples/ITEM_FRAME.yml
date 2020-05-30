@@ -1,0 +1,15 @@
+id: item_frame
+spec:
+  item:
+    check: \*
+  rotation:
+    check: list
+    data:
+      - clockwise
+      - clockwise_135
+      - clockwise_45
+      - counter_clockwise
+      - counter_clockwise_45
+      - flipped
+      - flipped_45
+      - none

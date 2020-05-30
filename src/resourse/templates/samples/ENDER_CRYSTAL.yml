@@ -1,0 +1,6 @@
+id: ender_crystal
+spec:
+  base:
+    check: boolean
+  beamtarget:
+    check: local

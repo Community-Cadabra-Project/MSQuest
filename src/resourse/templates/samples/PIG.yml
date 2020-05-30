@@ -1,0 +1,4 @@
+id: pig
+spec:
+  saddled: 
+    check: boolean

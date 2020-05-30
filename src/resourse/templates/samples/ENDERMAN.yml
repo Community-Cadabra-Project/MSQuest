@@ -1,0 +1,4 @@
+id: enderman
+spec:
+  carried: 
+    check: \*

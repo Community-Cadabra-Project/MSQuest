@@ -1,0 +1,4 @@
+id: husk
+spec:
+  baby:
+    check: boolean

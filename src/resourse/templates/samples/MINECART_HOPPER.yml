@@ -1,0 +1,6 @@
+id: minecraft_hopper
+spec:
+  block:
+    check: \*
+  offset:
+    check: int

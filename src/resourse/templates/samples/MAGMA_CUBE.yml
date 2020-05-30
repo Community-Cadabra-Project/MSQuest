@@ -1,0 +1,4 @@
+id: magma_cube
+spec:
+  size:
+    check: int

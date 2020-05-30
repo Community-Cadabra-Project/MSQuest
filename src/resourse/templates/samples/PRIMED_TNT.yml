@@ -1,0 +1,6 @@
+id: primed_tnt
+spec:
+  fuseticks:
+    check: int
+  source:
+    check: \*

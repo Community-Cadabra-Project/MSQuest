@@ -1,0 +1,6 @@
+id: mushroom_cow
+spec:
+  type: list
+  data:
+    - tred
+    - brown

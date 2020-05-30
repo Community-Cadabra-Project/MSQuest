@@ -1,0 +1,14 @@
+id: skeleton_horse
+spec:
+  domestication:
+    check: int
+  jump:
+    check: double
+    data:
+      range:
+        - 1.0
+        - 2.0
+  maxdomestication:
+    check: int
+  saddle:
+    check: item

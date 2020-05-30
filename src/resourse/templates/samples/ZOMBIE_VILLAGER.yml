@@ -1,0 +1,22 @@
+id: zombie_villager
+spec:
+  baby:
+    check: boolean
+  profession:
+    check: list
+    data:
+      - tbutcher
+      - farmer
+      - librarian
+      - nitwit
+      - armorer
+      - cartographer
+      - cleric
+      - fisherman
+      - fletcher
+      - leatherworker
+      - mason
+      - none
+      - shepherd
+      - toolsmith
+      - weaponsmith

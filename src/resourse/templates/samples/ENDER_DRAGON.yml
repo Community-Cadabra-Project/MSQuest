@@ -1,0 +1,16 @@
+id: ender_dragon
+spec:
+  phase:
+    check: list
+    data:
+      - breath_attack
+      - charge_player
+      - circling
+      - dying
+      - fly_to_portal
+      - hover
+      - land_on_portal
+      - leave_portal
+      - roar_before_attack
+      - search_for_breath_attack_target
+      - strafing

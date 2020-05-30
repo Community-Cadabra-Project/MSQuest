@@ -1,0 +1,8 @@
+id: creeper
+spec:
+  powered:
+    check: boolean
+  maxfuseticks:
+    check: int
+  explosionradius:
+    check: int

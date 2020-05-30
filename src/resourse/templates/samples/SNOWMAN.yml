@@ -1,0 +1,4 @@
+id: snowman
+spec:
+  derp:
+    check: boolean

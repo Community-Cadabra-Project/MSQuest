@@ -1,0 +1,8 @@
+id: ender_eye
+spec:
+  despawnticks:
+    check: int
+  drop:
+    check: boolean
+  target:
+    check: local

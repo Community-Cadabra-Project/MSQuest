@@ -1,0 +1,6 @@
+id: minecraft
+spec:
+  block:
+    check: \*
+  offset:
+    check: int

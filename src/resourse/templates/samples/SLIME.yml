@@ -1,0 +1,4 @@
+id: slime
+spec:
+  size:
+    check: int

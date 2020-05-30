@@ -1,0 +1,4 @@
+id: ZOMBIE
+spec:
+  baby:
+    check: boolean

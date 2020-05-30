@@ -1,0 +1,11 @@
+id: ocelot
+spec:
+  sitting:
+    check: boolean
+  type:
+    check: list
+    data:
+      - black_cat
+      - red_cat
+      - siamese_cat
+      - wild_ocelot

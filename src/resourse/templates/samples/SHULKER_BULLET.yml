@@ -1,0 +1,7 @@
+id: shulker_bullet
+spec:
+  target:
+    check:
+      - uuid
+      - "null"
+    mode: or

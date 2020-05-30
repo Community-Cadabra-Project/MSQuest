@@ -1,0 +1,16 @@
+id: llama
+spec:
+  chest:
+    check: boolean
+  domestication:
+    check: int
+  maxdomestication:
+    check: int
+  color:
+    check: list
+      - creamy
+      - white
+      - brown
+      - gray
+  saddle:
+    check: \*

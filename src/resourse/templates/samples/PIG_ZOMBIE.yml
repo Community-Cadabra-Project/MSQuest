@@ -1,0 +1,8 @@
+id: pig_zombie
+spec:
+  anger:
+    check: int
+  angry:
+    check: boolean
+  baby:
+    check: boolean

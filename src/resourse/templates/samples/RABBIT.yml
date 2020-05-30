@@ -1,0 +1,12 @@
+id: rabbit
+spec:
+  type:
+    check: list
+    data:
+      - brown
+      - white
+      - black
+      - black_and_white
+      - gold
+      - salt_and_pepper
+      - the_killer_bunny

@@ -1,0 +1,8 @@
+id: evoker_fangs
+spec:
+  source:
+    check:
+      mode: or
+      data:
+        - uuid
+        - "null"

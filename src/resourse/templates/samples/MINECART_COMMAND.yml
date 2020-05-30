@@ -1,0 +1,10 @@
+id: minecrat_block
+spec:
+  command:
+    check: string
+  customname:
+    check: string
+  block:
+    check: \*
+  offset:
+    check: int

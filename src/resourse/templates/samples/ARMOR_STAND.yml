@@ -1,0 +1,16 @@
+id: armor_stand
+spec: 
+  arms:
+    check: boolean
+  baseplate:
+    check: boolean
+  gravity:
+    check: boolean
+  marker:
+    check: boolean
+  small:
+    check: boolean
+  visible:
+    check: boolean
+  poses:
+    check: \*

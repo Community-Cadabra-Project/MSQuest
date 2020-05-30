@@ -1,0 +1,4 @@
+id: lightning
+spec:
+  effect: 
+    check: boolean

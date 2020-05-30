@@ -1,0 +1,4 @@
+id: fireball
+spec:
+  direction:
+    check: \*

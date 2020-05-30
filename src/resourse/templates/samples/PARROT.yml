@@ -1,0 +1,12 @@
+id: parrot
+spec:
+  sitting:
+    check: boolean
+  type:
+    check: list
+    data:
+      - red
+      - blue
+      - green
+      - cyan
+      - gray

@@ -1,0 +1,6 @@
+id: dropped_item
+spec:
+  itemstack: 
+    check: \*
+  pickupdelay: 
+    check: int

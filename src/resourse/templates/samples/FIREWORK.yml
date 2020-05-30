@@ -1,0 +1,6 @@
+id: firework
+spec:
+  strength:
+    check: int
+  effects:
+    check: \*

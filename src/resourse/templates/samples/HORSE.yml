@@ -1,0 +1,36 @@
+id: hourse
+spec:
+  armor:
+    check: item
+  color:
+    check: list
+    data:
+      - black
+      - brown
+      - chestnut
+      - creamy
+      - dark_brown
+      - gray
+      - white
+  domestication:
+    check: int
+    data:
+      less: spec.maxdomestication
+  jump:
+    check: double
+    data:
+      range:
+        - 1.0
+        - 2.0
+  maxdomestication:
+    check: int
+  saddle:
+    check: item
+  style:
+    check: list
+    data:
+      - none
+      - socks
+      - whitefield
+      - white_dots
+      - black_dots

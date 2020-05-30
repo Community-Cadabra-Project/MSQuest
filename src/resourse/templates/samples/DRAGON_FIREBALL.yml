@@ -1,0 +1,4 @@
+id: dragon_fireball
+spec:
+  direction:
+    check: \*

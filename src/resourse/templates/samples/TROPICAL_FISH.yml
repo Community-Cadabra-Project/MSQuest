@@ -1,0 +1,38 @@
+id: tropical_fish
+spec:
+  color:
+    check: list
+    data:
+      - white
+      - orange
+      - magenta
+      - light_blue
+      - yellow
+      - lime
+      - pink
+      - gray
+      - light_gray
+      - cyan
+      - purple
+      - blue
+      - brown
+      - green
+      - red
+      - black
+  patterncolor:
+    check: \*
+  pattern:
+    check: list
+    data:
+      - kob
+      - sunstreak
+      - snooper
+      - dasher
+      - brinely
+      - spotty
+      - flopper
+      - stripey
+      - glitter
+      - blockfish
+      - betty
+      - clayfish

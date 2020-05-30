@@ -1,0 +1,4 @@
+id: iron_golem
+spec:
+  playercreated: 
+    check: boolean

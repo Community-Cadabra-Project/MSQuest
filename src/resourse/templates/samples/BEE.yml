@@ -1,0 +1,12 @@
+id: bee
+spec:
+  anger:
+    check: boolean
+  flowerlocation:
+    check: *
+  hivelocation:
+    check: local
+  nector:
+    check: boolean
+  stung:
+    check: boolean

@@ -1,0 +1,4 @@
+id: vex
+spec:
+  charging:
+    check: boolean
