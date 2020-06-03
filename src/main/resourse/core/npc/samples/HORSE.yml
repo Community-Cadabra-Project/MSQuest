@@ -1,7 +1,7 @@
 id: hourse
 spec:
   armor:
-    check: item
+    check: \*
   color:
     check: list
     data:

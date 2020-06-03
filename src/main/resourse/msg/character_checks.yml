@@ -1,0 +1,4 @@
+---
+name: util/character_checks.ms
+msg:
+  pass: "template %s isn't correct"

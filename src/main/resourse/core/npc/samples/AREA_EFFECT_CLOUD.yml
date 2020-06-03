@@ -86,11 +86,9 @@ spec:
   reapplicationdelay:
     check: int
   source:
+    mode: or
     check: 
-      mode: or
-      data:
-        - uuid
-        - local
-        - "null"
+      - uuid
+      - local
   waittime:
     check: int

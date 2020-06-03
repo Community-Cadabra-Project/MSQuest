@@ -1,16 +1,19 @@
 --- 
 paths: 
-  characters: characters
-  dialogs: dialogs
-  extension: extension/main.ms
-  ms: src/ms
+  characters: data/character
+  dialogs: data/dialog
+  extension: data/extension/main.ms
+  scripts: data/script
+  templates: data/template
+  ms: src/main/ms
+  log: data/log
   resourse: 
-    msg: src/resourse/msg
-    templates: src/resourse/templates
-  scripts: scripts
-syntax: 
-  full: 
-    register: _quest_script_register_as
-  head_part: 
-    run: _quest_script_run
-  tail_part: ~
+    msg: src/main/resourse/msg
+    template:
+      spec: src/main/resourse/npc/sample
+      entity: src/main/resourse/npc/entity.yml
+      mob: src/main/resourse/npc/mob.yml
+      setting: src/main/resourse/npc/setting.yml
+    script:
+      syntax: src/main/resourse/script/syntax.yml
+

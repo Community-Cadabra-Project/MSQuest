@@ -14,7 +14,7 @@ execute(closure() {
     @path_to_setting = 'setting.yml'
 
     if (!file_exists(@path_to_setting)) {
-        @msg = "MSQuest: [ERROR] file '@path_to_setting' of setting doesn't exists."
+        @msg = "MSQuest: [FATAL] file '@path_to_setting' of setting doesn't exists."
         _util_error(@msg)
     }
     @setting = yml_decode(read(@path_to_setting))

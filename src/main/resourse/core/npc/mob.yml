@@ -1,0 +1,94 @@
+pickup:
+  exist: false
+  check: boolean
+ai:
+  exist: false
+  check: boolean
+air:
+  exist: false
+  check: int
+breedable:
+  exist: false
+  check: boolean
+gliding:
+  exist: false
+  check: boolean
+health:
+  exist: false
+  check: int
+  data:
+    range:
+      - 0
+      - 100
+immunity:
+  exist: false
+  check: int
+max_air:
+  exist: false
+  check: int
+persistence:
+  exist: false
+  check: boolean
+equipment_droprates:
+  exist: false
+  check: \*
+leashholder:
+  exist: false
+  check: uuid
+max_health:
+  exist: false
+  check: double
+collidable:
+  exist: false
+  check: boolean
+mob_effect:
+  exist: false
+  check: \*
+equipment:
+  exist: false
+  check: \*
+owner:
+  exist: false
+  check: string
+target:
+  exist: false
+  check:
+    - null
+    - uuid
+  mode: or
+effects:
+  exist: false
+  check: list
+  data: 
+    - SLOWNESS
+    - INVISIBILITY
+    - SLOW_FALLING
+    - BAD_OMEN
+    - WEAKNESS
+    - DOLPHINS_GRACE
+    - INSTANT_DAMAGE
+    - MINING_FATIGUE
+    - SPEED
+    - WITHER
+    - LUCK
+    - FIRE_RESISTANCE
+    - WATER_BREATHING
+    - GLOWING
+    - ABSORPTION
+    - HUNGER
+    - BAD_LUCK
+    - HERO_OF_THE_VILLAGE
+    - REGENERATION
+    - STRENGTH
+    - BLINDNESS
+    - LEVITATION
+    - CONDUIT_POWER
+    - JUMP_BOOST
+    - POISON
+    - NAUSEA
+    - RESISTANCE
+    - HEALTH_BOOST
+    - NIGHT_VISION
+    - INSTANT_HEALTH
+    - HASTE
+    - SATURATION
