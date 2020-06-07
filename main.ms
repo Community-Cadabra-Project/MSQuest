@@ -1,4 +1,4 @@
 ### includes ###
 
 include('setting.ms')
-include('src/ms/main.ms')
+include('src/main/ms/main.ms')

@@ -3,7 +3,7 @@ spec:
   anger:
     check: boolean
   flowerlocation:
-    check: *
+    check: \*
   hivelocation:
     check: local
   nector:

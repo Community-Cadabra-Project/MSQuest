@@ -10,10 +10,14 @@ paths:
   resourse: 
     msg: src/main/resourse/msg
     template:
-      spec: src/main/resourse/npc/sample
-      entity: src/main/resourse/npc/entity.yml
-      mob: src/main/resourse/npc/mob.yml
-      setting: src/main/resourse/npc/setting.yml
+      spec: src/main/resourse/core/npc/samples
+      entity: src/main/resourse/core/npc/entity.yml
+      mob: src/main/resourse/core/npc/mob.yml
+      setting: src/main/resourse/core/npc/setting.yml
     script:
-      syntax: src/main/resourse/script/syntax.yml
+      syntax: src/main/resourse/core/script/syntax.yml
+  test:
+    log: src/test/log
+    tests: src/test/scripts
+    prop: src/test/setting.properties
 

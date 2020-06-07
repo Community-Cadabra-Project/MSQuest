@@ -10,7 +10,7 @@ proc _private_quest_dialogs_init_self() {
 
 proc _quest_dialogs_add(array @dialog) {
     @self = _quest_dialogs_get_instance()
-    @self['dialogs'][@dialog['quest']] = @dialog
+    @self['dialogs'] = @dialog
 }
 
 proc _quest_dialogs_get(string @name_quest) {

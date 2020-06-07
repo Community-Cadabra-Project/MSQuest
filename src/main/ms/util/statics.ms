@@ -36,8 +36,8 @@ void proc _quest_log(string @type, string @msg) {
 }
 
 #quick log = qlog
-void proc _quest_qlog(string @type, string @key, array @args = array(), string @append = '') {
-    _quest_log(@type, _util_msg(_quest_get_prefix(), @key, 2, @args).@append)
+void proc _quest_qlog(string @type, string @key, array @args = array(), string @append = '', int @stack = 1) {
+    _quest_log(@type, _util_msg(_quest_get_prefix(), @key, @stack + 1, @args).@append)
 }
 
 void proc _quest_error(string @key, array @args = array()) {
