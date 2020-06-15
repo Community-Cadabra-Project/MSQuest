@@ -1,6 +1,6 @@
 id: minecart_mob_spawner
 spec:
   block:
-    check: \*
+    check: "*"
   offset:
     check: int

@@ -1,0 +1,9 @@
+main:
+  id: SizuyNoise
+  location:
+    - 100.0
+    - 100.0
+    - 65.0
+  type: villager
+  pitch: 90.0
+  yaw: 90.0

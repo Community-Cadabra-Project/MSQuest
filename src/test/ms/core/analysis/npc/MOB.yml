@@ -1,0 +1,22 @@
+main:
+  type: villager
+
+mob:
+  pickup: false
+  ai: false
+  air: 100
+  breedable: false
+  gliding: false
+  health: 75
+  immunity: 999
+  max_air: 255
+  persistence: true
+  #equipment_droprates:
+  #leashholder:
+  max_health: 100.0
+  collidable: true
+  #mob_effect:
+  #equipment:
+  owner: Anatoliy57
+  #target:
+  #effects:

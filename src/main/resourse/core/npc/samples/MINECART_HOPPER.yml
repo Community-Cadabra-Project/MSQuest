@@ -1,6 +1,6 @@
 id: minecraft_hopper
 spec:
   block:
-    check: \*
+    check: "*"
   offset:
     check: int

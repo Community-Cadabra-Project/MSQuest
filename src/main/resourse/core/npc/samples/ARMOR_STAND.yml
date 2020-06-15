@@ -13,4 +13,4 @@ spec:
   visible:
     check: boolean
   poses:
-    check: \*
+    check: "*"

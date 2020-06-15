@@ -1,11 +1,11 @@
 id: area_effect_cloud
 spec:
   color:
-    check: \*
+    check: "*"
   duration:
     check: int
   durationonuse:
-    check: \*
+    check: "*"
   particle:
     check: list
     data:
@@ -76,7 +76,7 @@ spec:
       - drip_lava
       - block_crack
   potionmeta:
-    check: \*
+    check: "*"
   radius:
     check: double
   radiusonuse:

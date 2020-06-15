@@ -1,36 +1,25 @@
 ---
 glowing: 
-  exist: false
   check: boolean
 gravity: 
-  exist: false
   check: boolean
 invulnerable: 
-  exist: false
   check: boolean
 world:
-  exist: false
   check: string
 on_fire: 
-  exist: false
   check: boolean
 ride: 
-  exist: false
   check: uuid
 silent: 
-  exist: false
   check: boolean
 name: 
-  exist: true
   check: string
 visible_name: 
-  exist: false
   check: boolean
 velocity: 
-  exist: false
   check: local
 effects: 
-  exist: false
   check: list
   data:
     - arrow_particles 

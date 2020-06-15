@@ -31,10 +31,21 @@ proc _private_quest_entity_checker_get_env() {
 }
 
 proc _private_quest_entity_checker_get_commander() {
-    return(_package_quest_entity_checker_import()['commader'])
+    return(_package_quest_entity_checker_import()['commander'])
 }
 
-array proc _quest_entity_checker(array @entity, boolean @is_npc) {
+array proc _quest_entity_checker(string @path_to_entity, boolean @is_npc) {
+
+    array @entity
+    try {
+        @entity = yml_decode(read(@path_to_entity))
+    } catch (FormatException @e) {
+        return(array(_quest_init_exception(
+            'yml_format_exception',
+            array(@path_to_entity)
+        )))
+    }
+
     @commander = _private_quest_entity_checker_get_commander()
     @env = _private_quest_entity_checker_get_env()
     
@@ -48,208 +59,164 @@ array proc _quest_entity_checker(array @entity, boolean @is_npc) {
     if (@is_npc) {
         array_push_all(@exceptions, _private_quest_entity_checker_sparams(
             @global_temp['params'],
-            @entity,
+            @entity['main'],
             @entity,
             @env,
             @commander
         ))
-        @selections = @global_temp['selections']
-        if (!_util_array_some_contains(array_keys(@selections), array_keys(@entity))) {
-            return(@exceptions)
-        }
-        if (!array_index_exists(@entity, 'type')) {
-            @e = _package_quest_character_check_e('type_undefined_exception', array(@key))
-            array_push(@exceptions, @e)
-        } else {
-            if (array_index_exists(@entity, 'entity')) {
-                if (@e = _private_entity_checker_param(
-                    @entity['type'],
-                    @selections['entity']['data'],
-                    @env,
-                    @commander
-                )) {
-                    array_push(@exceptions, @e)
-                } else {
-                    array_push_all(@exceptions, _private_quest_entity_checker_sparams(
-                        @entity_temp,
-                        @entity['entity'],
-                        @entity,
-                        @env,
-                        @commander
-                    ))
-                }
-            }
-            if (array_index_exists(@entity, 'mob')) {
-                if (@e = _private_entity_checker_param(
-                    @entity['type'],
-                    @selections['mob']['data'],
-                    @env,
-                    @commander
-                )) {
-                    array_push(@exceptions, @e)
-                } else {
-                    array_push_all(@exceptions, _private_quest_entity_checker_sparams(
-                        @mob_temp,
-                        @entity['mob'],
-                        @entity,
-                        @env,
-                        @commander
-                    ))
-                }
-            }
-            if (array_index_exists(@entity, 'spec')) {
-                if (@e = _private_entity_checker_param(
-                    @entity['type'],
-                    @selections['spec']['data'],
-                    @env,
-                    @commander
-                )) {
-                    array_push(@exceptions, @e)
-                } else {
-                    array_push_all(@exceptions, _private_quest_entity_checker_sparams(
-                        @spec_temp[@entity['type']],
-                        @entity['spec'],
-                        @entity,
-                        @env,
-                        @commander
-                    ))
-                }
-            }
-        }
     } else {
         array_push_all(@exceptions, _private_quest_entity_checker_params(
             @global_temp['params'],
-            @entity,
+            @entity['main'],
             @entity,
             @env,
             @commander
         ))
-        @selections = @global_temp['selections']
-        if (!_util_array_some_contains(array_keys(@selections), array_keys(@entity))) {
-            return(@exceptions)
+    }
+    @sections = @global_temp['sections']
+    if (!_util_array_some_contains(array_keys(@sections), array_keys(@entity))) {
+        return(@exceptions)
+    }
+    if (!array_index_exists(@entity['main'], 'type')) {
+        @e = _quest_init_exception('type_undefined_exception', array('type'))
+        array_push(@exceptions, @e)
+    } else {
+        if (array_index_exists(@entity, 'entity')) {
+            if (@e = _private_entity_checker_param(
+                @sections['entity']['check'],
+                @entity['main']['type'],
+                @sections['entity']['data'],
+                @entity,
+                @env,
+                @commander
+            )) {
+                array_insert(@e['args'], 'entity', 0)
+                array_push(@exceptions, @e)
+            } else {
+                array_push_all(@exceptions, _private_quest_entity_checker_params(
+                    @entity_temp,
+                    @entity['entity'],
+                    @entity,
+                    @env,
+                    @commander
+                ))
+            }
         }
-        if (!array_index_exists(@entity, 'type')) {
-            @e = _package_quest_character_check_e('type_undefined_exception', array(@key))
-            array_push(@exceptions, @e)
-        } else {
-            if (array_index_exists(@entity, 'entity')) {
-                if (@e = _private_entity_checker_param(
-                    @entity['type'],
-                    @selections['entity']['data'],
+        if (array_index_exists(@entity, 'mob')) {
+            if (@e = _private_entity_checker_param(
+                @sections['mob']['check'],
+                @entity['main']['type'],
+                @sections['mob']['data'],
+                @entity,
+                @env,
+                @commander
+            )) {
+                array_insert(@e['args'], 'mob', 0)
+                array_push(@exceptions, @e)
+            } else {
+                array_push_all(@exceptions, _private_quest_entity_checker_params(
+                    @mob_temp,
+                    @entity['mob'],
+                    @entity,
                     @env,
                     @commander
-                )) {
-                    array_push(@exceptions, @e)
-                } else {
-                    array_push_all(@exceptions, _private_quest_entity_checker_sparams(
-                        @entity_temp,
-                        @entity['entity'],
-                        @entity,
-                        @env,
-                        @commander
-                    ))
-                }
+                ))
             }
-            if (array_index_exists(@entity, 'mob')) {
-                if (@e = _private_entity_checker_param(
-                    @entity['type'],
-                    @selections['mob']['data'],
+        }
+        if (array_index_exists(@entity, 'spec')) {
+            if (@e = _private_entity_checker_param(
+                @sections['spec']['check'],
+                @entity['main']['type'],
+                @sections['spec']['data'],
+                @entity,
+                @env,
+                @commander
+            )) {
+                array_insert(@e['args'], 'spec', 0)
+                array_push(@exceptions, @e)
+            } else {
+                array_push_all(@exceptions, _private_quest_entity_checker_params(
+                    @spec_temp[@entity['type']],
+                    @entity['spec'],
+                    @entity,
                     @env,
                     @commander
-                )) {
-                    array_push(@exceptions, @e)
-                } else {
-                    array_push_all(@exceptions, _private_quest_entity_checker_sparams(
-                        @mob_temp,
-                        @entity['mob'],
-                        @entity,
-                        @env,
-                        @commander
-                    ))
-                }
-            }
-            if (array_index_exists(@entity, 'spec')) {
-                if (@e = _private_entity_checker_param(
-                    @entity['type'],
-                    @selections['spec']['data'],
-                    @env,
-                    @commander
-                )) {
-                  array_push(@exceptions, @e)
-                } else {
-                    array_push_all(@exceptions, _private_quest_entity_checker_sparams(
-                        @spec_temp[@entity['type']],
-                        @entity['spec'],
-                        @entity,
-                        @env,
-                        @commander
-                    ))
-                }
+                ))
             }
         }
     }
-    return(@exception)
+    foreach(@e in @exceptions) {
+        array_insert(@e['args'], @path_to_entity, 0)
+    }
+    return(@exceptions)
 }
 
 array proc _private_quest_entity_checker_params(array @temp, array @params, array @npc, array @env, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
-            @e = _package_quest_character_check_e('unknown_key_exception', array(@key))
+            @e = _quest_init_exception('unknown_key_exception', array(@key))
             array_push(@exceptions, @e)
         } else {
+            @data = if (array_index_exists(@temp[@key], 'data'), @temp[@key]['data'], null)
             if (@e = _private_entity_checker_param(
+                @temp[@key]['check'],
                 @value,
-                @temp[@key]['data'],
+                @data,
                 @npc,
                 @env,
                 @commander
             )) {
+                array_insert(@e['args'], @key, 0)
                 array_push(@exceptions, @e)
             }
         }
     }
-    return(@exception)
+    return(@exceptions)
 }
 
 array proc _private_quest_entity_checker_sparams(array @temp, array @params, array @npc, array @env, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @temp) {
         if (!array_index_exists(@params, @key)) {
-            @e = _package_quest_character_check_e('key_not_found_exception', array(@key))
+            @e = _quest_init_exception('key_not_found_exception', array(@key))
             array_push(@exceptions, @e)
         } else {
+            @data = if (array_index_exists(@value, 'data'), @value['data'], null)
             if (@e = _private_entity_checker_param(
+                @value['check'],
                 @params[@key],
-                @value['data'],
+                @data,
                 @npc,
                 @env,
                 @commander
             )) {
+                array_insert(@e['args'], @key, 0)
                 array_push(@exceptions, @e)
             }
         }
     }
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
-            @e = _package_quest_character_check_e('unknown_key_exception', array(@key))
+            @e = _quest_init_exception('unknown_key_exception', array(@key))
             array_push(@exceptions, @e)
         }
     }
-    return(@exception)
+    return(@exceptions)
 }
 
-proc _private_entity_checker_param(@value, @data, @npc, @env, @commander) {
+proc _private_entity_checker_param(string @check, @value, @data, array @npc, array @env, array @commander) {
     @env['value'] = @value
     @env['data'] = @data
     @env['character'] = @npc
-    _util_commander_execute(@commander, @data['check'])
+    _util_commander_execute(@commander, @check)
     @exception = @env['exception']
     execute(@env['clear'])
     return(@exception)
 }
 
 execute(closure() {
+    include('checks.ms')
     @commander = _util_commander_init_self()
     @env = array()
     @env['clear'] = closure() {

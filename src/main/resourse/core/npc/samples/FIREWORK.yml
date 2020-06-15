@@ -3,4 +3,4 @@ spec:
   strength:
     check: int
   effects:
-    check: \*
+    check: "*"

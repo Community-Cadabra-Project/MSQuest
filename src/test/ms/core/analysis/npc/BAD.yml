@@ -1,0 +1,14 @@
+main:
+  id: 123
+  location:
+    - 100.0
+    - 100.0
+  type: villager
+  pitch: 180.0
+
+mob:
+  ai: "false"
+  air: 377
+  immunity: "123"
+  max_air: 255.0
+  max_health: null

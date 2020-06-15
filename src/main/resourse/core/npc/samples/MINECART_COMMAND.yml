@@ -5,6 +5,6 @@ spec:
   customname:
     check: string
   block:
-    check: \*
+    check: "*"
   offset:
     check: int

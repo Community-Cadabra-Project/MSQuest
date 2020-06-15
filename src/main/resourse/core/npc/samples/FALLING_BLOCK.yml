@@ -1,8 +1,8 @@
 id: falling_block
 spec:
   block:
-    check: \*
+    check: "*"
   dropitem:
-    check: \*
+    check: "*"
   damage:
     check: double

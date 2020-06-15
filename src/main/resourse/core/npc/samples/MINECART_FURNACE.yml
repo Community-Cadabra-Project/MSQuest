@@ -1,6 +1,6 @@
 id: minecart_furnace
 spec:
   block:
-    check: \*
+    check: "*"
   offset:
     check: int

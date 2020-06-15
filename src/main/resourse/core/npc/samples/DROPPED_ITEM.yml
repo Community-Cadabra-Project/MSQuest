@@ -1,6 +1,6 @@
 id: dropped_item
 spec:
   itemstack: 
-    check: \*
+    check: "*"
   pickupdelay: 
     check: int

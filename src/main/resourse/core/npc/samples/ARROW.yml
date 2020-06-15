@@ -7,4 +7,4 @@ spec:
   damage:
     check: double
   potionmeta:
-    check: \*
+    check: "*"

@@ -1,6 +1,6 @@
 id: minecraft
 spec:
   block:
-    check: \*
+    check: "*"
   offset:
     check: int

@@ -20,7 +20,7 @@ spec:
       - red
       - black
   patterncolor:
-    check: \*
+    check: "*"
   pattern:
     check: list
     data:

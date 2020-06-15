@@ -3,4 +3,4 @@ spec:
   fuseticks:
     check: int
   source:
-    check: \*
+    check: "*"

@@ -1,6 +1,6 @@
 id: minecart_tnt
 spec:
   block:
-    check: \*
+    check: "*"
   offset:
     check: int

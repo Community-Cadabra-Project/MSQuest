@@ -15,4 +15,4 @@ spec:
   maxdomestication:
     check: int
   saddle:
-    check: \*
+    check: "*"

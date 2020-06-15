@@ -1,94 +1,75 @@
 pickup:
-  exist: false
   check: boolean
 ai:
-  exist: false
   check: boolean
 air:
-  exist: false
   check: int
+  data:
+      less: mob.max_air
 breedable:
-  exist: false
   check: boolean
 gliding:
-  exist: false
   check: boolean
 health:
-  exist: false
   check: int
   data:
     range:
       - 0
       - 100
 immunity:
-  exist: false
   check: int
 max_air:
-  exist: false
   check: int
 persistence:
-  exist: false
   check: boolean
 equipment_droprates:
-  exist: false
-  check: \*
+  check: "*"
 leashholder:
-  exist: false
   check: uuid
 max_health:
-  exist: false
   check: double
 collidable:
-  exist: false
   check: boolean
 mob_effect:
-  exist: false
-  check: \*
+  check: "*"
 equipment:
-  exist: false
-  check: \*
+  check: "*"
 owner:
-  exist: false
   check: string
 target:
-  exist: false
-  check:
-    - null
-    - uuid
-  mode: or
+  check: "*"
 effects:
-  exist: false
   check: list
   data: 
-    - SLOWNESS
-    - INVISIBILITY
-    - SLOW_FALLING
-    - BAD_OMEN
-    - WEAKNESS
-    - DOLPHINS_GRACE
-    - INSTANT_DAMAGE
-    - MINING_FATIGUE
-    - SPEED
-    - WITHER
-    - LUCK
-    - FIRE_RESISTANCE
-    - WATER_BREATHING
-    - GLOWING
-    - ABSORPTION
-    - HUNGER
-    - BAD_LUCK
-    - HERO_OF_THE_VILLAGE
-    - REGENERATION
-    - STRENGTH
-    - BLINDNESS
-    - LEVITATION
-    - CONDUIT_POWER
-    - JUMP_BOOST
-    - POISON
-    - NAUSEA
-    - RESISTANCE
-    - HEALTH_BOOST
-    - NIGHT_VISION
-    - INSTANT_HEALTH
-    - HASTE
-    - SATURATION
+    - slowness
+    - invisibility
+    - slow_falling
+    - bad_omen
+    - weakness
+    - dolphins_grace
+    - instant_damage
+    - mining_fatigue
+    - speed
+    - wither
+    - luck
+    - fire_resistance
+    - water_breathing
+    - glowing
+    - absorption
+    - hunger
+    - bad_luck
+    - hero_of_the_village
+    - regeneration
+    - strength
+    - blindness
+    - levitation
+    - conduit_power
+    - jump_boost
+    - poison
+    - nausea
+    - resistance
+    - health_boost
+    - night_vision
+    - instant_health
+    - haste
+    - saturation

@@ -1,4 +1,4 @@
 id: fireball
 spec:
   direction:
-    check: \*
+    check: "*"

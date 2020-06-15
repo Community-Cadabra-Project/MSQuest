@@ -40,6 +40,10 @@ void proc _quest_qlog(string @type, string @key, array @args = array(), string @
     _quest_log(@type, _util_msg(_quest_get_prefix(), @key, @stack + 1, @args).@append)
 }
 
+array proc _quest_init_exception(string @type, array @args, string @msg = '') {
+    return(array(type: @type, args: @args, msg: @msg))
+}
+
 void proc _quest_error(string @key, array @args = array()) {
     @msg = _util_msg(_quest_get_prefix(), @key, @stack + 1, @args)
     _quest_log('FATAL', @msg)

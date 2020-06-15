@@ -17,7 +17,7 @@ paths:
     script:
       syntax: src/main/resourse/core/script/syntax.yml
   test:
-    log: src/test/log
-    tests: src/test/scripts
+    logs: src/test/logs
+    tests: src/test/ms
     prop: src/test/setting.properties
 

@@ -1,0 +1,18 @@
+main:
+  type: villager
+
+entity:
+  glowing: true
+  gravity: true
+  invulnerable: true
+  world: world
+  on_fire: true
+  #ride
+  silent: true
+  name: Сизый нос
+  visible_name: true
+  velocity:
+    - 0.0
+    - 0.0
+    - 0.0
+  #effects:

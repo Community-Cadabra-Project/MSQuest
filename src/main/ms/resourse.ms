@@ -1,4 +1,4 @@
-execute(closure() {
+proc _quets_resourse_load() {
 
     ### paths to resourses ###
 
@@ -27,7 +27,7 @@ execute(closure() {
     @to_file = closure(@msg) {
         @path_to_log .= '\\'.simple_date('yyyy.mm.dd').'txt'
         if (!file_exists(@path_to_log)) {
-            _util_make_dir(@path_to_log)
+            _util_make_file(@path_to_log)
         }
         write_file(@path_to_log, @msg, 'APPEND')
     }
@@ -93,13 +93,14 @@ execute(closure() {
     @templates['global'] = @npc_global
     @templates['entity'] = @npc_entity
     @templates['spec'] = @npc_spec
+    @templates['mob'] = @npc_mob
 
     ### UNIT TEST ###
 
-    _unit_register_module_pro(
+    _unit_register_module(
         'msquest',
         _quest_get_path('test.tests'),
         _quest_get_path('test.prop'),
-        _unit_get_default_outs(_quest_get_path('test.log'))
+        _unit_get_default_outs(_quest_get_path('test.logs'))
     )
-})
+}
