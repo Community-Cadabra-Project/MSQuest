@@ -86,7 +86,8 @@ proc _quets_resourse_load() {
     @npc_spec = array()
     foreach(@sample in @npc_samples) {
         if (string_contains(@sample, '.yml')) {
-            @npc_spec[to_lower(@sample)] = yml_decode(read(@sample))
+            @o = yml_decode(read(@sample))
+            @npc_spec[@o['id']] = @o['spec'] 
         }
     }
     @templates = _package_quest_entity_checker_import()['templates']

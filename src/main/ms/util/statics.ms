@@ -44,6 +44,18 @@ array proc _quest_init_exception(string @type, array @args, string @msg = '') {
     return(array(type: @type, args: @args, msg: @msg))
 }
 
+string proc _quest_parse_exception(array @e, int @stack = 1) {
+    @message = _util_msg(_quest_get_prefix(), @e['type'], @stack + 1, @e['args'])
+    if (@e['msg'] != null && trim(@e['msg']) != '') {
+        @message .= '\nMessage: '.@e['msg']
+    }
+    return(@message)
+}
+
+void proc _quest_log_exception(string @type, array @e, int @stack = 1) {
+
+}
+
 void proc _quest_error(string @key, array @args = array()) {
     @msg = _util_msg(_quest_get_prefix(), @key, @stack + 1, @args)
     _quest_log('FATAL', @msg)

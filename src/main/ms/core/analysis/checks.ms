@@ -5,7 +5,7 @@ Exceptions:
     args: { 0 : expect_type, 1 : actually_type }
 - range_exception
     args: { 0 : value, 1 : less, 2 : more}
-- less_exception
+- more_exception
     args: { 0 : value, 1 : more}
 - less_exception
     args: { 0 : value, 1 : less}
@@ -62,7 +62,7 @@ proc _private_quest_character_check_number(number @value, mixed @data, array @ch
                     return(@more)
                 }
                 if (@value < @less || @value > @more) {
-                    @error = _quest_init_exception('range_exception', array(@value, @info))
+                    @error = _quest_init_exception('range_exception', array(@info[0], @info[1], @value))
                     return(@error)
                 }
                 break()
@@ -101,11 +101,11 @@ proc _private_quest_character_check_get_number(mixed @val, array @character) {
             if (array_index_exists(@attr, @path)) {
                 @attr = @attr[@path]
             } else {
-                @error = _quest_init_exception('key_path_exception', array(@paths, @attr))
+                @error = _quest_init_exception('key_path_exception', array(array_implode(@paths, '.'), @attr))
             }
         }
         if (!is_number(@attr)) {
-            @error = _quest_init_exception('ref_cast_exception', array(@paths, 'ms.lang.number', typeof(@attr)))
+            @error = _quest_init_exception('ref_cast_exception', array(array_implode(@paths, '.'), 'ms.lang.number', typeof(@attr)))
         } 
         return(@attr)
     } else {

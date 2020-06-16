@@ -1,4 +1,4 @@
 ---
-name: util/character_checks.ms
+name: core/analysis/checks.ms
 msg:
   pass: "template %s isn't correct"

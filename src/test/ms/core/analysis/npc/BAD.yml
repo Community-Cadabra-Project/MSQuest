@@ -12,3 +12,6 @@ mob:
   immunity: "123"
   max_air: 255.0
   max_health: null
+
+spec:
+  profession: bartender

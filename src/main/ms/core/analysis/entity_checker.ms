@@ -1,3 +1,14 @@
+/*
+Exceptions:
+- yml_exception
+    args: {}
+- unknown_key_exception
+    args: {}
+- key_not_found_exception
+    args: {}
+- type_undefined_exception
+*/
+
 proc _private_quest_entity_checker_name() {
     return('__QUEST_ENTITY_CHECKER')
 }
@@ -34,16 +45,46 @@ proc _private_quest_entity_checker_get_commander() {
     return(_package_quest_entity_checker_import()['commander'])
 }
 
-array proc _quest_entity_checker(string @path_to_entity, boolean @is_npc) {
+string proc _quest_entity_analys(array @entries, string @root = '') {
+    int @cslice = length(@root) + 1
+    @builder = res_create_resource('STRING_BUILDER')
+    @res = true;
+    foreach(@entry in @entries) {
+        @is_npc = @entry['is_npc']
+        @path = @entry['path']
 
+        @info = _package_quest_entity_checker(@path, @is_npc)
+        if (array_size(@info['exceptions']) != 0) {
+            @res = false
+        } else {
+            continue()
+        }
+        string_append(@builder, '\n')
+        string_append(@builder, 'Entity at: ')
+        string_append(@builder, @info['id'][cslice(@cslice, -1)])
+        foreach(@attr: @e in @info['exceptions']) {
+            string_append(@builder, '\n- attribute: ')
+            string_append(@builder, @attr)
+            string_append(@builder, '\n\t')
+            string_append(@builder, _quest_parse_exception(@e))
+            string_append(@builder, '\n')
+        }
+    }
+    return(if(@res, null, string(@builder)))
+}
+
+array proc _package_quest_entity_checker(string @path_to_entity, boolean @is_npc) {
     array @entity
     try {
         @entity = yml_decode(read(@path_to_entity))
     } catch (FormatException @e) {
-        return(array(_quest_init_exception(
-            'yml_format_exception',
-            array(@path_to_entity)
-        )))
+        return(array(
+            id: @path_to_entity,
+            exceptions: _quest_init_exception(
+                'yml_exception',
+                array(@path_to_entity)
+            )
+        ))
     }
 
     @commander = _private_quest_entity_checker_get_commander()
@@ -54,32 +95,44 @@ array proc _quest_entity_checker(string @path_to_entity, boolean @is_npc) {
     @mob_temp = _package_quest_entity_checker_get_mob()
     @spec_temp = _package_quest_entity_checker_get_spec()
 
+    @log = array(id: @path_to_entity)
     @exceptions = array()
 
     if (@is_npc) {
-        array_push_all(@exceptions, _private_quest_entity_checker_sparams(
+        if (!array_index_exists(@entity, 'main')) {
+            @e = _quest_init_exception('key_not_found_exception', array())
+            @exceptions['main'] = @e
+            @log['exceptions'] = @exceptions
+            return(@log)
+        }
+         @exceptions = array_merge(@exceptions, _private_quest_entity_checker_sparams(
             @global_temp['params'],
             @entity['main'],
             @entity,
+            'main',
             @env,
             @commander
         ))
     } else {
-        array_push_all(@exceptions, _private_quest_entity_checker_params(
-            @global_temp['params'],
-            @entity['main'],
-            @entity,
-            @env,
-            @commander
-        ))
+        if (array_index_exists(@entity, 'main')) {
+             @exceptions = array_merge(@exceptions, _private_quest_entity_checker_params(
+                @global_temp['params'],
+                @entity['main'],
+                @entity,
+                'main',
+                @env,
+                @commander
+            ))
+        }
     }
     @sections = @global_temp['sections']
     if (!_util_array_some_contains(array_keys(@sections), array_keys(@entity))) {
-        return(@exceptions)
+        @log['exceptions'] = @exceptions
+        return(@log)
     }
     if (!array_index_exists(@entity['main'], 'type')) {
-        @e = _quest_init_exception('type_undefined_exception', array('type'))
-        array_push(@exceptions, @e)
+        @e = _quest_init_exception('type_undefined_exception', array())
+        @exceptions['main.type'] = @e
     } else {
         if (array_index_exists(@entity, 'entity')) {
             if (@e = _private_entity_checker_param(
@@ -90,13 +143,13 @@ array proc _quest_entity_checker(string @path_to_entity, boolean @is_npc) {
                 @env,
                 @commander
             )) {
-                array_insert(@e['args'], 'entity', 0)
-                array_push(@exceptions, @e)
+                @exceptions['entity'] = @e
             } else {
-                array_push_all(@exceptions, _private_quest_entity_checker_params(
+                 @exceptions = array_merge(@exceptions, _private_quest_entity_checker_params(
                     @entity_temp,
                     @entity['entity'],
                     @entity,
+                    'entity',
                     @env,
                     @commander
                 ))
@@ -111,13 +164,13 @@ array proc _quest_entity_checker(string @path_to_entity, boolean @is_npc) {
                 @env,
                 @commander
             )) {
-                array_insert(@e['args'], 'mob', 0)
-                array_push(@exceptions, @e)
+                @exceptions['mob'] = @e
             } else {
-                array_push_all(@exceptions, _private_quest_entity_checker_params(
+                 @exceptions = array_merge(@exceptions, _private_quest_entity_checker_params(
                     @mob_temp,
                     @entity['mob'],
                     @entity,
+                    'mob',
                     @env,
                     @commander
                 ))
@@ -132,31 +185,29 @@ array proc _quest_entity_checker(string @path_to_entity, boolean @is_npc) {
                 @env,
                 @commander
             )) {
-                array_insert(@e['args'], 'spec', 0)
-                array_push(@exceptions, @e)
+                @exceptions['spec'] = @e
             } else {
-                array_push_all(@exceptions, _private_quest_entity_checker_params(
-                    @spec_temp[@entity['type']],
+                 @exceptions = array_merge(@exceptions, _private_quest_entity_checker_params(
+                    @spec_temp[@entity['main']['type']],
                     @entity['spec'],
                     @entity,
+                    'spec',
                     @env,
                     @commander
                 ))
             }
         }
     }
-    foreach(@e in @exceptions) {
-        array_insert(@e['args'], @path_to_entity, 0)
-    }
-    return(@exceptions)
+    @log['exceptions'] = @exceptions
+    return(@log)
 }
 
-array proc _private_quest_entity_checker_params(array @temp, array @params, array @npc, array @env, array @commander) {
+array proc _private_quest_entity_checker_params(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
-            @e = _quest_init_exception('unknown_key_exception', array(@key))
-            array_push(@exceptions, @e)
+            @e = _quest_init_exception('unknown_key_exception', array())
+            @exceptions[@key] = @e
         } else {
             @data = if (array_index_exists(@temp[@key], 'data'), @temp[@key]['data'], null)
             if (@e = _private_entity_checker_param(
@@ -167,20 +218,19 @@ array proc _private_quest_entity_checker_params(array @temp, array @params, arra
                 @env,
                 @commander
             )) {
-                array_insert(@e['args'], @key, 0)
-                array_push(@exceptions, @e)
+                @exceptions[@section.'.'.@key] = @e
             }
         }
     }
     return(@exceptions)
 }
 
-array proc _private_quest_entity_checker_sparams(array @temp, array @params, array @npc, array @env, array @commander) {
+array proc _private_quest_entity_checker_sparams(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @temp) {
         if (!array_index_exists(@params, @key)) {
-            @e = _quest_init_exception('key_not_found_exception', array(@key))
-            array_push(@exceptions, @e)
+            @e = _quest_init_exception('key_not_found_exception', array())
+            @exceptions[@section.'.'.@key] = @e
         } else {
             @data = if (array_index_exists(@value, 'data'), @value['data'], null)
             if (@e = _private_entity_checker_param(
@@ -191,15 +241,14 @@ array proc _private_quest_entity_checker_sparams(array @temp, array @params, arr
                 @env,
                 @commander
             )) {
-                array_insert(@e['args'], @key, 0)
-                array_push(@exceptions, @e)
+                @exceptions[@section.'.'.@key] = @e
             }
         }
     }
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
-            @e = _quest_init_exception('unknown_key_exception', array(@key))
-            array_push(@exceptions, @e)
+            @e = _quest_init_exception('unknown_key_exception', array())
+            @exceptions[@section.'.'.@key] = @e
         }
     }
     return(@exceptions)

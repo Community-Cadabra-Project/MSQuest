@@ -1,0 +1,51 @@
+
+#Exceptions:
+#- yml_exception
+#    args: {}
+#- unknown_key_exception
+#    args: {}
+#- key_not_found_exception
+#    args: {}
+#- type_undefined_exception
+
+#Exceptions:
+#    keySet: type, args, [msg]
+#- cast_exception
+#    args: { 0 : expect_type, 1 : actually_type }
+#- range_exception
+#    args: { 0 : value, 1 : less, 2 : more}
+#- more_exception
+#    args: { 0 : value, 1 : more}
+#- less_exception
+#    args: { 0 : value, 1 : less}
+#- key_path_exception
+#    args: { 0 : keys, 1 : key}
+#- ref_cast_exception
+#    args: { 0 : keys, 1 : expect_type, 2 : actually_type}
+#- contains_exception
+#    args: { 0 : value, 1 : list}
+#- size_exception
+#    args: { 0 : expect_size, 1 : actually_size }
+#- id_exception
+#    args: { 0 : id }
+
+
+
+name: core\analysis\entity_checker.ms
+msg:
+  yml_exception: "NPCException: YAML parsing error"
+  unknown_key_exception: "NPCException: Unknown attribute"
+  key_not_found_exception: "NPCException: not found attribute"
+  type_undefined_exception: "NPCException: attribute 'type' undefined"
+  cast_exception: "CastException: expect type - %s, actually - %s"
+  range_exception: "RangeException: range is [%s %s], but value is %s"
+  more_exception: "RangeException: value %s less that %s"
+  less_exception: "RangeException: value %s more that %s"
+  key_path_exception: "NotFoundException: attribute %s:%s not found"
+  ref_cast_exception: "CastException: value in %s expect type - %s, actually - %s"
+  contains_exception: "IllegalValueException: The value '%s' not in %s"
+  size_exception: "SizeException: expect size - %s, actually - %s"
+  id_exception: "IDK"
+
+
+
