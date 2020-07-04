@@ -1,8 +1,13 @@
-### includes ###
+proc _quest_init_module(array @setting = array(msunit: false)) {
+    include('setting.ms')
+    include('src/main/ms/main.ms')
 
-include('setting.ms')
-include('src/main/ms/main.ms')
-
-proc _quest_init_module() {
-    _quets_resourse_load()
+    if (@setting['msunit']) {
+        _unit_register_module(
+            'msquest',
+            _get_path('test.tests'),
+            _get_path('test.prop'),
+            _unit_get_default_outs(_get_path('test.logs'))
+        )
+    }
 }

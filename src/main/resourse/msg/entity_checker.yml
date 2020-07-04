@@ -1,7 +1,9 @@
 
 #Exceptions:
-#- yml_exception
-#    args: {}
+#- unknown_section_excetion
+#    args: {sections}
+#- id_exception
+#    args: {id}
 #- unknown_key_exception
 #    args: {}
 #- key_not_found_exception
@@ -31,9 +33,10 @@
 
 
 
-name: core\analysis\entity_checker.ms
+name: core\analysis\entity\entity_checker.ms
 msg:
-  yml_exception: "NPCException: YAML parsing error"
+  unknown_section_excetion: "NPCException: Unknown attributes: %s"
+  id_exception: "NPCException: Already existing id: %s"
   unknown_key_exception: "NPCException: Unknown attribute"
   key_not_found_exception: "NPCException: not found attribute"
   type_undefined_exception: "NPCException: attribute 'type' undefined"
@@ -45,7 +48,5 @@ msg:
   ref_cast_exception: "CastException: value in %s expect type - %s, actually - %s"
   contains_exception: "IllegalValueException: The value '%s' not in %s"
   size_exception: "SizeException: expect size - %s, actually - %s"
-  id_exception: "IDK"
-
 
 

@@ -1,184 +1,65 @@
-params:
-  id:
-    check: uuid
-  type:
-    check: list
-    data:
-      - area_effect_cloud
-      - armor_stand
-      - arrow
+main:
+  check: "*"  
+  data: null
+spec: 
+  check: "*"
+  data: null
+entity:
+  check: "*"
+  data: null
+mob:
+  check: list
+  data:
       - bat
       - bee
       - blaze
-      - boat
-      - cat
-      - cave_spider
+      - cavespider
       - chicken
-      - cod
       - cow
       - creeper
-      - dolphin
-      - dragon_fireball
-      - dropped_item
-      - drowned
       - donkey
-      - egg
-      - elder_guardian
+      - elderguardian
+      - enderdragon
       - enderman
       - endermite
-      - ender_crystal
-      - ender_dragon
-      - ender_eye
-      - ender_pearl
       - evoker
-      - evoker_fangs
-      - experience_orb
-      - falling_block
-      - fireball
-      - firework
-      - fox
       - ghast
       - giant
       - guardian
       - horse
       - husk
       - illusioner
-      - iron_golem
-      - item_frame
+      - irongolem
       - llama
-      - llama_spit
-      - leash_hitch
-      - lightning
-      - magma_cube
-      - minecart
-      - minecart_chest
-      - minecart_command
-      - minecart_furnace
-      - minecart_hopper
-      - minecart_mob_spawner
-      - minecart_tnt
+      - magmacube
+      - mooshroom
       - mule
-      - mushroom_cow
+      - mushroomcow
       - ocelot
-      - painting
-      - panda
       - parrot
-      - phantom
       - pig
-      - pig_zombie
-      - pillager
-      - polar_bear
-      - primed_tnt
-      - pufferfish
+      - pigzombie
+      - polarbear
       - rabbit
-      - ravager
-      - salmon
       - sheep
+      - shulker
       - silverfish
       - skeleton
-      - shulker
-      - shulker_bullet
-      - skeleton_horse
+      - skeletonhorse
       - slime
-      - small_fireball
-      - snowball
+      - snowgolem
       - snowman
-      - squid
-      - spectral_arrow
       - spider
-      - splash_potion
+      - spiderjockey
+      - squid
       - stray
-      - thrown_exp_bottle
-      - trader_llama
-      - trident
-      - tropical_fish
-      - turtle
+      - witch
+      - wither
+      - witherskeleton
+      - wolf
       - vex
       - villager
       - vindicator
-      - wandering_trader
-      - witch
-      - wither
-      - wither_skeleton
-      - wither_skull
-      - wolf
       - zombie
-      - zombie_horse
-      - zombie_villager
-  location: 
-    check: local
-  pitch:
-    check: double
-    data:
-      range:
-        - 0.0
-        - 90.0
-  yaw:
-    check: double
-    data:
-      range:
-        - 0.0
-        - 380.0
-sections:
-  spec: 
-    check: "*"
-    data: null
-  entity:
-    check: "*"
-    data: null
-  mob:
-    check: list
-    data:
-        - bat
-        - bee
-        - blaze
-        - cavespider
-        - chicken
-        - cow
-        - creeper
-        - donkey
-        - elderguardian
-        - enderdragon
-        - enderman
-        - endermite
-        - evoker
-        - ghast
-        - giant
-        - guardian
-        - horse
-        - husk
-        - illusioner
-        - irongolem
-        - llama
-        - magmacube
-        - mooshroom
-        - mule
-        - mushroomcow
-        - ocelot
-        - parrot
-        - pig
-        - pigzombie
-        - polarbear
-        - rabbit
-        - sheep
-        - shulker
-        - silverfish
-        - skeleton
-        - skeletonhorse
-        - slime
-        - snowgolem
-        - snowman
-        - spider
-        - spiderjockey
-        - squid
-        - stray
-        - witch
-        - wither
-        - witherskeleton
-        - wolf
-        - vex
-        - villager
-        - vindicator
-        - zombie
-        - zombiehorse
-        - zombievillager
+      - zombiehorse
+      - zombievillager

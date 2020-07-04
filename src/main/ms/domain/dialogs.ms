@@ -1,21 +1,21 @@
-proc _quest_dialogs_get_instance() {
-    return(import('__QUEST_DOMAIN_DIALOGS_INSTANCE'))
+proc _dialogs_get_instance() {
+    return(import('org.cadabra.msquest.dialogs'))
 }
 
-proc _private_quest_dialogs_init_self() {
+proc _private_dialogs_init_self() {
     @o = array()
     @o['dialogs'] = array()
     return(@o)
 }
 
-proc _quest_dialogs_add(array @dialog) {
-    @self = _quest_dialogs_get_instance()
+proc _dialogs_add(array @dialog) {
+    @self = _dialogs_get_instance()
     @self['dialogs'] = @dialog
 }
 
-proc _quest_dialogs_get(string @name_quest) {
-    @self = _quest_dialogs_get_instance()
-    return(@self['dialogs'][@name_quest])
+proc _dialogs_get(string @name) {
+    @self = _dialogs_get_instance()
+    return(@self['dialogs'][@name])
 }
 
-export('__QUEST_DOMAIN_DIALOGS_INSTANCE', _private_quest_dialogs_init_self())
+export('org.cadabra.msquest.dialogs', _private_dialogs_init_self())

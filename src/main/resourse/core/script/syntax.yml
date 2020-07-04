@@ -1,5 +1,5 @@
 full: 
-  register: _quest_script_register_as
+  register: _script_register_as
 head_part: 
-  run: _quest_script_run
+  run: _script_run
 tail_part: ~

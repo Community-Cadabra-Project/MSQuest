@@ -5,6 +5,7 @@ paths:
   extension: data/extension/main.ms
   scripts: data/script
   templates: data/template
+  cache: data/.cache
   ms: src/main/ms
   log: data/log
   resourse: 
@@ -13,7 +14,8 @@ paths:
       spec: src/main/resourse/core/npc/samples
       entity: src/main/resourse/core/npc/entity.yml
       mob: src/main/resourse/core/npc/mob.yml
-      setting: src/main/resourse/core/npc/setting.yml
+      main: src/main/resourse/core/npc/main.yml
+      sections: src/main/resourse/core/npc/sections.yml
     script:
       syntax: src/main/resourse/core/script/syntax.yml
   test:

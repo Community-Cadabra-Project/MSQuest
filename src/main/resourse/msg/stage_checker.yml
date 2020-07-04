@@ -1,0 +1,43 @@
+# Exceptions:
+#     keySet: type, args, [msg]
+# - cast_exception
+#     args: [expect_type, actually_type]
+# - key_not_found_exception
+#     args: []
+# - size_graph_exception
+#     args: [expect_type, actually_type]
+# - contain_graph_exception
+#     args: [possible, actually]
+# - stage_duplication_exception
+#     args: [stage]
+# - unreachable_points_exception
+#     args: [stages]
+# - tree_head_exception
+#     args: []
+# - tree_node_exception
+#     args: [actually_type]
+# - unknown_keys_exception
+#     args: [keys]
+
+# - key_not_found_exception
+#     args: []
+# - stage_id_exception
+#     args: [key]
+# - quest_id_exception
+#     args: [key]
+
+---
+name: core\analysis\stage\stage_checker.ms
+msg:
+  cast_exception: "CastException: expect type - %s, actually - %s"
+  key_not_found_exception: "NPCException: not found attribute"
+  unknown_keys_excetion: "NPCException: Unknown attributes: %s"
+  stage_id_exception: "StageException: Already existing stage id: %s"
+  quest_id_exception: "StageException: Already existing id: %s"
+  tree_node_exception: "TreeNodeException: Node can be associative array or string, but: %s"
+  tree_head_exception: "TreeHeadException: Root can be only one"
+  unreachable_points_exception: "GraphException: Unreachable stages: %s"
+  stage_duplication_exception: "StageException: Duplicated stage - %s"
+  contain_graph_exception: "GraphException: Graph can by only contain - %s, but - %s"
+  size_graph_exception: "GraphException: Except size - %s, but - %s"
+  

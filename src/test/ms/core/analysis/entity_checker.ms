@@ -1,4 +1,4 @@
-proc _unit_before_all() {
+proc _before_all() {
 
     string @path_to_npc = get_absolute_path('npc')
 
@@ -7,33 +7,35 @@ proc _unit_before_all() {
 
     @files = _util_get_all_files(@path_to_npc)
     foreach(@file in @files) {
-        @entities[@file[cslice(@len_npc+1, -5)]] = @file
+        @id = @file[cslice(@len_npc+1, -5)]
+        @entities[@id]['id'] = @file
+        @entities[@id]['entity'] = yml_decode(read(@file))
     }
     return(@entities)
 }
 
-proc _unit_test_npc_analysis_main(@entities) {
-    @exceptions = _package_quest_entity_checker(@entities['SETTING'], true)['exceptions']
+proc _test_npc_analysis_main(@entities) {
+    @exceptions = _package_entity_checker(@entities['SETTING']['entity'], true)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
-proc _unit_test_npc_analysis_entity(@entities) {
-    @exceptions = _package_quest_entity_checker(@entities['ENTITY'], false)['exceptions']
+proc _test_npc_analysis_entity(@entities) {
+    @exceptions = _package_entity_checker(@entities['ENTITY']['entity'], false)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
-proc _unit_test_npc_analysis_mob(@entities) {
-    @exceptions = _package_quest_entity_checker(@entities['MOB'], false)['exceptions']
+proc _test_npc_analysis_mob(@entities) {
+    @exceptions = _package_entity_checker(@entities['MOB']['entity'], false)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
-proc _unit_test_npc_analysis_spec(@entities) {
+proc _test_npc_analysis_spec(@entities) {
     _skip_test()
 }
 
-proc _unit_test_npc_analysis_fail(@entities) {
-    @exceptions = _package_quest_entity_checker(@entities['BAD'], true)['exceptions']
-    _assert_size(10, @exceptions, string(_package_quest_entity_checker(@entities['BAD'], true)))
+proc _test_npc_analysis_fail(@entities) {
+    @exceptions = _package_entity_checker(@entities['BAD']['entity'], true)
+    _assert_size(10, @exceptions, string(@exceptions))
     foreach(@e in @exceptions) {
         _assert_true(
             array_contains(
@@ -45,13 +47,12 @@ proc _unit_test_npc_analysis_fail(@entities) {
     }
 }
 
-proc _unit_test_npc_analysis_log(@entities) {
-    @result = _quest_entity_analys(
+proc _test_npc_analysis_log(@entities) {
+    @logs = _entity_checker_analys(
         array(
-            array(path: @entities['BAD'], is_npc: true)
-        ),
-        get_absolute_path('npc')
+            array(id: @entities['BAD']['id'], entity: @entities['BAD']['entity'], is_npc: true)
+        )
     )
-    _assert_not_null(@result)
-    _print(@result)
+    _assert_not_empty(@logs)
+    _print(_entity_checker_parse_exceptions(@logs))
 }

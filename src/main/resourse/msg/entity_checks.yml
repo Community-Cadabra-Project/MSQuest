@@ -1,4 +1,4 @@
 ---
-name: core/analysis/checks.ms
+name: core/analysis/entity/checks.ms
 msg:
   pass: "template %s isn't correct"
