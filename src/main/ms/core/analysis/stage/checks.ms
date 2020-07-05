@@ -32,8 +32,10 @@ proc _is_ass_array(mixed @data, array @keys, string @path) {
     }
     if (@keys && array_size(@data) != array_size(@keys)) {
         @unknown = _util_array_minus(array_keys(@data), @keys)
-        @error = _init_exception('unknown_keys_exception', array(@unknown, @path))
-        return(@error)
+        if (array_size(@unknown) == 0) {
+            @error = _init_exception('unknown_keys_exception', array(@unknown, @path))
+            return(@error)
+        }
     }
     return(false)
 }

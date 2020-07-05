@@ -1,0 +1,6 @@
+id: somethink
+stages:
+  main:
+    type: set
+    data: ["1"]
+    unexpected: exception

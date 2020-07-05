@@ -1,0 +1,15 @@
+id: somethink
+stages:
+  main:
+    type: tree
+    data:
+      start:
+        - one
+        - two
+        - three:
+            - a
+            - b
+          kvar:
+            - c
+            - d
+        - [1, 2, 3]

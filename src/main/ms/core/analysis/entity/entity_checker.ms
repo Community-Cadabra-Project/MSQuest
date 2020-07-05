@@ -12,40 +12,36 @@ Exceptions:
     args: {}
 */
 
-proc _package_entity_checker_import() {
+proc _pck_entity_checker_import() {
     return(import('org.cadabra.msquest.entity_checker'))
 }
 
-proc _package_entity_checker_successful() {
-    return(_package_entity_checker_import()['successful'])
+proc _pr_entity_checker_get_global() {
+    return(_pck_entity_checker_import()['templates']['main'])
 }
 
-proc _package_entity_checker_get_global() {
-    return(_package_entity_checker_import()['templates']['main'])
+proc _pr_entity_checker_get_spec() {
+    return(_pck_entity_checker_import()['templates']['spec'])
 }
 
-proc _package_entity_checker_get_spec() {
-    return(_package_entity_checker_import()['templates']['spec'])
+proc _pr_entity_checker_get_entity() {
+    return(_pck_entity_checker_import()['templates']['entity'])
 }
 
-proc _package_entity_checker_get_entity() {
-    return(_package_entity_checker_import()['templates']['entity'])
+proc _pr_entity_checker_get_mob() {
+    return(_pck_entity_checker_import()['templates']['mob'])
 }
 
-proc _package_entity_checker_get_mob() {
-    return(_package_entity_checker_import()['templates']['mob'])
+proc _pr_entity_checker_get_sections() {
+    return(_pck_entity_checker_import()['templates']['sections'])
 }
 
-proc _package_entity_checker_get_sections() {
-    return(_package_entity_checker_import()['templates']['sections'])
+proc _pr_entity_checker_get_env() {
+    return(_pck_entity_checker_import()['env'])
 }
 
-proc _private_entity_checker_get_env() {
-    return(_package_entity_checker_import()['env'])
-}
-
-proc _private_entity_checker_get_commander() {
-    return(_package_entity_checker_import()['commander'])
+proc _pr_entity_checker_get_commander() {
+    return(_pck_entity_checker_import()['commander'])
 }
 
 string proc _entity_checker_parse_exceptions(array @logs) {
@@ -100,7 +96,7 @@ array proc _entity_checker_analys(array @entities) {
         @id = @info_entity['id']
         @entity = @info_entity['entity']
 
-        @exceptions = _package_entity_checker_single(@entity, @is_npc)
+        @exceptions = _pr_entity_checker_single(@entity, @is_npc)
         if (array_size(@exceptions) != 0) {
             array_push(@logs, array(is_npc: @is_npc, id: @id, exceptions: = @exceptions))
         }
@@ -118,16 +114,16 @@ array proc _entity_checker_analys(array @entities) {
     return(@logs)
 }
 
-array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
+array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
 
-    @commander = _private_entity_checker_get_commander()
-    @env = _private_entity_checker_get_env()
+    @commander = _pr_entity_checker_get_commander()
+    @env = _pr_entity_checker_get_env()
     
-    @sections_temp = _package_entity_checker_get_sections()
+    @sections_temp = _pr_entity_checker_get_sections()
     @main_temp = _package_entity_checker_get_main()
-    @entity_temp = _package_entity_checker_get_entity()
-    @mob_temp = _package_entity_checker_get_mob()
-    @spec_temp = _package_entity_checker_get_spec()
+    @entity_temp = _pr_entity_checker_get_entity()
+    @mob_temp = _pr_entity_checker_get_mob()
+    @spec_temp = _pr_entity_checker_get_spec()
 
     @exceptions = array()
 
@@ -137,7 +133,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
             @exceptions['main'] = @e
             return(@exceptions)
         }
-         @exceptions = array_merge(@exceptions, _private_entity_checker_sparams(
+         @exceptions = array_merge(@exceptions, _pr_entity_checker_sparams(
             @main,
             @entity['main'],
             @entity,
@@ -147,7 +143,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
         ))
     } else {
         if (array_index_exists(@entity, 'main')) {
-             @exceptions = array_merge(@exceptions, _private_entity_checker_params(
+             @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
                 @main,
                 @entity['main'],
                 @entity,
@@ -170,7 +166,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
         @exceptions['main.type'] = @e
     } else {
         if (array_index_exists(@entity, 'entity')) {
-            if (@e = _private_entity_checker_param(
+            if (@e = _pr_entity_checker_param(
                 @sections['entity']['check'],
                 @entity['main']['type'],
                 @sections['entity']['data'],
@@ -180,7 +176,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
             )) {
                 @exceptions['entity'] = @e
             } else {
-                 @exceptions = array_merge(@exceptions, _private_entity_checker_params(
+                 @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
                     @entity_temp,
                     @entity['entity'],
                     @entity,
@@ -191,7 +187,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
             }
         }
         if (array_index_exists(@entity, 'mob')) {
-            if (@e = _private_entity_checker_param(
+            if (@e = _pr_entity_checker_param(
                 @sections['mob']['check'],
                 @entity['main']['type'],
                 @sections['mob']['data'],
@@ -201,7 +197,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
             )) {
                 @exceptions['mob'] = @e
             } else {
-                 @exceptions = array_merge(@exceptions, _private_entity_checker_params(
+                 @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
                     @mob_temp,
                     @entity['mob'],
                     @entity,
@@ -212,7 +208,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
             }
         }
         if (array_index_exists(@entity, 'spec')) {
-            if (@e = _private_entity_checker_param(
+            if (@e = _pr_entity_checker_param(
                 @sections['spec']['check'],
                 @entity['main']['type'],
                 @sections['spec']['data'],
@@ -222,7 +218,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
             )) {
                 @exceptions['spec'] = @e
             } else {
-                 @exceptions = array_merge(@exceptions, _private_entity_checker_params(
+                 @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
                     @spec_temp[@entity['main']['type']],
                     @entity['spec'],
                     @entity,
@@ -236,7 +232,7 @@ array proc _package_entity_checker_single(array @entity, boolean @is_npc) {
     return(@exceptions)
 }
 
-array proc _private_entity_checker_params(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
+array proc _pr_entity_checker_params(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
@@ -244,7 +240,7 @@ array proc _private_entity_checker_params(array @temp, array @params, array @npc
             @exceptions[@key] = @e
         } else {
             @data = if (array_index_exists(@temp[@key], 'data'), @temp[@key]['data'], null)
-            if (@e = _private_entity_checker_param(
+            if (@e = _pr_entity_checker_param(
                 @temp[@key]['check'],
                 @value,
                 @data,
@@ -259,7 +255,7 @@ array proc _private_entity_checker_params(array @temp, array @params, array @npc
     return(@exceptions)
 }
 
-array proc _private_entity_checker_sparams(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
+array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @temp) {
         if (!array_index_exists(@params, @key)) {
@@ -267,7 +263,7 @@ array proc _private_entity_checker_sparams(array @temp, array @params, array @np
             @exceptions[@section.'.'.@key] = @e
         } else {
             @data = if (array_index_exists(@value, 'data'), @value['data'], null)
-            if (@e = _private_entity_checker_param(
+            if (@e = _pr_entity_checker_param(
                 @value['check'],
                 @params[@key],
                 @data,
@@ -288,7 +284,7 @@ array proc _private_entity_checker_sparams(array @temp, array @params, array @np
     return(@exceptions)
 }
 
-proc _private_entity_checker_param(string @check, @value, @data, array @npc, array @env, array @commander) {
+proc _pr_entity_checker_param(string @check, @value, @data, array @npc, array @env, array @commander) {
     @env['value'] = @value
     @env['data'] = @data
     @env['character'] = @npc

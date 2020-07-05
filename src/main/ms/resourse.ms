@@ -89,7 +89,7 @@ foreach(@sample in @npc_samples) {
         @npc_spec[@o['id']] = @o['spec'] 
     }
 }
-@templates = _package_entity_checker_import()['templates']
+@templates = _pck_entity_checker_import()['templates']
 @templates['main'] = @npc_main
 @templates['sections'] = @npc_sections
 @templates['entity'] = @npc_entity

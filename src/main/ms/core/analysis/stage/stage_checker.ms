@@ -3,10 +3,14 @@ Exceptions:
     keySet: type, args, [msg]
 - key_not_found_exception
     args: []
+- not_one_stage_exception
+    args: []
 - stage_id_exception
     args: [key]
 - quest_id_exception
     args: [key]
+- type_exception
+    args: [type]
 */
 
 proc _pr_stage_checker_import() {
@@ -84,21 +88,39 @@ array proc _pr_stage_checker_single(array @stage) {
     if (!array_index_exists(@stage, 'id')) {
         @e = _init_exception('key_not_found_exception')
         _stage_checker_put_exception(@exceptions, @e, 'id')
+        return(@exceptions)
     }
     if (!array_index_exists(@stage, 'stages')) {
         @e = _init_exception('key_not_found_exception')
         _stage_checker_put_exception(@exceptions, @e, 'stages')
+        return(@exceptions)
     }
     if (!is_array(@stage['stages'])) {
         @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), 'stages'))
-        return(@error)
+       _stage_checker_put_exception(@exceptions, @e, 'stages')
+        return(@exceptions)
     }
     if (!is_associative(@stage['stages'])) {
         @error = _init_exception('cast_exception', array('associated array', 'linear array', 'stages'))
-        return(@error)
+        _stage_checker_put_exception(@exceptions, @e, 'stages')
+        return(@exceptions)
+    }
+    @keys = array('stages, id, local, global')
+    if (array_size(@struct) != array_size(@keys)) {
+        @unknown = _util_array_minus(array_keys(@data), @keys)
+        if (array_size(@unknown) == 0) {
+            @e = _init_exception('unknown_keys_exception', array(@unknown))
+            _stage_checker_put_exception(@exceptions, @e, '/')
+            return(@exceptions)
+        }
+    }
+    if (array_size(@stage['stages']) == 0) {
+        @error = _init_exception('not_one_stage_exception', array())
+        _stage_checker_put_exception(@exceptions, @e, 'stages')
+        return(@exceptions)
     }
     foreach(@st in @stage['stages']) {
-        array_push_all(@exceptions, _pr_stage_checker_stages(@st))
+        array_push_all(@exceptions, _pr_stage_checker_stages(@st, 'stages'))
     }
     return(@exceptions)
 }
@@ -119,22 +141,24 @@ array proc _pr_stage_checker_stages(array @stage, string @path) {
         }
         if (!is_array(@struct)) {
             @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), @path))
-            @exceptions[@path.@id] = @error
+            @exceptions["@path.@id"] = @error
             return(@exceptions)
         }
         if (!is_associative(@data)) {
             @error = _init_exception('cast_exception', array('associated array', 'linear array', @path))
-            @exceptions[@path.@id] = @error
+            @exceptions["@path.@id"] = @error
             return(@exceptions)
         }
         @keys = array('type, data')
         if (array_size(@struct) != array_size(@keys)) {
             @unknown = _util_array_minus(array_keys(@data), @keys)
-            @error = _init_exception('unknown_keys_exception', array(@unknown))
-            @exceptions[@path.@id] = @error
-            return(@exceptions)
+            if (array_size(@unknown) == 0) {
+                @error = _init_exception('unknown_keys_exception', array(@unknown))
+                @exceptions["@path.@id"] = @error
+                return(@exceptions)
+            }
         }
-        @e = _pr_stage_checker_stage(@struct, @env, @c, @path.@id)
+        @e = _pr_stage_checker_stage(@struct, @env, @c, "@path.@id")
         if (@e) {
             _pr_stage_checker_put_exception(@exceptions, @e)
         }
@@ -144,9 +168,15 @@ array proc _pr_stage_checker_stages(array @stage, string @path) {
 array proc _pr_stage_checker_stage(array @stage, array @env, array @c, string @path) {
     @env['path'] = @path.'data'
     @env['value'] = @stage['data']
-    _util_commander_execute(@commander, @stage['type'])
-    @exception = @env['exception']
-    execute(@env['clear'])
+    @exception = null
+    try {
+        _util_commander_execute(@commander, @stage['type'])
+        @exception = @env['exception']
+    } catch (IllegalArgumentException @e) {
+        @exception = _init_exception('type_exception', array(@stage['type'], @path.'type'))
+    } finally {
+        execute(@env['clear'])
+    }   
     return(@exception)
 }
 

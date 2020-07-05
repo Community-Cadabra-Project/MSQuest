@@ -1,0 +1,39 @@
+id: spawn_barter1
+local:
+  count_players: 0
+global:
+  have_suggestions: false
+stage:
+  main:
+    type: cycle
+    data: [one, tow, tree]
+  sub:
+    type: linear
+    data: [before, after]
+  dialogs:
+    type: set
+    data: [one, two, tree, four]
+  points:
+    type: graph
+    data:
+      stages: [one, two, three, four, five]
+      graph:
+        - [0, 1, 1, 0, 1]
+        - [0, 0, 0, 1, 0]
+        - [0, 0, 0, 1, 0]
+        - [0, 0, 0, 0, 1]
+        - [0, 0, 0, 0, 0]
+  tree:
+    type: tree
+    data:
+      start:
+        - one
+        - two
+        - three:
+          - a
+          - b:
+            - c
+            - d
+          - e
+        - four
+    

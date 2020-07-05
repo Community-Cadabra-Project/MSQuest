@@ -1,0 +1,5 @@
+id: somethink
+stages:
+  main:
+    type: unknown
+    data: ignored because type is unknown

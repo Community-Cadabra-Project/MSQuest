@@ -1,0 +1,5 @@
+id: somethink
+stages:
+  main:
+    type: set
+    data: [one, ywo, one]

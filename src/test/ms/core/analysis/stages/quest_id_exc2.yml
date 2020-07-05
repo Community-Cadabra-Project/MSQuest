@@ -1,0 +1,5 @@
+id: dublicate
+stages:
+  main:
+    type: set
+    data: [one, two]

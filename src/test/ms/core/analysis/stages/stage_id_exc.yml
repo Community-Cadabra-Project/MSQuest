@@ -1,0 +1,8 @@
+id: somethink
+stages:
+  main:
+    type: set
+    data: [one, two]
+  main:
+    type: linear
+    data: [one, two, three]

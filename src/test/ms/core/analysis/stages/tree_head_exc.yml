@@ -1,0 +1,11 @@
+id: somethink
+stages:
+  main:
+    type: tree
+    data:
+      start:
+        - one
+        - two
+      second:
+        - a
+        - b

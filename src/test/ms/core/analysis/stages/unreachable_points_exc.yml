@@ -1,0 +1,11 @@
+id: somethink
+stages:
+  main:
+    type: graph
+    data:
+      stages: ["1", "2", "3"]
+      graph: 
+        - [0, 1, 0]
+        - [1, 0, 0]
+        - [0, 0, 0]
+      
