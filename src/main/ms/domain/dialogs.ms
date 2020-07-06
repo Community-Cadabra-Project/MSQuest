@@ -18,4 +18,8 @@ proc _dialogs_get(string @name) {
     return(@self['dialogs'][@name])
 }
 
-export('org.cadabra.msquest.dialogs', _private_dialogs_init_self())
+execute(closure() {
+    //todo
+    export('org.cadabra.msquest.dialogs', null)
+})
+

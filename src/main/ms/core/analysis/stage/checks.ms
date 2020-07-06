@@ -9,7 +9,7 @@ Exceptions:
     args: [expect_type, actually_type, path]
 - contain_graph_exception
     args: [possible, actually, path]
-- stage_duplication_exception
+- stage_duplicate_exception
     args: [stage, path]
 - unreachable_points_exception
     args: [stages, path]
@@ -32,7 +32,7 @@ proc _is_ass_array(mixed @data, array @keys, string @path) {
     }
     if (@keys && array_size(@data) != array_size(@keys)) {
         @unknown = _util_array_minus(array_keys(@data), @keys)
-        if (array_size(@unknown) == 0) {
+        if (array_size(@unknown) != 0) {
             @error = _init_exception('unknown_keys_exception', array(@unknown, @path))
             return(@error)
         }
@@ -60,7 +60,7 @@ proc _valide_stages(array @data, string @path) {
             return(@error)
         }
         if (array_contains(@set, @o)) {
-            @error = _init_exception('stage_duplication_exception', array(@o, @path.@o))
+            @error = _init_exception('stage_duplicate_exception', array(@o, @path))
             return(@error)
         }
         array_push(@set, @o)
@@ -88,23 +88,23 @@ proc _is_grapth(mixed @g, int @size, string @path) {
     }
 
     if (array_size(@g) != @size) {
-        @error = _init_exception('size_graph_exception', array(@size, array_size(@g), "@path.[...]"))
+        @error = _init_exception('size_graph_exception', array(@size, array_size(@g), "@path"))
         return(@error)
     }
 
     for(@i = 0, @i < @size, @i++) {
         @row = @g[@i]
-        @error = _is_lin_array(@row, "@path.[...][@i]")
+        @error = _is_lin_array(@row, "@path[@i]")
         if (@error) {
             return(@error)
         }
         if (array_size(@g) != @size) {
-            @error = _init_exception('size_graph_exception', array(@size, array_size(@g), "@path.[...]"))
+            @error = _init_exception('size_graph_exception', array(@size, array_size(@g), "@path"))
             return(@error)
         }
         for(@j = 0, @j < @size, @j++) {
-            if (@row[@j] != 0 || @row != 1) {
-                @error = _init_exception('contain_graph_exception', array(array(0, 1), @row[@j], "@path.[...][@i][@j]"))
+            if (@row[@j] != 0 && @row[@j] != 1) {
+                @error = _init_exception('contain_graph_exception', array(array(0, 1), @row[@j], "@path[@i][@j]"))
                 return(@error)
             }
         }
@@ -119,7 +119,7 @@ proc _visitor(array @g, int @pos, array @set) {
         }
         if (@g[@pos][@i] == 1) {
             array_push(@set, @i)
-            _visitor(@g, @i, @set, @path)
+            _visitor(@g, @i, @set)
         }
     }
     return(false)
@@ -144,30 +144,30 @@ proc _graph(mixed @data, string @path) {
 
     @key_graph = 'graph'
     if (!array_index_exists(@data, @key_graph)) {
-        @error = _init_exception('key_not_found_exception', array(@"@path.'graph"))
+        @error = _init_exception('key_not_found_exception', array("@path.graph"))
         return(@error)
     }
-    @error = _is_grapth(@data[@key_graph], "@path.@key_graph")
+    @error = _is_grapth(@data[@key_graph], array_size(@data[@key_stages]), "@path.@key_graph")
     if (@error) {
         return(@error)
     }
 
     @set = array(0)
     _visitor(@data[@key_graph], 0, @set)
-    @points = _util_array_minus(range(@size), @set)
+    @points = _util_array_minus(range(array_size(@data[@key_stages])), @set)
     if (array_size(@points) != 0) {
         @error = _init_exception(
             'unreachable_points_exception',
             array(array_map(@points, closure(@i) {
                 return(@data[@key_stages])
-            }), "@path.@key_graph.[...]")
+            }), "@path.@key_graph")
         )
         return(@error)
     }
     return(false)
 }
 
-proc _node(mixed @n, string @path) {
+proc _node(mixed @n, string @path, array @set) {
     if (is_associative(@n)) {
         foreach(@key in array_keys(@n)) {
             @error = _node(@n[@key], "@path.@key")
@@ -195,5 +195,8 @@ proc _tree(mixed @data, string @path) {
         return(@error)
     }
     @error = _node(@data[@keys[0]], @path.@keys[0])
+    if (@error) {
+        return(@error)
+    }
     return(false)
 }

@@ -2,11 +2,6 @@ proc _scripts_get_instance() {
     return(import('org.cadabra.msquest.scripts'))
 }
 
-proc _private_scripts_init_self() {
-    @o = array()
-    return(@o)
-}
-
 proc _scripts_add(string @name_scripts) {
     @self = _scripts_get_instance()
     array_push(@self, @name_scripts)
@@ -22,4 +17,7 @@ proc _scripts_get_all(string @name) {
     return(@self[])
 }
 
-export('org.cadabra.msquest.scripts', _private_scripts_init_self())
+execute(closure() {
+    //todo
+    export('org.cadabra.msquest.scripts', null)
+})

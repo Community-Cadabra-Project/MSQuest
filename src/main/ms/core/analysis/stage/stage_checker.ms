@@ -5,8 +5,6 @@ Exceptions:
     args: []
 - not_one_stage_exception
     args: []
-- stage_id_exception
-    args: [key]
 - quest_id_exception
     args: [key]
 - type_exception
@@ -30,7 +28,7 @@ string proc _stage_checker_parse_exceptions(array @logs) {
 
     string_append(@builder, '############ STAGE ############')
     string_append(@builder, '\n')
-    foreach(@log in @npc_logs) {
+    foreach(@log in @logs) {
         @id = @log['id']
         string_append(@builder, '\n')
         string_append(@builder, 'Stage at: ')
@@ -47,7 +45,7 @@ string proc _stage_checker_parse_exceptions(array @logs) {
     return(string(@builder))
 }
 
-proc _stage_checker_analys(string @entries, array @stage) {
+proc _stage_checker_analys(array @entries, array @stage) {
     @logs = array()
     @ids = array()
     foreach(@entry in @entries) {
@@ -56,14 +54,14 @@ proc _stage_checker_analys(string @entries, array @stage) {
 
         @exceptions = _pr_stage_checker_single(@stage)
         if (array_size(@exceptions) != 0) {
-            array_push(@logs, array(id: @id, exceptions: = @exceptions))
+            array_push(@logs, array(id: @id, exceptions: @exceptions))
         }
         if (array_index_exists(@stage, 'id')) {
             @_id = @stage['id']
             if (array_contains(@ids, @_id)) {
                 @exceptions = array()
                 @exceptions['id']= _init_exception('quest_id_exception', array(@_id))
-                array_push(@logs, array(id: @id, exceptions: = @exceptions))
+                array_push(@logs, array(id: @id, exceptions: @exceptions))
             } else {
                 array_push(@ids, @_id)
             }
@@ -73,9 +71,12 @@ proc _stage_checker_analys(string @entries, array @stage) {
 }
 
 proc _pr_stage_checker_put_exception(array @exceptions, array @e, string @key = null) {
-    if (@key) {
+    if (array_index_exists(@exceptions, @key)) {
+        throw(IllegalArgumentException, "Already key \"@key\" exists: ".array_keys(@exceptions))
+    }
+    if (!@key) {
         @key = @e['args'][-1]
-        array_remove(@e['args'], -1)
+        array_remove(@e['args'], array_size(@e['args']) - 1)
         @exceptions[@key] = @e
     } else {
         @exceptions[@key] = @e
@@ -87,75 +88,64 @@ array proc _pr_stage_checker_single(array @stage) {
 
     if (!array_index_exists(@stage, 'id')) {
         @e = _init_exception('key_not_found_exception')
-        _stage_checker_put_exception(@exceptions, @e, 'id')
+        _pr_stage_checker_put_exception(@exceptions, @e, 'id')
         return(@exceptions)
     }
     if (!array_index_exists(@stage, 'stages')) {
         @e = _init_exception('key_not_found_exception')
-        _stage_checker_put_exception(@exceptions, @e, 'stages')
+        _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
         return(@exceptions)
     }
     if (!is_array(@stage['stages'])) {
         @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), 'stages'))
-       _stage_checker_put_exception(@exceptions, @e, 'stages')
+       _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
         return(@exceptions)
     }
     if (!is_associative(@stage['stages'])) {
         @error = _init_exception('cast_exception', array('associated array', 'linear array', 'stages'))
-        _stage_checker_put_exception(@exceptions, @e, 'stages')
+        _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
         return(@exceptions)
     }
-    @keys = array('stages, id, local, global')
-    if (array_size(@struct) != array_size(@keys)) {
-        @unknown = _util_array_minus(array_keys(@data), @keys)
-        if (array_size(@unknown) == 0) {
+    @keys = array('stages', 'id', 'local', 'global')
+    if (array_size(@stage) != array_size(@keys)) {
+        @unknown = _util_array_minus(array_keys(@stage), @keys)
+        if (array_size(@unknown) != 0) {
             @e = _init_exception('unknown_keys_exception', array(@unknown))
-            _stage_checker_put_exception(@exceptions, @e, '/')
-            return(@exceptions)
+            _pr_stage_checker_put_exception(@exceptions, @e, '/')
         }
     }
     if (array_size(@stage['stages']) == 0) {
-        @error = _init_exception('not_one_stage_exception', array())
-        _stage_checker_put_exception(@exceptions, @e, 'stages')
+        @e = _init_exception('not_one_stage_exception', array())
+        _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
         return(@exceptions)
     }
-    foreach(@st in @stage['stages']) {
-        array_push_all(@exceptions, _pr_stage_checker_stages(@st, 'stages'))
-    }
+    @exceptions = array_merge(@exceptions, _pr_stage_checker_stages(@stage['stages'], 'stages'))
     return(@exceptions)
 }
 
 array proc _pr_stage_checker_stages(array @stage, string @path) {
     @env = _pr_stage_checker_get_env()
     @c = _pr_stage_checker_get_commander()
-    @ids = array()
     @exceptions = array()
 
     foreach(@id: @struct in @stage) {
-        if (array_contains(@ids, @id)) {
-            @error = _init_exception('stage_id_exception', array('id'))
-            @exceptions[@path] = @error
-            return(@exceptions)
-        } else {
-            array_push(@ids, @id)
-        }
         if (!is_array(@struct)) {
             @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), @path))
             @exceptions["@path.@id"] = @error
-            return(@exceptions)
+            continue()
         }
-        if (!is_associative(@data)) {
+        if (!is_associative(@struct)) {
             @error = _init_exception('cast_exception', array('associated array', 'linear array', @path))
             @exceptions["@path.@id"] = @error
-            return(@exceptions)
+            continue()
         }
-        @keys = array('type, data')
+        @keys = array('type', 'data')
         if (array_size(@struct) != array_size(@keys)) {
-            @unknown = _util_array_minus(array_keys(@data), @keys)
-            if (array_size(@unknown) == 0) {
+            @unknown = _util_array_minus(array_keys(@struct), @keys)
+            if (array_size(@unknown) != 0) {
                 @error = _init_exception('unknown_keys_exception', array(@unknown))
                 @exceptions["@path.@id"] = @error
-                return(@exceptions)
+                continue()
             }
         }
         @e = _pr_stage_checker_stage(@struct, @env, @c, "@path.@id")
@@ -163,17 +153,18 @@ array proc _pr_stage_checker_stages(array @stage, string @path) {
             _pr_stage_checker_put_exception(@exceptions, @e)
         }
     }
+    return(@exceptions)
 }
 
-array proc _pr_stage_checker_stage(array @stage, array @env, array @c, string @path) {
-    @env['path'] = @path.'data'
+proc _pr_stage_checker_stage(array @stage, array @env, array @c, string @path) {
+    @env['path'] = "@path.data"
     @env['value'] = @stage['data']
     @exception = null
     try {
-        _util_commander_execute(@commander, @stage['type'])
+        _util_commander_execute(@c, @stage['type'])
         @exception = @env['exception']
     } catch (IllegalArgumentException @e) {
-        @exception = _init_exception('type_exception', array(@stage['type'], @path.'type'))
+        @exception = _init_exception('type_exception', array(@stage['type'], "@path.type"))
     } finally {
         execute(@env['clear'])
     }   
@@ -182,7 +173,7 @@ array proc _pr_stage_checker_stage(array @stage, array @env, array @c, string @p
 
 execute(closure() {
     include('checks.ms')
-    @commander = _util_commander_init_self()
+    @c = _util_commander_init_self()
     @env = array()
     @env['clear'] = closure() {
         @env['path'] = null
@@ -190,27 +181,27 @@ execute(closure() {
         @env['exception'] = null
     }
 
-    _util_commander_register(@commander, 'set' , closure() {
+    _util_commander_register(@c, 'set' , closure() {
         @env['exception'] = _array(@env['value'], @env['path'])
     })
-    _util_commander_register(@commander, 'linear' , closure() {
+    _util_commander_register(@c, 'linear' , closure() {
         @env['exception'] = _array(@env['value'], @env['path'])
     })
-    _util_commander_register(@commander, 'orientated_linear' , closure() {
+    _util_commander_register(@c, 'orientated_linear' , closure() {
         @env['exception'] = _array(@env['value'], @env['path'])
     })
-    _util_commander_register(@commander, 'cycle' , closure() {
+    _util_commander_register(@c, 'cycle' , closure() {
         @env['exception'] = _array(@env['value'], @env['path'])
     })
-    _util_commander_register(@commander, 'orientated_cycle' , closure() {
+    _util_commander_register(@c, 'orientated_cycle' , closure() {
         @env['exception'] = _array(@env['value'], @env['path'])
     })
-    _util_commander_register(@commander, 'graph' , closure() {
+    _util_commander_register(@c, 'graph' , closure() {
         @env['exception'] = _graph(@env['value'], @env['path'])
     })
-    _util_commander_register(@commander, 'tree' , closure() {
-        @env['exception'] = _tree(@env['value'], @env['path'])
-    })
-    @o = array(commander: @commander, env: @env)
+    // _util_commander_register(@c, 'tree' , closure() {
+    //     @env['exception'] = _tree(@env['value'], @env['path'])
+    // })
+    @o = array(commander: @c, env: @env)
     export('org.cadabra.msquest.stage_checker', @o)
 })

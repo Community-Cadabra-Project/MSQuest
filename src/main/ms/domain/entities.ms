@@ -2,14 +2,6 @@ array proc _entities_get_instance() {
     return(import('org.cadabra.msquest.entities'))
 }
 
-array proc _private_entities_init_self() {
-    @o = array()
-    @o['entry_templates'] = array()
-    @o['entry_npc'] = array()
-    @o['id'] = array()
-    return(@o)
-}
-
 proc _package_entities_add_template(string @file, array @template) {
     @self = _entities_get_instance()
     array_push(@self['entry_templates'], array(file: @file, entity: @template))
@@ -52,4 +44,7 @@ array proc _package_entities_get_ids() {
     return(@self['id'][])
 }
 
-export('org.cadabra.msquest.entities', _private_entities_init_self())
+execute(closure() {
+    //todo
+    export('org.cadabra.msquest.entities', null)
+})

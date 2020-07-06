@@ -1,0 +1,11 @@
+---
+- 
+  func: _register_as
+  type: full
+  repeat: 1
+  required: true
+- 
+  func: _script_run
+  type: full
+  repeat: 1
+  required: true

@@ -3,16 +3,18 @@ local:
   count_players: 0
 global:
   have_suggestions: false
+myobject:
+  - mmm
 stages:
   main:
     type: cycle
     data: [one, tow, tree]
   sub:
-    type: linear
+    type: aaaa
     data: [before, after]
   dialogs:
     type: set
-    data: [one, two, tree, four]
+    data: [one, tree, tree, four]
   points:
     type: graph
     data:
@@ -20,20 +22,6 @@ stages:
       graph:
         - [0, 1, 1, 0, 1]
         - [0, 0, 0, 1, 0]
-        - [0, 0, 0, 1, 0]
+        - [0, 0, 3, 1, 0]
         - [0, 0, 0, 0, 1]
         - [0, 0, 0, 0, 0]
-  # tree:
-  #   type: tree
-  #   data:
-  #     start:
-  #       - one
-  #       - two
-  #       - three:
-  #         - a
-  #         - b:
-  #           - c
-  #           - d
-  #         - e
-  #       - four
-    

@@ -1,7 +1,0 @@
----
-name: domain/resourse.ms
-msg: 
-  incor_characters: "directory %s of characters doesn't exists."
-  incor_dialogs: "directory %s of dialogs doesn't exists."
-  incor_scripts: "directory %s of scripts doesn't exists."
-  incor_templates: "directory %s of templates doesn't exists."

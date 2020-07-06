@@ -1,5 +1,0 @@
-full: 
-  register: _script_register_as
-head_part: 
-  run: _script_run
-tail_part: ~

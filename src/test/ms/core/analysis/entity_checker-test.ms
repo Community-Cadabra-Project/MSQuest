@@ -6,9 +6,14 @@ proc _before_all() {
     int @len_npc = length(@path_to_npc)
 
     @files = _util_get_all_files(@path_to_npc)
+    @entities = array()
     foreach(@file in @files) {
         @id = @file[cslice(@len_npc+1, -5)]
-        @entities[@id] = yml_decode(read(@file))
+        try {
+            @entities[@id] = yml_decode(read(@file))
+        } catch(FormatException @e) {
+            console(@file)
+        }
     }
     return(@entities)
 }
