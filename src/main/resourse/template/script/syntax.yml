@@ -1,11 +1,9 @@
----
+--- 
 - 
-  func: _register_as
-  type: full
-  repeat: 1
+  proc: _register_as
   required: true
+  type: full
 - 
-  func: _script_run
-  type: full
-  repeat: 1
+  proc: _script_run
   required: true
+  type: full

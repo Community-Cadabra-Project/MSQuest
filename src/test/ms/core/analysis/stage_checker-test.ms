@@ -1,14 +1,14 @@
 proc _before_all() {
 
-    string @path_to_npc = get_absolute_path('stages')
+    string @path = get_absolute_path('stages')
 
     array @entities = array()
-    int @len_npc = length(@path_to_npc)
+    int @len = length(@path)
 
-    @files = _util_get_all_files(@path_to_npc)
+    @files = _util_get_all_files(@path)
     @stages = array()
     foreach(@file in @files) {
-        @id = @file[cslice(@len_npc+1, -5)]
+        @id = @file[cslice(@len+1, -5)]
         try {
             @stages[@id] = yml_decode(read(@file))
         } catch(FormatException @e) {
@@ -119,6 +119,19 @@ proc _test_log(@stage) {
             ),
         )
     )
+    @act_types = _to_types(@logs[0]['exceptions'])
+    @exp_types = array(
+        'contain_graph_exception',
+        'unknown_keys_exception',
+        'stage_duplicate_exception',
+        'type_exception'
+    )
+    _assert_true(array_every(
+        @act_types,
+        closure(@v) {
+            return(array_contains(@exp_types, @v))
+        }
+    ))
     @string = _stage_checker_parse_exceptions(@logs)
     _assert_not_empty(@string)
     _print(@string)

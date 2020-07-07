@@ -111,7 +111,7 @@ array proc _pr_stage_checker_single(array @stage) {
         @unknown = _util_array_minus(array_keys(@stage), @keys)
         if (array_size(@unknown) != 0) {
             @e = _init_exception('unknown_keys_exception', array(@unknown))
-            _pr_stage_checker_put_exception(@exceptions, @e, '/')
+            _pr_stage_checker_put_exception(@exceptions, @e, './')
         }
     }
     if (array_size(@stage['stages']) == 0) {
