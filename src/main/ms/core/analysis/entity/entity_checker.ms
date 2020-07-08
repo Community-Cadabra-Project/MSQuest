@@ -58,7 +58,9 @@ string proc _entity_checker_parse_exceptions(array @logs) {
             string_append(@builder, '\n')
             string_append(@builder, 'Entity at: ')
             string_append(@builder, @id)
-            foreach(@attr: @e in @log['exceptions']) {
+            foreach(@entry in @log['exceptions']) {
+                @attr = @entry['key']
+                @e = @entry['e']
                 string_append(@builder, '\n- attribute: ')
                 string_append(@builder, @attr)
                 string_append(@builder, '\n\t')
@@ -76,7 +78,9 @@ string proc _entity_checker_parse_exceptions(array @logs) {
             string_append(@builder, '\n')
             string_append(@builder, 'Entity at: ')
             string_append(@builder, @id)
-            foreach(@attr: @e in @log['exceptions']) {
+            foreach(@entry in @log['exceptions']) {
+                @attr = @entry['key']
+                @e = @entry['e']
                 string_append(@builder, '\n- attribute: ')
                 string_append(@builder, @attr)
                 string_append(@builder, '\n\t')
@@ -97,15 +101,19 @@ array proc _entity_checker_analys(array @entities) {
         @entity = @info_entity['entity']
 
         @exceptions = _pr_entity_checker_single(@entity, @is_npc)
+        @log_exist = false
         if (array_size(@exceptions) != 0) {
             array_push(@logs, array(is_npc: @is_npc, id: @id, exceptions: @exceptions))
+            @log_exist = true
         }
-        if (array_index_exists(@entity, 'main') && array_index_exists(@entity['main'], 'id')) {
+        if (array_index_exists(@entity, 'main') && array_index_exists(@entity['main'], 'id') && is_string(@entity['main']['id'])) {
             @_id = @entity['main']['id']
             if (array_contains(@ids, @_id)) {
-                @exceptions = array()
-                @exceptions["main.id"]= _init_exception('id_exception', array(@_id))
-                array_push(@logs, array(is_npc: @is_npc, id: @id, exceptions: = @exceptions))
+                @e = _init_exception('id_exception', array(@_id))
+                _pr_entity_checker_put_exception(@exceptions, @e, 'main.id')
+                if (!@log_exist) {
+                    array_push(@logs, array(is_npc: @is_npc, id: @id, exceptions: @exceptions))
+                }
             } else {
                 array_push(@ids, @_id)
             }
@@ -130,10 +138,10 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
     if (@is_npc) {
         if (!array_index_exists(@entity, 'main')) {
             @e = _init_exception('key_not_found_exception')
-            @exceptions['main'] = @e
+            _pr_entity_checker_put_exception(@exceptions, @e, 'main')
             return(@exceptions)
         }
-         @exceptions = array_merge(@exceptions, _pr_entity_checker_sparams(
+        array_push_all(@exceptions, _pr_entity_checker_sparams(
             @main_temp,
             @entity['main'],
             @entity,
@@ -143,7 +151,7 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
         ))
     } else {
         if (array_index_exists(@entity, 'main')) {
-             @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
+            array_push_all(@exceptions, _pr_entity_checker_params(
                 @main_temp,
                 @entity['main'],
                 @entity,
@@ -158,12 +166,13 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
     @keys_sections = array_keys(@sections_temp)
     if (array_size(@unknown = _util_array_minus(@keys_entity, @keys_sections)) != 0) {
         @e = _init_exception('unknown_section_excetion', array(@unknown))
-        @exceptions['/'] = @e
+        _pr_entity_checker_put_exception(@exceptions, @e, './')
         return(@exceptions)
     }
     if (!array_index_exists(@entity['main'], 'type')) {
         @e = _init_exception('type_undefined_exception')
-        @exceptions['main.type'] = @e
+        _pr_entity_checker_put_exception(@exceptions, @e, 'main.type')
+        return(@exceptions)
     } else {
         if (array_index_exists(@entity, 'entity')) {
             if (@e = _pr_entity_checker_param(
@@ -174,9 +183,9 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @env,
                 @commander
             )) {
-                @exceptions['entity'] = @e
+                _pr_entity_checker_put_exception(@exceptions, @e, 'entity')
             } else {
-                 @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
+                array_push_all(@exceptions, _pr_entity_checker_params(
                     @entity_temp,
                     @entity['entity'],
                     @entity,
@@ -195,9 +204,9 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @env,
                 @commander
             )) {
-                @exceptions['mob'] = @e
+               _pr_entity_checker_put_exception(@exceptions, @e, 'mob')
             } else {
-                 @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
+                array_push_all(@exceptions, _pr_entity_checker_params(
                     @mob_temp,
                     @entity['mob'],
                     @entity,
@@ -216,9 +225,9 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @env,
                 @commander
             )) {
-                @exceptions['spec'] = @e
+                _pr_entity_checker_put_exception(@exceptions, @e, 'spec')
             } else {
-                 @exceptions = array_merge(@exceptions, _pr_entity_checker_params(
+                array_push_all(@exceptions, _pr_entity_checker_params(
                     @spec_temp[@entity['main']['type']],
                     @entity['spec'],
                     @entity,
@@ -237,7 +246,7 @@ array proc _pr_entity_checker_params(array @temp, array @params, array @npc, str
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
             @e = _init_exception('unknown_key_exception')
-            @exceptions[@key] = @e
+            _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
         } else {
             @data = if (array_index_exists(@temp[@key], 'data'), @temp[@key]['data'], null)
             if (@e = _pr_entity_checker_param(
@@ -248,7 +257,7 @@ array proc _pr_entity_checker_params(array @temp, array @params, array @npc, str
                 @env,
                 @commander
             )) {
-                @exceptions[@section.'.'.@key] = @e
+                _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
             }
         }
     }
@@ -260,7 +269,7 @@ array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, st
     foreach(@key: @value in @temp) {
         if (!array_index_exists(@params, @key)) {
             @e = _init_exception('key_not_found_exception')
-            @exceptions[@section.'.'.@key] = @e
+            _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
         } else {
             @data = if (array_index_exists(@value, 'data'), @value['data'], null)
             if (@e = _pr_entity_checker_param(
@@ -271,14 +280,14 @@ array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, st
                 @env,
                 @commander
             )) {
-                @exceptions[@section.'.'.@key] = @e
+                _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
             }
         }
     }
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
             @e = _init_exception('unknown_key_exception')
-            @exceptions[@section.'.'.@key] = @e
+            _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
         }
     }
     return(@exceptions)
@@ -353,3 +362,7 @@ execute(closure() {
     @o = array(commander: @commander, env: @env, templates: @templates)
     export('org.cadabra.msquest.entity_checker', @o)
 })
+
+proc _pr_entity_checker_put_exception(@exceptions, @e, @key) {
+    array_push(@exceptions, array(key: @key, e: @e))
+}

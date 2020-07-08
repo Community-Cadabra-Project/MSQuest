@@ -1,0 +1,17 @@
+# Exceptions:
+# - unknown_keys_exception
+#     args: [keys]
+# - id_exception
+#     args: [id]
+# - key_not_found_exception
+#     args: []
+# - cast_exception
+#     args: [expect_type, actually_type]
+
+
+name: "core\\analysis\\dialog\\dialog_checker.ms"
+msg:
+  cast_exception: "CastException: expect type - %s, actually - %s"
+  key_not_found_exception: "DialogException: not found attribute"
+  id_exception: "DialogException: Already existing id - %s"
+  unknown_keys_exception: "DialogException: Invalid keys - %s"

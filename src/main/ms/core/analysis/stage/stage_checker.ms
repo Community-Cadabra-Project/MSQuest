@@ -33,7 +33,9 @@ string proc _stage_checker_parse_exceptions(array @logs) {
         string_append(@builder, '\n')
         string_append(@builder, 'Stage at: ')
         string_append(@builder, @id)
-        foreach(@attr: @e in @log['exceptions']) {
+        foreach(@entry in @log['exceptions']) {
+            @attr = @entry['key']
+            @e = @entry['e']
             string_append(@builder, '\n- attribute: ')
             string_append(@builder, @attr)
             string_append(@builder, '\n\t')
@@ -53,15 +55,18 @@ proc _stage_checker_analys(array @entries, array @stage) {
         @stage = @entry['stage']
 
         @exceptions = _pr_stage_checker_single(@stage)
+        @log_exist = false
         if (array_size(@exceptions) != 0) {
             array_push(@logs, array(id: @id, exceptions: @exceptions))
+            @log_exist = true
         }
-        if (array_index_exists(@stage, 'id')) {
+        if (array_index_exists(@stage, 'id') && is_string(@stage['id'])) {
             @_id = @stage['id']
             if (array_contains(@ids, @_id)) {
-                @exceptions = array()
-                @exceptions['id']= _init_exception('quest_id_exception', array(@_id))
-                array_push(@logs, array(id: @id, exceptions: @exceptions))
+                _pr_stage_checker_put_exception(@exceptions, _init_exception('quest_id_exception', array(@_id)), 'id')
+                if (!@log_exist) {
+                    array_push(@logs, array(id: @id, exceptions: @exceptions))
+                }
             } else {
                 array_push(@ids, @_id)
             }
@@ -71,16 +76,11 @@ proc _stage_checker_analys(array @entries, array @stage) {
 }
 
 proc _pr_stage_checker_put_exception(array @exceptions, array @e, string @key = null) {
-    if (array_index_exists(@exceptions, @key)) {
-        throw(IllegalArgumentException, "Already key \"@key\" exists: ".array_keys(@exceptions))
-    }
     if (!@key) {
         @key = @e['args'][-1]
         array_remove(@e['args'], array_size(@e['args']) - 1)
-        @exceptions[@key] = @e
-    } else {
-        @exceptions[@key] = @e
     }
+    array_push(@exceptions, array(key: @key, e: @e))
 }
 
 array proc _pr_stage_checker_single(array @stage) {
@@ -89,7 +89,6 @@ array proc _pr_stage_checker_single(array @stage) {
     if (!array_index_exists(@stage, 'id')) {
         @e = _init_exception('key_not_found_exception')
         _pr_stage_checker_put_exception(@exceptions, @e, 'id')
-        return(@exceptions)
     }
     if (!array_index_exists(@stage, 'stages')) {
         @e = _init_exception('key_not_found_exception')
@@ -97,12 +96,12 @@ array proc _pr_stage_checker_single(array @stage) {
         return(@exceptions)
     }
     if (!is_array(@stage['stages'])) {
-        @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), 'stages'))
+        @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@stage['stages']), 'stages'))
        _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
         return(@exceptions)
     }
     if (!is_associative(@stage['stages'])) {
-        @error = _init_exception('cast_exception', array('associated array', 'linear array', 'stages'))
+        @error = _init_exception('cast_exception', array('associated array', typeof(@stage['stages']), 'stages'))
         _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
         return(@exceptions)
     }
@@ -119,7 +118,7 @@ array proc _pr_stage_checker_single(array @stage) {
         _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
         return(@exceptions)
     }
-    @exceptions = array_merge(@exceptions, _pr_stage_checker_stages(@stage['stages'], 'stages'))
+    array_push_all(@exceptions, _pr_stage_checker_stages(@stage['stages'], 'stages'))
     return(@exceptions)
 }
 
@@ -130,21 +129,22 @@ array proc _pr_stage_checker_stages(array @stage, string @path) {
 
     foreach(@id: @struct in @stage) {
         if (!is_array(@struct)) {
-            @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), @path))
+            @e = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), @path))
             @exceptions["@path.@id"] = @error
+            _pr_stage_checker_put_exception(@exceptions, @e, "@path.@id")
             continue()
         }
         if (!is_associative(@struct)) {
-            @error = _init_exception('cast_exception', array('associated array', 'linear array', @path))
-            @exceptions["@path.@id"] = @error
+            @e = _init_exception('cast_exception', array('associated array', 'linear array', @path))
+            _pr_stage_checker_put_exception(@exceptions, @e, "@path.@id")
             continue()
         }
         @keys = array('type', 'data')
         if (array_size(@struct) != array_size(@keys)) {
             @unknown = _util_array_minus(array_keys(@struct), @keys)
             if (array_size(@unknown) != 0) {
-                @error = _init_exception('unknown_keys_exception', array(@unknown))
-                @exceptions["@path.@id"] = @error
+                @e = _init_exception('unknown_keys_exception', array(@unknown))
+                _pr_stage_checker_put_exception(@exceptions, @e, "@path.@id")
                 continue()
             }
         }

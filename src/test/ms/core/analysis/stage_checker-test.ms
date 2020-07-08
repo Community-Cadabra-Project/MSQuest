@@ -30,7 +30,7 @@ proc _test_unreachable_points_exc(@stages) {
 
 proc _test_key_not_found_exc1(@stages) {
     @exceptions = _pr_stage_checker_single(@stages['key_not_found_exc1'])
-    _assert_equals(array('key_not_found_exception'),_to_types(@exceptions), string(@exceptions))
+    _assert_equals(array('key_not_found_exception', 'key_not_found_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_key_not_found_exc2(@stages) {
@@ -100,9 +100,9 @@ proc _test_quest_id_exc(@stage) {
     )
     _assert_not_empty(array_filter(@logs, closure(@k, @v) {
         return(array_size(array_filter(@v['exceptions'], closure(@k, @v) {
-            return(@v['type'] == 'quest_id_exception')
+            return(@v['e']['type'] == 'quest_id_exception')
         })) != 0)
-    }))
+    }), @logs)
 }
 
 proc _test_valide_stage(@stage) {
@@ -139,7 +139,7 @@ proc _test_log(@stage) {
 
 proc _to_types(@exceptions) {
     @map = array_map(@exceptions, closure(@v) {
-        return(@v['type'])
+        return(@v['e']['type'])
     })
     @result = array()
     foreach(@v in @map) {

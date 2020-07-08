@@ -34,8 +34,8 @@
 name: core\analysis\stage\stage_checker.ms
 msg:
   cast_exception: "CastException: expect type - %s, actually - %s"
-  key_not_found_exception: "NPCException: not found attribute"
-  unknown_keys_excetion: "NPCException: Unknown attributes - %s"
+  key_not_found_exception: "StageException: not found attribute"
+  unknown_keys_excetion: "StageException: Unknown attributes - %s"
   quest_id_exception: "StageException: Already existing id - %s"
   tree_node_exception: "TreeNodeException: Node can be associative array or string, but: %s"
   tree_head_exception: "TreeHeadException: Root can be only one"
