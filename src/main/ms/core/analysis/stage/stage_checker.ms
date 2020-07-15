@@ -130,7 +130,7 @@ array proc _pr_stage_checker_stages(array @stage, string @path) {
     foreach(@id: @struct in @stage) {
         if (!is_array(@struct)) {
             @e = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), @path))
-            @exceptions["@path.@id"] = @error
+            @exceptions["@path.@id"] = @e
             _pr_stage_checker_put_exception(@exceptions, @e, "@path.@id")
             continue()
         }

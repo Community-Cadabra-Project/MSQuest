@@ -21,7 +21,7 @@ Exceptions:
     args: [keys, path]
 */
 
-proc _is_ass_array(mixed @data, array @keys, string @path) {
+proc _is_ass_array(@data, array @keys, string @path) {
     if (!is_array(@data)) {
         @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), @path))
         return(@error)
@@ -40,7 +40,7 @@ proc _is_ass_array(mixed @data, array @keys, string @path) {
     return(false)
 }
 
-proc _is_lin_array(mixed @data, string @path) {
+proc _is_lin_array(@data, string @path) {
     if (!is_array(@data)) {
         @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@data), @path))
         return(@error)
@@ -69,7 +69,7 @@ proc _valide_stages(array @data, string @path) {
 }
 
 # Checker
-proc _array(mixed @data, string @path) {
+proc _array(@data, string @path) {
     @error = _is_lin_array(@data, @path)
     if (@error) {
         return(@error)
@@ -81,7 +81,7 @@ proc _array(mixed @data, string @path) {
     return(false)
 }
 
-proc _is_grapth(mixed @g, int @size, string @path) {
+proc _is_grapth(@g, int @size, string @path) {
     @error = _is_lin_array(@g, @path)
     if (@error) {
         return(@error)
@@ -126,7 +126,7 @@ proc _visitor(array @g, int @pos, array @set) {
 }
 
 # Checker
-proc _graph(mixed @data, string @path) {
+proc _graph(@data, string @path) {
     @error = _is_ass_array(@data, array('stages', 'graph'), @path)
     if (@error) {
         return(@error)
@@ -167,7 +167,7 @@ proc _graph(mixed @data, string @path) {
     return(false)
 }
 
-proc _node(mixed @n, string @path, array @set) {
+proc _node(@n, string @path, array @set) {
     if (is_associative(@n)) {
         foreach(@key in array_keys(@n)) {
             @error = _node(@n[@key], "@path.@key")
@@ -184,7 +184,7 @@ proc _node(mixed @n, string @path, array @set) {
 }
 
 # Checker
-proc _tree(mixed @data, string @path) {
+proc _tree(@data, string @path) {
     @error = _is_ass_array(@data, null, @path)
     if (@error) {
         return(@error)

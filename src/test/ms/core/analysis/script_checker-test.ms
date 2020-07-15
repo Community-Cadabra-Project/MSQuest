@@ -26,8 +26,11 @@ proc _test_proc_not_found_exc2(@scripts) {
 }
 
 proc _test_analys(@scripts) {
-    @log = _script_checker_analys(@scripts)
-    _assert_size(3, @log, string(@log))
+    @log = _script_checker_analys(
+        @scripts,
+        array(dialogs: array(), entities: array(), quests: array())
+    )
+    _assert_size(4, @log, string(@log))
     @string = _script_checker_parse_exceptions(@log)
     _assert_not_empty(@string)
     _print(@string)
