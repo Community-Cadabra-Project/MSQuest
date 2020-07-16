@@ -4,20 +4,20 @@ array proc _entities_get_instance() {
 
 proc _package_entities_add_template(string @file, array @template) {
     @self = _entities_get_instance()
-    array_push(@self['entry_templates'], array(file: @file, entity: @template))
+    @self['entry_templates'][] = array(file: @file, entity: @template)
     _private_entities_push_id(@template)
 }
 
 proc _package_entities_add_npc(string @file, array @npc) {
     @self = _entities_get_instance()
-    array_push(@self['entry_npc'],  array(file: @file, entity: @npc))
+    @self['entry_npc'][] =  array(file: @file, entity: @npc)
     _private_entities_push_id(@npc)
 }
 
 proc _private_entities_push_id(array @entity) {
     @self = _entities_get_instance()
     if (array_index_exists(@entity, 'id')) {
-        array_push(@self['id'], @entity['id'])
+        @self['id'][] = @entity['id']
     }
 }
 

@@ -43,7 +43,7 @@ array proc _dialog_checker_analys(array @dialogs) {
         @exceptions = _pr_dialog_checker_single(@dialog)
         @log_exist = false
         if (@exceptions) {
-            array_push(@logs, array(id: @id, exceptions: @exceptions))
+            @logs[] = array(id: @id, exceptions: @exceptions)
             @log_exist = true
         }
         if (array_index_exists(@dialog, 'id') && is_string(@dialog['id'])) {
@@ -55,10 +55,10 @@ array proc _dialog_checker_analys(array @dialogs) {
                     'id'
                 )
                 if (!@log_exist) {
-                    array_push(@logs, array(id: @id, exceptions: @exceptions))
+                    @logs[] = array(id: @id, exceptions: @exceptions)
                 }
             } else {
-                array_push(@ids, @_id)
+                @ids[] = @_id
             }
         }
     }
@@ -103,5 +103,5 @@ array proc _pr_dialog_checker_single(array @dialog) {
 }
 
 void proc _pr_dialog_checker_put_exception(array @exceptions, array @e, string @key) {
-    array_push(@exceptions, array(key: @key, e: @e))
+    @exceptions[] = array(key: @key, e: @e)
 }

@@ -4,7 +4,7 @@ proc _scripts_get_instance() {
 
 proc _scripts_add(string @name_scripts) {
     @self = _scripts_get_instance()
-    array_push(@self, @name_scripts)
+    @self[] = @name_scripts
 }
 
 proc _scripts_add_all(array @names_scripts) {

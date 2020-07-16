@@ -103,7 +103,7 @@ array proc _entity_checker_analys(array @entities) {
         @exceptions = _pr_entity_checker_single(@entity, @is_npc)
         @log_exist = false
         if (array_size(@exceptions) != 0) {
-            array_push(@logs, array(is_npc: @is_npc, id: @id, exceptions: @exceptions))
+            @logs[] = array(is_npc: @is_npc, id: @id, exceptions: @exceptions)
             @log_exist = true
         }
         if (array_index_exists(@entity, 'main') && array_index_exists(@entity['main'], 'id') && is_string(@entity['main']['id'])) {
@@ -112,10 +112,10 @@ array proc _entity_checker_analys(array @entities) {
                 @e = _init_exception('id_exception', array(@_id))
                 _pr_entity_checker_put_exception(@exceptions, @e, 'main.id')
                 if (!@log_exist) {
-                    array_push(@logs, array(is_npc: @is_npc, id: @id, exceptions: @exceptions))
+                    @logs[] = array(is_npc: @is_npc, id: @id, exceptions: @exceptions)
                 }
             } else {
-                array_push(@ids, @_id)
+                @ids[] = @_id
             }
         }
     }
@@ -364,5 +364,5 @@ execute(closure() {
 })
 
 proc _pr_entity_checker_put_exception(@exceptions, @e, @key) {
-    array_push(@exceptions, array(key: @key, e: @e))
+    @exceptions[] = array(key: @key, e: @e)
 }

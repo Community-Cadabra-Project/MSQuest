@@ -87,19 +87,18 @@ array proc _pr_script_checker_run(@path) {
     try {
         _register_as()
     } catch(Exception @e) {
-        array_push(@exceptions, array(
+        @exceptions[] = array(
                 'classType': @e['classType'],
                 'message': @e['message'],
                 'stackTrace': @e['stackTrace'][0..0]
-            )
         )
     }
     if (!@context['used_bind']) {
-        array_push(@exceptions, array(
+        @exceptions[] = array(
             'classType': 'ms.lang.NotCalledProcException',
             'stackTrace': array(),
             'message': 'The _bind_events() must be called at least once'
-        ))
+        )
     }
     array_push_all(@exceptions, @context['exceptions'])
     execute(@context['clear'])
@@ -121,7 +120,7 @@ array proc _pr_script_checker_single(string @path) {
     foreach(@data in @res) {
         @e = _pr_script_checker_proc(@data, @procs)
         if (@e) {
-            array_push(@exceptions, @e)
+            @exceptions[] = @e
         }
     }
     return(@exceptions)

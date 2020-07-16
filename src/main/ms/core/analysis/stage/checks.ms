@@ -63,7 +63,7 @@ proc _valide_stages(array @data, string @path) {
             @error = _init_exception('stage_duplicate_exception', array(@o, @path))
             return(@error)
         }
-        array_push(@set, @o)
+        @set[] = @o
     }
     return(false)
 }
@@ -118,7 +118,7 @@ proc _visitor(array @g, int @pos, array @set) {
             continue()
         }
         if (@g[@pos][@i] == 1) {
-            array_push(@set, @i)
+            @set[] = @i
             _visitor(@g, @i, @set)
         }
     }

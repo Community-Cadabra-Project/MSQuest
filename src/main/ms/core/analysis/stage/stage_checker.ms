@@ -47,7 +47,7 @@ string proc _stage_checker_parse_exceptions(array @logs) {
     return(string(@builder))
 }
 
-proc _stage_checker_analys(array @entries, array @stage) {
+array proc _stage_checker_analys(array @entries) {
     @logs = array()
     @ids = array()
     foreach(@entry in @entries) {
@@ -57,7 +57,7 @@ proc _stage_checker_analys(array @entries, array @stage) {
         @exceptions = _pr_stage_checker_single(@stage)
         @log_exist = false
         if (array_size(@exceptions) != 0) {
-            array_push(@logs, array(id: @id, exceptions: @exceptions))
+            @logs[] = array(id: @id, exceptions: @exceptions)
             @log_exist = true
         }
         if (array_index_exists(@stage, 'id') && is_string(@stage['id'])) {
@@ -65,10 +65,10 @@ proc _stage_checker_analys(array @entries, array @stage) {
             if (array_contains(@ids, @_id)) {
                 _pr_stage_checker_put_exception(@exceptions, _init_exception('quest_id_exception', array(@_id)), 'id')
                 if (!@log_exist) {
-                    array_push(@logs, array(id: @id, exceptions: @exceptions))
+                    @logs[] = array(id: @id, exceptions: @exceptions)
                 }
             } else {
-                array_push(@ids, @_id)
+                @ids[] = @_id
             }
         }
     }
@@ -80,7 +80,7 @@ proc _pr_stage_checker_put_exception(array @exceptions, array @e, string @key = 
         @key = @e['args'][-1]
         array_remove(@e['args'], array_size(@e['args']) - 1)
     }
-    array_push(@exceptions, array(key: @key, e: @e))
+    @exceptions[] = array(key: @key, e: @e)
 }
 
 array proc _pr_stage_checker_single(array @stage) {

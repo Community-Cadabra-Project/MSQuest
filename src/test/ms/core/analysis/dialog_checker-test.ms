@@ -104,7 +104,7 @@ proc _to_types(@exceptions) {
     })
     @result = array()
     foreach(@v in @map) {
-        array_push(@result, @v)
+        @result[] = @v
     }
     return(@result)
 }
