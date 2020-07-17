@@ -15,6 +15,7 @@ proc _before_all() {
             console(@file)
         }
     }
+    _entity_checker_init()
     return(@entities)
 }
 
@@ -58,5 +59,5 @@ proc _test_npc_analysis_log(@entities) {
         )
     )
     _assert_not_empty(@logs)
-    _print(_entity_checker_parse_exceptions(@logs))
+    //_print(_entity_checker_parse_exceptions(@logs))
 }

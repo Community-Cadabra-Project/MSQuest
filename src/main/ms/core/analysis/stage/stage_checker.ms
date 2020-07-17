@@ -15,22 +15,16 @@ proc _pr_stage_checker_import() {
     return(import('org.cadabra.msquest.stage_checker'))
 }
 
-proc _pr_stage_checker_get_env() {
-    return(_pr_stage_checker_import()['env'])
-}
-
 proc _pr_stage_checker_get_commander() {
     return(_pr_stage_checker_import()['commander'])
 }
 
-string proc _stage_checker_parse_exceptions(array @logs) {
-    @builder = res_create_resource('STRING_BUILDER')
-
+Resource proc _stage_checker_parse_exceptions(array @logs, Resource @builder = res_create_resource('STRING_BUILDER')) {
     string_append(@builder, '############ STAGE ############')
     string_append(@builder, '\n')
     foreach(@log in @logs) {
         @id = @log['id']
-        string_append(@builder, '\n')
+        string_append(@builder, '\n############\n')
         string_append(@builder, 'Stage at: ')
         string_append(@builder, @id)
         foreach(@entry in @log['exceptions']) {
@@ -44,7 +38,11 @@ string proc _stage_checker_parse_exceptions(array @logs) {
         }
     }
     
-    return(string(@builder))
+    return(@builder)
+}
+
+array proc _stage_checker_ids() {
+    return(_pr_stage_checker_import()['ids'])
 }
 
 array proc _stage_checker_analys(array @entries) {
@@ -72,6 +70,7 @@ array proc _stage_checker_analys(array @entries) {
             }
         }
     }
+    _pr_stage_checker_import()['ids'] = @ids
     return(@logs)
 }
 
@@ -123,7 +122,6 @@ array proc _pr_stage_checker_single(array @stage) {
 }
 
 array proc _pr_stage_checker_stages(array @stage, string @path) {
-    @env = _pr_stage_checker_get_env()
     @c = _pr_stage_checker_get_commander()
     @exceptions = array()
 
@@ -148,7 +146,7 @@ array proc _pr_stage_checker_stages(array @stage, string @path) {
                 continue()
             }
         }
-        @e = _pr_stage_checker_stage(@struct, @env, @c, "@path.@id")
+        @e = _pr_stage_checker_stage(@struct, @c, "@path.@id")
         if (@e) {
             _pr_stage_checker_put_exception(@exceptions, @e)
         }
@@ -156,52 +154,32 @@ array proc _pr_stage_checker_stages(array @stage, string @path) {
     return(@exceptions)
 }
 
-proc _pr_stage_checker_stage(array @stage, array @env, array @c, string @path) {
-    @env['path'] = "@path.data"
-    @env['value'] = @stage['data']
+proc _pr_stage_checker_stage(array @stage, array @c, string @path) {
     @exception = null
     try {
-        _util_commander_execute(@c, @stage['type'])
-        @exception = @env['exception']
+        @exception = _util_commander_execute(@c, @stage['type'], @stage['data'], "@path.data")
     } catch (IllegalArgumentException @e) {
         @exception = _init_exception('type_exception', array(@stage['type'], "@path.type"))
-    } finally {
-        execute(@env['clear'])
-    }   
+    }
     return(@exception)
 }
 
-execute(closure() {
-    include('checks.ms')
-    @c = _util_commander_init_self()
-    @env = array()
-    @env['clear'] = closure() {
-        @env['path'] = null
-        @env['value'] = null
-        @env['exception'] = null
+proc _stage_checker_init() {
+    synchronized('org.cadabra.msquest.stage_checker') {
+        if (_pr_stage_checker_import()) {
+            return()
+        }
+        include('checks.ms')
+        @c = _util_commander_init_self()
+    
+        _util_commander_register_proc(@c, 'set' , '_array')
+        _util_commander_register_proc(@c, 'linear' , '_array')
+        _util_commander_register_proc(@c, 'orientated_linear' , '_array')
+        _util_commander_register_proc(@c, 'cycle' , '_array')
+        _util_commander_register_proc(@c, 'orientated_cycle' , '_array')
+        _util_commander_register_proc(@c, 'graph' , '_graph')
+        // _util_commander_register(@c, 'tree', '_tree')
+        @o = array(commander: @c)
+        export('org.cadabra.msquest.stage_checker', @o)
     }
-
-    _util_commander_register(@c, 'set' , closure() {
-        @env['exception'] = _array(@env['value'], @env['path'])
-    })
-    _util_commander_register(@c, 'linear' , closure() {
-        @env['exception'] = _array(@env['value'], @env['path'])
-    })
-    _util_commander_register(@c, 'orientated_linear' , closure() {
-        @env['exception'] = _array(@env['value'], @env['path'])
-    })
-    _util_commander_register(@c, 'cycle' , closure() {
-        @env['exception'] = _array(@env['value'], @env['path'])
-    })
-    _util_commander_register(@c, 'orientated_cycle' , closure() {
-        @env['exception'] = _array(@env['value'], @env['path'])
-    })
-    _util_commander_register(@c, 'graph' , closure() {
-        @env['exception'] = _graph(@env['value'], @env['path'])
-    })
-    // _util_commander_register(@c, 'tree' , closure() {
-    //     @env['exception'] = _tree(@env['value'], @env['path'])
-    // })
-    @o = array(commander: @c, env: @env)
-    export('org.cadabra.msquest.stage_checker', @o)
-})
+}

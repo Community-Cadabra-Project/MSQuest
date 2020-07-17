@@ -10,6 +10,7 @@ proc _before_all() {
         @id = @file[cslice(@len+1, -6)]
         @scripts[@id] = array(id: @id, path: @file)
     }
+    _script_checker_init()
     return(@scripts)
 }
 
@@ -31,9 +32,9 @@ proc _test_analys(@scripts) {
         array(dialogs: array(), entities: array(), quests: array())
     )
     _assert_size(4, @log, string(@log))
-    @string = _script_checker_parse_exceptions(@log)
+    @string = string(_script_checker_parse_exceptions(@log))
     _assert_not_empty(@string)
-    _print(@string)
+    //_print(@string)
 }
 
 

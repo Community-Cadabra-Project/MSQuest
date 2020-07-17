@@ -12,6 +12,6 @@
 name: "core\\analysis\\dialog\\dialog_checker.ms"
 msg:
   cast_exception: "CastException: expect type - %s, actually - %s"
-  key_not_found_exception: "DialogException: not found attribute"
+  key_not_found_exception: "DialogException: not found attribute - %s"
   id_exception: "DialogException: Already existing id - %s"
   unknown_keys_exception: "DialogException: Invalid keys - %s"

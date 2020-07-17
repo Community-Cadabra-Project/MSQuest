@@ -7,18 +7,16 @@ Exceptions:
     args: [proc, exp_n, act_n]
 */
 
-string proc _script_checker_parse_exceptions(array @log) {
-    @builder = res_create_resource('STRING_BUILDER')
-
+Resource proc _script_checker_parse_exceptions(array @log, Resource @builder = res_create_resource('STRING_BUILDER')) {
     string_append(@builder, '########## SCRIPTS ##########')
     string_append(@builder, '\n')
     foreach(@id: @entry in @log) {
-        string_append(@builder,'\n=============================\n')
+        string_append(@builder,'\n##########\n')
         string_append(@builder, 'Script at: ')
         string_append(@builder, @id)
         string_append(@builder, '\n')
         if (@entry['static']) {
-            string_append(@builder, '\n##### Static exceptions\n')
+            string_append(@builder, '\n===== Static exceptions\n')
         }
         foreach(@e in @entry['static']) {
             string_append(@builder, '- ')
@@ -26,7 +24,7 @@ string proc _script_checker_parse_exceptions(array @log) {
             string_append(@builder, '\n\n')
         }
         if (@entry['running']) {
-            string_append(@builder, '\n##### Running exceptions\n')
+            string_append(@builder, '\n===== Running exceptions\n')
         }
         foreach(@e in @entry['running']) {
             string_append(@builder, '- ')
@@ -34,7 +32,7 @@ string proc _script_checker_parse_exceptions(array @log) {
             string_append(@builder, '\n\n')
         }
     }
-    return(string(@builder))
+    return(@builder)
 }
 
 array proc _script_checker_analys(array @scripts, array @context) {
@@ -158,11 +156,16 @@ proc _pr_script_checker_proc(array @data, array @procs) {
     return(false)
 }
 
-execute(closure() {
-    @model = array()
-
-    @model['syntax'] = yml_decode(read(_get_resourse('template.script.syntax.yml')))
-    @model['bioms'] = yml_decode(read(_get_resourse('template.script.bioms.yml')))
-
-    export('org.cadabra.msquest.script_checker', @model)
-})
+proc _script_checker_init() {
+    synchronized('org.cadabra.msquest.script_checker') {
+        if (import('org.cadabra.msquest.script_checker')) {
+            return()
+        }
+        @model = associative_array()
+    
+        @model['syntax'] = yml_decode(read(_get_resourse('template.script.syntax.yml')))
+        @model['bioms'] = yml_decode(read(_get_resourse('template.script.bioms.yml')))
+    
+        export('org.cadabra.msquest.script_checker', @model)
+    }
+}

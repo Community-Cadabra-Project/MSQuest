@@ -10,14 +10,12 @@ Exceptions:
     args: [expect_type, actually_type]
 */
 
-string proc _dialog_checker_parse_exceptions(array @logs) {
-    @builder = res_create_resource('STRING_BUILDER')
-
+Resource proc _dialog_checker_parse_exceptions(array @logs, Resource @builder = res_create_resource('STRING_BUILDER')) {
     string_append(@builder, '############ DIALOG ############')
     string_append(@builder, '\n')
     foreach(@log in @logs) {
         @id = @log['id']
-        string_append(@builder, '\n')
+        string_append(@builder, '\n############\n')
         string_append(@builder, 'Dialog at: ')
         string_append(@builder, @id)
         foreach(@entry in @log['exceptions']) {
@@ -31,7 +29,11 @@ string proc _dialog_checker_parse_exceptions(array @logs) {
         }
     }
     
-    return(string(@builder))
+    return(@builder)
+}
+
+array proc _dialog_checker_ids(array @dialogs) {
+    return(import('org.cadabra.msquest.dialog_checker'))
 }
 
 array proc _dialog_checker_analys(array @dialogs) {
@@ -62,6 +64,7 @@ array proc _dialog_checker_analys(array @dialogs) {
             }
         }
     }
+    export('org.cadabra.msquest.dialog_checker', @ids)
     return(@logs)
 }
 

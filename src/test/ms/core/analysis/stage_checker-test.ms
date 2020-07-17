@@ -15,6 +15,7 @@ proc _before_all() {
             console(@file)
         }
     }
+    _stage_checker_init()
     return(@stages)
 }
 
@@ -132,9 +133,9 @@ proc _test_log(@stage) {
             return(array_contains(@exp_types, @v))
         }
     ))
-    @string = _stage_checker_parse_exceptions(@logs)
+    @string = string(_stage_checker_parse_exceptions(@logs))
     _assert_not_empty(@string)
-    _print(@string)
+    //_print(@string)
 }
 
 proc _to_types(@exceptions) {

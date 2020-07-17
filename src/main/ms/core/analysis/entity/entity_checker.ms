@@ -44,9 +44,7 @@ proc _pr_entity_checker_get_commander() {
     return(_pck_entity_checker_import()['commander'])
 }
 
-string proc _entity_checker_parse_exceptions(array @logs) {
-    @builder = res_create_resource('STRING_BUILDER')
-
+Resource proc _entity_checker_parse_exceptions(array @logs, Resource @builder = res_create_resource('STRING_BUILDER')) {
     @npc_logs = array_filter(@logs, closure(@k, @v) {return(@v['is_npc'])})
     @temp_logs = array_filter(@logs, closure(@k, @v) {return(!@v['is_npc'])})
 
@@ -55,7 +53,7 @@ string proc _entity_checker_parse_exceptions(array @logs) {
         string_append(@builder, '\n')
         foreach(@log in @npc_logs) {
             @id = @log['id']
-            string_append(@builder, '\n')
+            string_append(@builder, '\n############\n')
             string_append(@builder, 'Entity at: ')
             string_append(@builder, @id)
             foreach(@entry in @log['exceptions']) {
@@ -75,7 +73,7 @@ string proc _entity_checker_parse_exceptions(array @logs) {
         string_append(@builder, '\n')
         foreach(@log in @temp_logs) {
             @id = @log['id']
-            string_append(@builder, '\n')
+            string_append(@builder, '\n############\n')
             string_append(@builder, 'Entity at: ')
             string_append(@builder, @id)
             foreach(@entry in @log['exceptions']) {
@@ -89,7 +87,11 @@ string proc _entity_checker_parse_exceptions(array @logs) {
             }
         }
     }
-    return(string(@builder))
+    return(@builder)
+}
+
+array proc _entity_checker_ids() {
+    return(_pck_entity_checker_import()['ids'])
 }
 
 array proc _entity_checker_analys(array @entities) {
@@ -119,13 +121,13 @@ array proc _entity_checker_analys(array @entities) {
             }
         }
     }
+    _pck_entity_checker_import()['ids'] = @ids
     return(@logs)
 }
 
 array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
 
     @commander = _pr_entity_checker_get_commander()
-    @env = _pr_entity_checker_get_env()
     
     @sections_temp = _pr_entity_checker_get_sections()
     @main_temp = _pr_entity_checker_get_main()
@@ -146,7 +148,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
             @entity['main'],
             @entity,
             'main',
-            @env,
             @commander
         ))
     } else {
@@ -156,7 +157,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @entity['main'],
                 @entity,
                 'main',
-                @env,
                 @commander
             ))
         }
@@ -180,7 +180,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @entity['main']['type'],
                 @sections_temp['entity']['data'],
                 @entity,
-                @env,
                 @commander
             )) {
                 _pr_entity_checker_put_exception(@exceptions, @e, 'entity')
@@ -190,7 +189,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                     @entity['entity'],
                     @entity,
                     'entity',
-                    @env,
                     @commander
                 ))
             }
@@ -201,7 +199,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @entity['main']['type'],
                 @sections_temp['mob']['data'],
                 @entity,
-                @env,
                 @commander
             )) {
                _pr_entity_checker_put_exception(@exceptions, @e, 'mob')
@@ -211,7 +208,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                     @entity['mob'],
                     @entity,
                     'mob',
-                    @env,
                     @commander
                 ))
             }
@@ -222,7 +218,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @entity['main']['type'],
                 @sections_temp['spec']['data'],
                 @entity,
-                @env,
                 @commander
             )) {
                 _pr_entity_checker_put_exception(@exceptions, @e, 'spec')
@@ -232,7 +227,6 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                     @entity['spec'],
                     @entity,
                     'spec',
-                    @env,
                     @commander
                 ))
             }
@@ -241,7 +235,7 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
     return(@exceptions)
 }
 
-array proc _pr_entity_checker_params(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
+array proc _pr_entity_checker_params(array @temp, array @params, array @npc, string @section, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
@@ -254,7 +248,6 @@ array proc _pr_entity_checker_params(array @temp, array @params, array @npc, str
                 @value,
                 @data,
                 @npc,
-                @env,
                 @commander
             )) {
                 _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
@@ -264,7 +257,7 @@ array proc _pr_entity_checker_params(array @temp, array @params, array @npc, str
     return(@exceptions)
 }
 
-array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, string @section, array @env, array @commander) {
+array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, string @section, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @temp) {
         if (!array_index_exists(@params, @key)) {
@@ -277,7 +270,6 @@ array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, st
                 @params[@key],
                 @data,
                 @npc,
-                @env,
                 @commander
             )) {
                 _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
@@ -293,75 +285,51 @@ array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, st
     return(@exceptions)
 }
 
-proc _pr_entity_checker_param(string @check, @value, @data, array @npc, array @env, array @commander) {
-    @env['value'] = @value
-    @env['data'] = @data
-    @env['character'] = @npc
-    _util_commander_execute(@commander, @check)
-    @exception = @env['exception']
-    execute(@env['clear'])
-    return(@exception)
+proc _pr_entity_checker_param(string @check, @value, @data, array @npc, array @commander) {
+    return(_util_commander_execute(@commander, @check, @value, @data, @npc))
 }
 
-execute(closure() {
-    include('checks.ms')
-    @commander = _util_commander_init_self()
-    @env = array()
-    @env['clear'] = closure() {
-        @env['data'] = null
-        @env['character'] = null
-        @env['value'] = null
-        @env['exception'] = null
-    }
-
-    _util_commander_register(@commander, 'int' , closure() {
-        @env['exception'] = _int(@env['value'], @env['data'], @env['character'])
-    })
-    _util_commander_register(@commander, 'double' , closure() {
-        @env['exception'] = _double(@env['value'], @env['data'], @env['character'])
-    })
-    _util_commander_register(@commander, 'boolean' , closure() {
-        @env['exception'] = _boolean(@env['value'], @env['data'], @env['character'])
-    })
-    _util_commander_register(@commander, 'string' , closure() {
-        @env['exception'] = _string(@env['value'], @env['data'], @env['character'])
-    })
-    _util_commander_register(@commander, 'list' , closure() {
-        @env['exception'] = _list(@env['value'], @env['data'], @env['character'])
-    })
-    _util_commander_register(@commander, 'local' , closure() {
-        @env['exception'] = _local(@env['value'], @env['data'], @env['character'])
-    })
-    _util_commander_register(@commander, 'uuid' , closure() {
-        @env['exception'] = _uuid(@env['value'], @env['data'], @env['character'])
-    })
-    _util_commander_register(@commander, '*' , closure() {
-        @env['exception'] = _nothink(@env['value'], @env['data'], @env['character'])
-    })
-
-    @npc_samples = _util_get_all_files(_get_resourse('template.npc.spec'))
-    @npc_mob = yml_decode(read(_get_resourse('template.npc.mob.yml')))
-    @npc_entity = yml_decode(read(_get_resourse('template.npc.entity.yml')))
-    @npc_main = yml_decode(read(_get_resourse('template.npc.main.yml')))
-    @npc_sections = yml_decode(read(_get_resourse('template.npc.sections.yml')))
-
-    @npc_spec = array()
-    foreach(@sample in @npc_samples) {
-        if (string_contains(@sample, '.yml')) {
-            @o = yml_decode(read(@sample))
-            @npc_spec[@o['id']] = @o['spec'] 
+proc _entity_checker_init() {
+    synchronized('org.cadabra.msquest.entity_checker') {
+        if (_pck_entity_checker_import()) {
+            return()
         }
+        include('checks.ms')
+        @commander = _util_commander_init_self()
+    
+        _util_commander_register_proc(@commander, 'int' , '_int')
+        _util_commander_register_proc(@commander, 'double' , '_double')
+        _util_commander_register_proc(@commander, 'boolean' , '_boolean')
+        _util_commander_register_proc(@commander, 'string' , '_string')
+        _util_commander_register_proc(@commander, 'list' , '_list')
+        _util_commander_register_proc(@commander, 'local' , '_local')
+        _util_commander_register_proc(@commander, 'uuid' , '_uuid')
+        _util_commander_register_proc(@commander, '*' , '_nothink')
+    
+        @npc_samples = _util_get_all_files(_get_resourse('template.npc.spec'))
+        @npc_mob = yml_decode(read(_get_resourse('template.npc.mob.yml')))
+        @npc_entity = yml_decode(read(_get_resourse('template.npc.entity.yml')))
+        @npc_main = yml_decode(read(_get_resourse('template.npc.main.yml')))
+        @npc_sections = yml_decode(read(_get_resourse('template.npc.sections.yml')))
+    
+        @npc_spec = array()
+        foreach(@sample in @npc_samples) {
+            if (string_contains(@sample, '.yml')) {
+                @o = yml_decode(read(@sample))
+                @npc_spec[@o['id']] = @o['spec'] 
+            }
+        }
+        @templates = array()
+        @templates['main'] = @npc_main
+        @templates['sections'] = @npc_sections
+        @templates['entity'] = @npc_entity
+        @templates['spec'] = @npc_spec
+        @templates['mob'] = @npc_mob
+    
+        @o = array(init: true, commander: @commander, templates: @templates)
+        export('org.cadabra.msquest.entity_checker', @o)
     }
-    @templates = array()
-    @templates['main'] = @npc_main
-    @templates['sections'] = @npc_sections
-    @templates['entity'] = @npc_entity
-    @templates['spec'] = @npc_spec
-    @templates['mob'] = @npc_mob
-
-    @o = array(commander: @commander, env: @env, templates: @templates)
-    export('org.cadabra.msquest.entity_checker', @o)
-})
+}
 
 proc _pr_entity_checker_put_exception(@exceptions, @e, @key) {
     @exceptions[] = array(key: @key, e: @e)

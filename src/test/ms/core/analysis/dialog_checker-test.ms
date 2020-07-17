@@ -93,9 +93,9 @@ proc _test_log(@dialogs) {
             return(array_contains(@exp_types, @v))
         }
     ), "@exp_types : @act_types")
-    @string = _dialog_checker_parse_exceptions(@logs)
+    @string = string(_dialog_checker_parse_exceptions(@logs))
     _assert_not_empty(@string)
-    _print(@string)
+    //_print(@string)
 }
 
 proc _to_types(@exceptions) {
