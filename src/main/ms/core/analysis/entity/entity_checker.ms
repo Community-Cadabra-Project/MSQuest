@@ -90,8 +90,20 @@ Resource proc _entity_checker_parse_exceptions(array @logs, Resource @builder = 
     return(@builder)
 }
 
-array proc _entity_checker_ids() {
-    return(_pck_entity_checker_import()['ids'])
+array proc _entity_checker_ids(array @entries) {
+    @ids = array()
+    foreach(@entry in @entries) {
+        @entity = @entry['entity']
+        if (array_index_exists(@entity, 'main') && array_index_exists(@entity['main'], 'id') && is_string(@entity['main']['id'])) {
+            @_id = @entity['main']['id']
+            if (array_contains(@ids, @_id)) {
+                continue()
+            } else {
+                @ids[] = @_id
+            }
+        }
+    }
+    return(@ids)
 }
 
 array proc _entity_checker_analys(array @entities) {
@@ -121,7 +133,6 @@ array proc _entity_checker_analys(array @entities) {
             }
         }
     }
-    _pck_entity_checker_import()['ids'] = @ids
     return(@logs)
 }
 

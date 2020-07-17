@@ -1,6 +1,6 @@
 proc _bind_events() {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
-    @context['used_bind'] = true
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+    @context['used_bind'] += 1
     if (array_size(@arguments) == 0) {
         @context['exceptions'][] = array(
             'classType': IllegalArgumentException,
@@ -20,7 +20,7 @@ proc _bind_events() {
 }
 
 proc _bind_dialog(string @dialog) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@context['used_dialog']) {
         @context['exceptions'][] = array(
             'classType': Exception,
@@ -40,7 +40,7 @@ proc _bind_dialog(string @dialog) {
 }
 
 proc _bind_import() {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     @context['exceptions'][] = array(
         'classType': UnsupportedOperationException,
         'message': 'Illegal use _bind_import()',
@@ -49,7 +49,7 @@ proc _bind_import() {
 }
 
 array proc _entity_event(string @entity, string @action, string @quest = null) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (!array_contains(@context['entities'], @entity)) {
         @context['exceptions'][] = array(
             'classType': IllegalArgumentException,
@@ -68,7 +68,7 @@ array proc _entity_event(string @entity, string @action, string @quest = null) {
 }
 
 array proc _quest_event(string @action, string @quest = null) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@quest != null && !array_contains(@context['quests'], @quest)) {
         @context['exceptions'][] = array(
             'classType': IllegalArgumentException,
@@ -80,7 +80,7 @@ array proc _quest_event(string @action, string @quest = null) {
 }
 
 array proc _world(string @world) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     try {
         world_info(@world)
     } catch(Exception @e) {
@@ -95,7 +95,7 @@ array proc _world(string @world) {
 }
 
 array proc _biome(string @biome) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (!array_contains(@context['bioms'], to_lower(@biome))) {
         @context['exceptions'][] = array(
             'classType': IllegalArgumentException,
@@ -107,7 +107,7 @@ array proc _biome(string @biome) {
 }
 
 array proc _game_time(int @from, int @to) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@from < 0 || @from > 24) {
         @context['exceptions'][] = array(
             'classType': RangeException,
@@ -133,7 +133,7 @@ array proc _game_time(int @from, int @to) {
 }
 
 array proc _year_time(int @from, int @to) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@from < 0) {
         @context['exceptions'][] = array(
             'classType': RangeException,
@@ -159,7 +159,7 @@ array proc _year_time(int @from, int @to) {
 }
 
 array proc _month_time(int @from, int @to) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@from < 0 || @from > 12) {
         @context['exceptions'][] = array(
             'classType': RangeException,
@@ -185,7 +185,7 @@ array proc _month_time(int @from, int @to) {
 }
 
 array proc _day_time(int @from, int @to) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@from < 0 || @from > 31) {
         @context['exceptions'][] = array(
             'classType': RangeException,
@@ -211,7 +211,7 @@ array proc _day_time(int @from, int @to) {
 }
 
 array proc _week_time(int @from, int @to) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@from < 0 || @from > 7) {
         @context['exceptions'][] = array(
             'classType': RangeException,
@@ -237,7 +237,7 @@ array proc _week_time(int @from, int @to) {
 }
 
 array proc _hour_time(int @from, int @to) {
-    @context = import('org.cadabra.msquest.script_checker.local_procs')
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@from < 0 || @from > 24) {
         @context['exceptions'][] = array(
             'classType': RangeException,

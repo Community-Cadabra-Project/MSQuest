@@ -41,8 +41,20 @@ Resource proc _stage_checker_parse_exceptions(array @logs, Resource @builder = r
     return(@builder)
 }
 
-array proc _stage_checker_ids() {
-    return(_pr_stage_checker_import()['ids'])
+array proc _stage_checker_ids(array @entries) {
+    @ids = array()
+    foreach(@entry in @entries) {
+        @stage = @entry['stage']
+        if (array_index_exists(@stage, 'id') && is_string(@stage['id'])) {
+            @_id = @stage['id']
+            if (array_contains(@ids, @_id)) {
+                continue()
+            } else {
+                @ids[] = @_id
+            }
+        }
+    }
+    return(@ids)
 }
 
 array proc _stage_checker_analys(array @entries) {
@@ -70,7 +82,6 @@ array proc _stage_checker_analys(array @entries) {
             }
         }
     }
-    _pr_stage_checker_import()['ids'] = @ids
     return(@logs)
 }
 

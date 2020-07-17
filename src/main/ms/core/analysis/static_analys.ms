@@ -20,9 +20,9 @@ array proc _static_analys(array @data) {
     @log['entity'] = _entity_checker_analys(@entities)
 
     @context = associative_array(
-        'dialogs': _dialog_checker_ids(),
-        'quests': _stage_checker_ids(),
-        'entities': _entity_checker_ids()
+        'dialogs': _dialog_checker_ids(@dialogs),
+        'quests': _stage_checker_ids(@stages),
+        'entities': _entity_checker_ids(@entities)
     )
     @log['script'] = _script_checker_analys(@scripts, @context)
     return(@log)

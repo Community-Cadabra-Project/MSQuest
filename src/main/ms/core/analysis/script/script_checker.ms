@@ -42,7 +42,6 @@ array proc _script_checker_analys(array @scripts, array @context) {
         @path = @script['path']
         @id = @script['id']
         @exceptions = _pr_script_checker_single(@path)
-        export('TEMP', array(@path, @context))
         @running_exceptions = _pr_script_checker_run(@path, @context)
         if (@exceptions || @running_exceptions) {
             @log[@id] = array('static': @exceptions, running: @running_exceptions)
@@ -59,24 +58,27 @@ array proc _pr_script_checker_init_context(@_context) {
     @context['fakeDetail'] = array('class': 'DetailEvent')
 
     @context['used_dialog'] = false
-    @context['used_bind'] = false
+    @context['used_bind'] = 0
     @context['exceptions'] = array()
 
     @context['clear'] = closure() {
-        @context['used_bind'] = false
+        @context['used_bind'] = 0
         @context['used_dialog'] = false
         @context['exceptions'] = array()
     }
-
-    export('org.cadabra.msquest.script_checker.local_procs', @context)
+    
+    _util_export('org.cadabra.msquest.script_checker.local_procs', @context)
     return(@context)
 }
 
-array proc _pr_script_checker_run(@path) {
-    x_clear_env()
-    @exceptions = array()
-    @path = import('TEMP')[0]
-    @context = import('TEMP')[1]
+array proc _pr_script_checker_run(@path, @context) {
+    synchronized('TEMP') {
+        export('TEMP', array(@path, @context))
+        x_clear_env()
+        @exceptions = array()
+        @path = import('TEMP')[0]
+        @context = import('TEMP')[1]
+    }
     include('local_procs.ms')
     include(@path)
     if (!is_proc('_register_as')) {
@@ -91,7 +93,7 @@ array proc _pr_script_checker_run(@path) {
                 'stackTrace': @e['stackTrace'][0..0]
         )
     }
-    if (!@context['used_bind']) {
+    if (@context['used_bind'] > 1) {
         @exceptions[] = array(
             'classType': 'ms.lang.NotCalledProcException',
             'stackTrace': array(),

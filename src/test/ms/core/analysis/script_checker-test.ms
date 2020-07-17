@@ -26,9 +26,9 @@ proc _test_proc_not_found_exc2(@scripts) {
     _assert_equals(array('proc_not_found_exception'), _to_types(@exceptions))
 }
 
-proc _test_analys(@scripts) {
+proc _test_analys1(@scripts) {
     @log = _script_checker_analys(
-        @scripts,
+        array_filter(@scripts, closure(@k, @v) {return(@k != 'valid_script')}),
         array(dialogs: array(), entities: array(), quests: array())
     )
     _assert_size(4, @log, string(@log))
@@ -37,6 +37,13 @@ proc _test_analys(@scripts) {
     //_print(@string)
 }
 
+proc _test_analys2(@scripts) {
+     @log = _script_checker_analys(
+        array(@scripts['valid_script']),
+        array(dialogs: array('dialog'), entities: array('npc'), quests: array('quest1', 'quest2'))
+    )
+    _assert_empty(@log, string(@log))
+}
 
 proc _to_types(array @exceptions) {
     return(array_map(@exceptions, closure(@v) {

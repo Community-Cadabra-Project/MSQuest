@@ -1,13 +1,34 @@
-execute(closure() {
+_util_includer_register('org.cadabra.msquest.event.bind', get_absolute_path('bind.ms'))
+_util_includer_register('org.cadabra.msquest.event.details', get_absolute_path('details.ms'))
+_util_includer_register('org.cadabra.msquest.event.events', get_absolute_path('events.ms'))
+
+proc _map_events_export(mixed @model) {
+    export('org.cadabra.msquest.event_map', @model)
+}
+
+array proc _map_events_import(mixed @model) {
+    return(import('org.cadabra.msquest.event_map'))
+}
+
+proc _map_events_init() {
     @model = array()
     @model['id'] = 1
-    @model['map'] = array()
-    export('org.cadabra.msquest.event_map', @model)
-})
+    @model['map_event_ID'] = associative_array()
+    @model['map_ID_event'] = associative_array()
+    _map_events_export(@model)
+}
+
+void proc _map_events_clear() {
+    @model = array()
+    @model['id'] = 1
+    @model['map_event_ID'] = associative_array()
+    @model['map_ID_event'] = associative_array()
+    _map_events_export(@model)
+}
 
 int proc _map_events_register(array @event) {
-    @model = import('org.cadabra.msquest.event_map')
-    @map = @model['map']
+    @model = _map_events_import()
+    @map = @model['map_event_ID']
     if (!array_index_exists(@map, @event['type'])) {
         @events = array()
         @map[@event['type']] = @events
@@ -18,30 +39,32 @@ int proc _map_events_register(array @event) {
         if (!array_index_exists(@events, @id)) {
             @events[@id] = array(@event)
         } else {
-            array_push(@events[@id], @event)
+            @events[@id][] = @event
         }
     }
-    @event['registed_id'] = @model['id']
-    @model['id'] += 1
+    @id = @model['id']
+    @event['registed_id'] = @id
+    @model['map_ID_event'][@id] = @event
+    @model['id'] = @id + 1
     return(@event['registed_id'])
 }
 
 array proc _map_event_get_id(array @game_event) {
-    @map = import('org.cadabra.msquest.event_map')['map']
+    @map = _map_events_import()['map_event_ID']
     if (!array_index_exists(@map, @game_event['type'])) {
         return(null)
     }
     
     @events = @map[@game_event['type']]
-    if (!array_index_exists(@events, @game_event['id']))) {
+    if (!array_index_exists(@events, @game_event['id'])) {
         return(null)
     }
 
     @ids = array()
     foreach(@event in @events[@game_event['id']]) {
         if (_method1(@event, 'test', @game_event['info'])) {
-            array_push(@ids, @event['registed_id'])
+            @ids[] = @event['registed_id']
         }
     }
-    return(if(array_size(@ids) == 0, null, @ids))
+    return(@ids)
 }

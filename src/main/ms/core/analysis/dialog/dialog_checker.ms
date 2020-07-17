@@ -32,8 +32,20 @@ Resource proc _dialog_checker_parse_exceptions(array @logs, Resource @builder = 
     return(@builder)
 }
 
-array proc _dialog_checker_ids(array @dialogs) {
-    return(import('org.cadabra.msquest.dialog_checker'))
+array proc _dialog_checker_ids(array @entries) {
+    @ids = array()
+    foreach(@entry in @entries) {
+        @dialog = @entry['dialog']
+        if (array_index_exists(@dialog, 'id') && is_string(@dialog['id'])) {
+            @_id = @dialog['id']
+            if (array_contains(@ids, @_id)) {
+                continue()
+            } else {
+                @ids[] = @_id
+            }
+        }
+    }
+    return(@ids)
 }
 
 array proc _dialog_checker_analys(array @dialogs) {
@@ -64,7 +76,6 @@ array proc _dialog_checker_analys(array @dialogs) {
             }
         }
     }
-    export('org.cadabra.msquest.dialog_checker', @ids)
     return(@logs)
 }
 

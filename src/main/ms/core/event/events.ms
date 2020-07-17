@@ -2,7 +2,7 @@ execute(closure() {
     @methods = array()
     @methods['test'] = closure(array @info_event, array @o) {
         foreach(@detail in @o['details']) {
-            if (!execute(@info_event, @detail['test']), return(false))
+            if (!execute(@info_event, @detail, @detail['test']), return(false))
         }
         return(true)
     }
@@ -13,6 +13,7 @@ execute(closure() {
 })
 
 proc _entity_event(string @entity, string @action, string @quest = null) {
+    @o = associative_array()
     @o = array()
     @o['type'] = 'ENTITY'
     @o['class'] = 'Event'
@@ -24,9 +25,11 @@ proc _entity_event(string @entity, string @action, string @quest = null) {
     @o['id'] = @entity
     @o['action'] = @action
     @o['quest'] = @quest
+    return(@o)
 }
 
 proc _quest_event(string @action, string @quest = null) {
+    @o = associative_array()
     @o['type'] = 'QUEST'
     @o['class'] = 'Event'
     @o['details'] = array()
@@ -37,5 +40,6 @@ proc _quest_event(string @action, string @quest = null) {
     @o['id'] = 'static_event'
     @o['action'] = @action
     @o['quest'] = @quest
+    return(@o)
 }
 
