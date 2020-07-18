@@ -1,36 +1,21 @@
+include('loader-ign.ms')
+
 proc _before_all() {
-
-    string @path_to_npc = get_absolute_path('entity')
-
-    array @entities = array()
-    int @len_npc = length(@path_to_npc)
-
-    @files = _util_get_all_files(@path_to_npc)
-    @entities = array()
-    foreach(@file in @files) {
-        @id = @file[cslice(@len_npc+1, -5)]
-        try {
-            @entities[@id] = yml_decode(read(@file))
-        } catch(FormatException @e) {
-            console(@file)
-        }
-    }
-    _entity_checker_init()
-    return(@entities)
+    return(_load_entities())
 }
 
 proc _test_npc_analysis_main(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['SETTING'], true)
+    @exceptions = _pr_entity_checker_single(@entities['SETTING']['entity'], true)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
 proc _test_npc_analysis_entity(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['ENTITY'], false)
+    @exceptions = _pr_entity_checker_single(@entities['ENTITY']['entity'], false)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
 proc _test_npc_analysis_mob(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['MOB'], false)
+    @exceptions = _pr_entity_checker_single(@entities['MOB']['entity'], false)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
@@ -39,7 +24,7 @@ proc _test_npc_analysis_spec(@entities) {
 }
 
 proc _test_npc_analysis_fail(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['BAD'], true)
+    @exceptions = _pr_entity_checker_single(@entities['BAD']['entity'], true)
     _assert_size(10, @exceptions, string(@exceptions))
     foreach(@entry in @exceptions) {
         _assert_true(
@@ -55,7 +40,7 @@ proc _test_npc_analysis_fail(@entities) {
 proc _test_npc_analysis_log(@entities) {
     @logs = _entity_checker_analys(
         array(
-            array(id: 'BAD', entity: @entities['BAD'], is_npc: true)
+           @entities['BAD']
         )
     )
     _assert_not_empty(@logs)

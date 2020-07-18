@@ -1,12 +1,8 @@
-_util_includer_register('org.cadabra.msquest.event.bind', get_absolute_path('bind.ms'))
-_util_includer_register('org.cadabra.msquest.event.details', get_absolute_path('details.ms'))
-_util_includer_register('org.cadabra.msquest.event.events', get_absolute_path('events.ms'))
-
-proc _map_events_export(mixed @model) {
+proc _map_events_export(array @model) {
     export('org.cadabra.msquest.event_map', @model)
 }
 
-array proc _map_events_import(mixed @model) {
+array proc _map_events_import() {
     return(import('org.cadabra.msquest.event_map'))
 }
 

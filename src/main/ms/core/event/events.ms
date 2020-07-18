@@ -1,8 +1,17 @@
 execute(closure() {
     @methods = array()
     @methods['test'] = closure(array @info_event, array @o) {
-        foreach(@detail in @o['details']) {
-            if (!execute(@info_event, @detail, @detail['test']), return(false))
+        foreach(@types in @o['details']) {
+            @res = false
+            foreach(@detail in @types) {
+                if (execute(@info_event, @detail, @detail['test'])) {
+                    @res = true
+                    break()
+                }
+            }
+            if (!@res) {
+                return(false)
+            }
         }
         return(true)
     }

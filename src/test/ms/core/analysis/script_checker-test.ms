@@ -1,17 +1,7 @@
+include('loader-ign.ms')
+
 proc _before_all() {
-
-    string @path = get_absolute_path('script')
-
-    array @scripts = array()
-    int @len = length(@path)
-
-    @files = _util_get_all_files(@path)
-    foreach(@file in @files) {
-        @id = @file[cslice(@len+1, -6)]
-        @scripts[@id] = array(id: @id, path: @file)
-    }
-    _script_checker_init()
-    return(@scripts)
+    return(_load_scripts())
 }
 
 proc _test_proc_not_found_exc1(@scripts) {
