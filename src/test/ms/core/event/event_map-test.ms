@@ -97,5 +97,5 @@ proc _test_to_register() {
         )
     ))
     _assert_equals(array(), @ids)
-    _map_events_clear()
+    // _map_events_init()
 }

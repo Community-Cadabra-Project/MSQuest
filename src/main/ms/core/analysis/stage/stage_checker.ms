@@ -100,22 +100,22 @@ array proc _pr_stage_checker_single(array @stage) {
         @e = _init_exception('key_not_found_exception')
         _pr_stage_checker_put_exception(@exceptions, @e, 'id')
     }
-    if (!array_index_exists(@stage, 'stages')) {
+    if (!array_index_exists(@stage, 'branches')) {
         @e = _init_exception('key_not_found_exception')
-        _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
+        _pr_stage_checker_put_exception(@exceptions, @e, 'branches')
         return(@exceptions)
     }
-    if (!is_array(@stage['stages'])) {
-        @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@stage['stages']), 'stages'))
-       _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
+    if (!is_array(@stage['branches'])) {
+        @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@stage['branches']), 'branches'))
+       _pr_stage_checker_put_exception(@exceptions, @e, 'branches')
         return(@exceptions)
     }
-    if (!is_associative(@stage['stages'])) {
-        @error = _init_exception('cast_exception', array('associated array', typeof(@stage['stages']), 'stages'))
-        _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
+    if (!is_associative(@stage['branches'])) {
+        @error = _init_exception('cast_exception', array('associated array', typeof(@stage['branches']), 'branches'))
+        _pr_stage_checker_put_exception(@exceptions, @e, 'branches')
         return(@exceptions)
     }
-    @keys = array('stages', 'id', 'local', 'global')
+    @keys = array('branches', 'id', 'local', 'global')
     if (array_size(@stage) != array_size(@keys)) {
         @unknown = _util_array_minus(array_keys(@stage), @keys)
         if (array_size(@unknown) != 0) {
@@ -123,12 +123,12 @@ array proc _pr_stage_checker_single(array @stage) {
             _pr_stage_checker_put_exception(@exceptions, @e, './')
         }
     }
-    if (array_size(@stage['stages']) == 0) {
+    if (array_size(@stage['branches']) == 0) {
         @e = _init_exception('not_one_stage_exception', array())
-        _pr_stage_checker_put_exception(@exceptions, @e, 'stages')
+        _pr_stage_checker_put_exception(@exceptions, @e, 'branches')
         return(@exceptions)
     }
-    array_push_all(@exceptions, _pr_stage_checker_stages(@stage['stages'], 'stages'))
+    array_push_all(@exceptions, _pr_stage_checker_stages(@stage['branches'], 'branches'))
     return(@exceptions)
 }
 
@@ -189,6 +189,7 @@ proc _stage_checker_init() {
         _util_commander_register_proc(@c, 'cycle' , '_array')
         _util_commander_register_proc(@c, 'orientated_cycle' , '_array')
         _util_commander_register_proc(@c, 'graph' , '_graph')
+        _util_commander_register_proc(@c, 'flag' , '_array')
         // _util_commander_register(@c, 'tree', '_tree')
         @o = array(commander: @c)
         export('org.cadabra.msquest.stage_checker', @o)

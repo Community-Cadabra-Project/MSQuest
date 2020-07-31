@@ -14,14 +14,6 @@ proc _map_events_init() {
     _map_events_export(@model)
 }
 
-void proc _map_events_clear() {
-    @model = array()
-    @model['id'] = 1
-    @model['map_event_ID'] = associative_array()
-    @model['map_ID_event'] = associative_array()
-    _map_events_export(@model)
-}
-
 int proc _map_events_register(array @event) {
     @model = _map_events_import()
     @map = @model['map_event_ID']
@@ -55,12 +47,31 @@ array proc _map_event_get_id(array @game_event) {
     if (!array_index_exists(@events, @game_event['id'])) {
         return(null)
     }
-
+    
     @ids = array()
     foreach(@event in @events[@game_event['id']]) {
-        if (_method1(@event, 'test', @game_event['info'])) {
+        if (_method(@event, 'test', @game_event['info'])) {
             @ids[] = @event['registed_id']
         }
     }
     return(@ids)
 }
+
+// array proc _map_events_save() {
+//     @model = _map_events_import()['map_event_ID']
+//     return(_util_delete_closures(@model))
+// }
+
+// proc _map_events_load(array @load) {
+//     __map_events_init()
+//     include(_get_src('core.event.details.ms'))
+//     include(_get_src('core.event.events.ms'))
+
+//     foreach(@e in @load) {
+//         @e['test'] = import('org.cadabra.msquest.events')['test']
+//         @e['get_id'] = import('org.cadabra.msquest.events')['get_id']
+//         foreach(@d in @e['details']) {
+//             @d['test'] = import('org.cadabra.msquest.details')[@d['type']]
+//         }
+//     }
+// }

@@ -1,5 +1,5 @@
 id: somethink
-stages:
+branches:
   main:
     type: set
     data: [one, ywo, one]

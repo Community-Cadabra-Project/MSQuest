@@ -1,10 +1,10 @@
 execute(closure() {
     @methods = array()
-    @methods['test'] = closure(array @info_event, array @o) {
+    @methods['test'] = closure(array @o, array @info_event) {
         foreach(@types in @o['details']) {
             @res = false
             foreach(@detail in @types) {
-                if (execute(@info_event, @detail, @detail['test'])) {
+                if (_method(@detail, 'test', @info_event)) {
                     @res = true
                     break()
                 }

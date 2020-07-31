@@ -1,6 +1,6 @@
 
 id: dublicate
-stages:
+branches:
   main:
     type: set
     data: [one, two]

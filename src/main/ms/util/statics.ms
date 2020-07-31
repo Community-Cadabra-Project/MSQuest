@@ -36,7 +36,7 @@ void proc _error(string @key, array @args = array()) {
 execute(closure() {
     # messager
     _util_msg_register_module(_get_id_module(), _get_src(''))
-    @files = _util_get_all_files(_get_resourse('msg'))
+    @files = _util_get_all_files(_get_resource('msg'))
     foreach(@file in @files) {
         if (string_contains(@file, '.yml')) {
             _util_msg_register_file(_get_id_module(), yml_decode(read(@file)))
@@ -49,11 +49,11 @@ execute(closure() {
     }
     @path_to_log = _get_data('log')
     @to_file = closure(@msg) {
-        @path_to_log .= '\\'.simple_date('yyyy.mm.dd').'txt'
+        @path_to_log .= '\\'.simple_date('yyyy.MM.dd').'txt'
         if (!file_exists(@path_to_log)) {
-            _util_make_file(@path_to_log)
+            _util_make_file(@path_to_log, '\\', 3)
         }
-        write_file(@path_to_log, @msg, 'APPEND')
+        write_file(@path_to_log, "@msg\n", 'APPEND')
     }
     _util_log_register(_get_id_module(), 'MSQuest', array(@to_console, @to_file))
 })

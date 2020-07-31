@@ -165,8 +165,8 @@ proc _script_checker_init() {
         }
         @model = associative_array()
     
-        @model['syntax'] = yml_decode(read(_get_resourse('template.script.syntax.yml')))
-        @model['bioms'] = yml_decode(read(_get_resourse('template.script.bioms.yml')))
+        @model['syntax'] = yml_decode(read(_get_resource('template.script.syntax.yml')))
+        @model['bioms'] = yml_decode(read(_get_resource('template.script.bioms.yml')))
     
         export('org.cadabra.msquest.script_checker', @model)
     }

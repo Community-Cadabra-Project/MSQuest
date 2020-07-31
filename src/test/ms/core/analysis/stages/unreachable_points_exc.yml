@@ -1,5 +1,5 @@
 id: somethink
-stages:
+branches:
   main:
     type: graph
     data:

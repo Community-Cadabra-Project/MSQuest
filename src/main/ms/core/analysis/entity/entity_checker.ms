@@ -317,11 +317,11 @@ proc _entity_checker_init() {
         _util_commander_register_proc(@commander, 'uuid' , '_uuid')
         _util_commander_register_proc(@commander, '*' , '_nothink')
     
-        @npc_samples = _util_get_all_files(_get_resourse('template.npc.spec'))
-        @npc_mob = yml_decode(read(_get_resourse('template.npc.mob.yml')))
-        @npc_entity = yml_decode(read(_get_resourse('template.npc.entity.yml')))
-        @npc_main = yml_decode(read(_get_resourse('template.npc.main.yml')))
-        @npc_sections = yml_decode(read(_get_resourse('template.npc.sections.yml')))
+        @npc_samples = _util_get_all_files(_get_resource('template.npc.spec'))
+        @npc_mob = yml_decode(read(_get_resource('template.npc.mob.yml')))
+        @npc_entity = yml_decode(read(_get_resource('template.npc.entity.yml')))
+        @npc_main = yml_decode(read(_get_resource('template.npc.main.yml')))
+        @npc_sections = yml_decode(read(_get_resource('template.npc.sections.yml')))
     
         @npc_spec = array()
         foreach(@sample in @npc_samples) {

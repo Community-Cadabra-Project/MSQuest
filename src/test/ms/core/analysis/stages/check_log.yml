@@ -5,7 +5,7 @@ global:
   have_suggestions: false
 myobject:
   - mmm
-stages:
+branches:
   main:
     type: cycle
     data: [one, tow, tree]

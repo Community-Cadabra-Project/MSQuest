@@ -1,5 +1,5 @@
 id: somethink
-stages:
+branches:
   main:
     type: unknown
     data: ignored because type is unknown
