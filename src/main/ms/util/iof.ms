@@ -1,7 +1,7 @@
 array proc _iof_init(string @root, string @path_del = '\\') {
     array @self = associative_array()
     _util_make_folder(@root, '\\', 3)
-    @self['class'] = 'FileCash'
+    @self['class'] = 'IOFile'
     @self['root'] = @root
     @self['del'] = @path_del
     _iof_include_methods(@self)

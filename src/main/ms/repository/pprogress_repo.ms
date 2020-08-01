@@ -1,20 +1,45 @@
-array proc _player_progress_init(string @path) {
+array proc _pprogress_repo_init(string @path) {
     array @o = associative_array()
     @o['class'] = 'PlayersProgress'
-    @o['map'] = associative_array()
+    @o['cash'] = associative_array()
     @o['io'] = _iof_init(@path)
-    foreach(@key: @method in import('org.cadabra.msquest.player_progress')) {
+    foreach(@key: @method in import('org.cadabra.msquest.pprogress')) {
         @o[@key] = @method
     }
     return(@o)
 }
 
 
-execute(closure() {    
-    @methods = associative_array()
+execute(closure() {
+
+    # private methods
+
+    @pmethods = associative_array()
+
+    @pmethods['addCash'] = closure(array @self, array @data) {
+        if (!array_index_exists(@self['cash'], @data['player'])) {
+            @self['cash'][@data['player']] = associative_array()
+        }
+        @self['cash'][@data['player']][@data['quest']] = @data
+    }
+
+    @pmethods['getCash'] = closure(array @self, string @quest, string @player) {
+        if (array_index_exists(@self['cash'], @player) && array_index_exists(@self['cash'][@player], @quest)) {
+            return(@self['cash'][@player][@quest])
+        }
+        return(null)
+    }
+
+    @pmethods['deleteCash'] = closure(array @self, string @quest, string @player) {
+        if (array_index_exists(@self['cash'], @player) && array_index_exists(@self['cash'][@player], @quest)) {
+            @self['cash'][@player][@quest] = null
+        }
+    }
+
+    @methods = associative_array(__private_methods__: @pmethods)
 
     @methods['get'] = closure(array @self, string @quest, string @player) {
-        @cash = _method(@self, 'getCash', @quest, @player)
+        @cash = _private_method(@self, 'getCash', @quest, @player)
         if (@cash) {
             return(@cash)
         }
@@ -29,32 +54,12 @@ execute(closure() {
         if ((@q = @player_progress['quest']) != @quest) {
             throw(Exception, "Mismatch of the player with the requested. Expect: @quest, actually: @q")
         } 
-        _method(@self, 'addCash', @player_progress)
+        _private_method(@self, 'addCash', @player_progress)
         return(@player_progress)
     }
 
-    @methods['addCash'] = closure(array @self, array @data) {
-        if (!array_index_exists(@self['map'], @data['player'])) {
-            @self['map'][@data['player']] = associative_array()
-        }
-        @self['map'][@data['player']][@data['quest']] = @data
-    }
-
-    @methods['getCash'] = closure(array @self, string @quest, string @player) {
-        if (array_index_exists(@self['map'], @player) && array_index_exists(@self['map'][@player], @quest)) {
-            return(@self['map'][@player][@quest])
-        }
-        return(null)
-    }
-
-    @methods['deleteCash'] = closure(array @self, string @quest, string @player) {
-        if (array_index_exists(@self['map'], @player) && array_index_exists(@self['map'][@player], @quest)) {
-            @self['map'][@player][@quest] = null
-        }
-    }
-
     @methods['save'] = closure(array @self, array @player_progress) {
-        _method(@self, 'addCash', @player_progress)
+        _private_method(@self, 'addCash', @player_progress)
         if (!_method(@self['io'], 'has', @player_progress['player'])) {
             _method(@self['io'], 'createDir', @player_progress['player'])
         }
@@ -68,9 +73,8 @@ execute(closure() {
             @status = false
         } else {
             _method(@self['io'], 'delete', @path)
-            _method(@self, 'deleteCash', @quest, @player)
         }
-        _method(@self, 'deleteCash', @quest, @player)
+        _private_method(@self, 'deleteCash', @quest, @player)
         _log('INFO', "Delete a player - '@player' progress in a quest - '@quest'. Status: @status")
         return(@status)
     }
@@ -82,7 +86,7 @@ execute(closure() {
         } else {
             _method(@self['io'], 'delete', @player)
         }
-        @self['map'][@player] = associative_array()
+        _method(@self, 'deletePlayerCash', @player)
         _log('INFO', "Delete a player - '@player' progress in all quests. Status: @status")
         return(@status)
     }
@@ -96,12 +100,20 @@ execute(closure() {
                 @status = true
             }
         }
-        foreach(@player in array_keys(@self['map'])) {
-            _method(@self, 'deleteCash', @quest, @player)
-        }
+        _method(@self, 'deleteQuestCash', @quest)
         _log('INFO', "Delete the all players progress for quest - '@quest'. Status: @status")
         return(@status)
     }
 
-    export('org.cadabra.msquest.player_progress', @methods)
+    @methods['deletePlayerCash'] = closure(array @self, string @player) {
+        @self['cash'][@player] = associative_array()
+    }
+
+    @methods['deleteQuestCash'] = closure(array @self, string @quest) {
+        foreach(@player in array_keys(@self['cash'])) {
+            _private_method(@self, 'deleteCash', @quest, @player)
+        }
+    }
+
+    export('org.cadabra.msquest.pprogress', @methods)
 })

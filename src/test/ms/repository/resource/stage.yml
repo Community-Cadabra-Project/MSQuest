@@ -1,17 +1,28 @@
 id: spawn_barter1
+local:
+  count_players: 0
 global:
   have_suggestions: false
 branches:
   main:
-    type: cycle
-    data: [one, tow, tree]
-  sub:
+    type: flag
+    data: [one, two, three]
+  linear:
     type: linear
     data: [before, after]
-  dialogs:
+  orien_linear:
+    type: orientated_linear
+    data: [before, after]
+  cycle:
+    type: cycle
+    data: [before, after]
+  orien_cycle:
+    type: orientated_cycle
+    data: [before, after]
+  set:
     type: set
-    data: [one, two, tree, four]
-  points:
+    data: [one, two, three, four]
+  graph:
     type: graph
     data:
       stages: [one, two, three, four, five]
@@ -21,17 +32,4 @@ branches:
         - [0, 0, 0, 1, 0]
         - [0, 0, 0, 0, 1]
         - [0, 0, 0, 0, 0]
-  # tree:
-  #   type: tree
-  #   data:
-  #     start:
-  #       - one
-  #       - two
-  #       - three:
-  #         - a
-  #         - b:
-  #           - c
-  #           - d
-  #         - e
-  #       - four
-    
+  

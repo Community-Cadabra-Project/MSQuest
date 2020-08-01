@@ -115,13 +115,11 @@ array proc _pr_stage_checker_single(array @stage) {
         _pr_stage_checker_put_exception(@exceptions, @e, 'branches')
         return(@exceptions)
     }
-    @keys = array('branches', 'id', 'local', 'global')
-    if (array_size(@stage) != array_size(@keys)) {
-        @unknown = _util_array_minus(array_keys(@stage), @keys)
-        if (array_size(@unknown) != 0) {
-            @e = _init_exception('unknown_keys_exception', array(@unknown))
-            _pr_stage_checker_put_exception(@exceptions, @e, './')
-        }
+    @keys = array('branches', 'id', 'global')
+    @unknown = _util_array_minus(array_keys(@stage), @keys)
+    if (array_size(@unknown) != 0) {
+        @e = _init_exception('unknown_keys_exception', array(@unknown))
+        _pr_stage_checker_put_exception(@exceptions, @e, './')
     }
     if (array_size(@stage['branches']) == 0) {
         @e = _init_exception('not_one_stage_exception', array())
