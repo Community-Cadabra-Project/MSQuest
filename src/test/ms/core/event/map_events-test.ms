@@ -13,9 +13,8 @@ proc _test_to_register() {
         _game_time(12, 24),
         _week_time(5, 7)
     )
-    _assert_equals(array(1), _bind_import()['ids'], _bind_import())
+    _assert_size(1, _bind_import()['events'], _bind_import())
 
-    _bind_init()
     _bind_events(
         _entity_event('npc', 'interactive', 'quest1'),
         _quest_event('interactive', 'quest2'),
@@ -28,17 +27,21 @@ proc _test_to_register() {
         _week_time(0, 7),
         _hour_time(0, 24)
     )
-    _assert_equals(array(2, 3), _bind_import()['ids'], _bind_import())
+    _assert_size(3, _bind_import()['events'], _bind_import())
 
-    _bind_init()
     _bind_events(
         _quest_event('interactive', 'quest3'),
         _game_time(0, 6), _game_time(8, 15)
     )
-    _assert_equals(array(4), _bind_import()['ids'], _bind_import())
+    _assert_size(4, _bind_import()['events'], _bind_import())
     
-    _bind_init()
-    array @ids = _map_event_get_id(array(
+    @evs = _bind_import()['events']
+    @map = _map_events_init()
+    foreach(@event in @evs) {
+        _method(@map, 'register', @event)
+    }
+
+    array @ids = _method(@map, 'getIDEvent', array(
         type: 'QUEST',
         id: 'static_event$interactive',
         info: array(
@@ -56,9 +59,14 @@ proc _test_to_register() {
             )
         )
     ))
-    _assert_equals(array(1, 3, 4), @ids)
+    _assert_equals(
+        array(
+            _method(@evs[0], 'getUUID'), _method(@evs[2], 'getUUID'), _method(@evs[3], 'getUUID')
+        ),
+        @ids
+    )
 
-    @ids = _map_event_get_id(array(
+    @ids = _method(@map, 'getIDEvent', array(
         type: 'QUEST',
         id: 'static_event$interactive',
         info: array(
@@ -76,9 +84,14 @@ proc _test_to_register() {
             )
         )
     ))
-    _assert_equals(array(3, 4), @ids)
+    _assert_equals(
+        array(
+            _method(@evs[2], 'getUUID'), _method(@evs[3], 'getUUID')
+        ),
+        @ids
+    )
 
-    @ids = _map_event_get_id(array(
+    @ids = _method(@map, 'getIDEvent', array(
         type: 'QUEST',
         id: 'static_event$interactive',
         info: array(
@@ -97,5 +110,4 @@ proc _test_to_register() {
         )
     ))
     _assert_equals(array(), @ids)
-    // _map_events_init()
 }

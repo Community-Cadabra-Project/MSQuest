@@ -48,6 +48,15 @@ proc _bind_import() {
     )
 }
 
+proc _bind_export() {
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+    @context['exceptions'][] = array(
+        'classType': UnsupportedOperationException,
+        'message': 'Illegal use _bind_import()',
+        'stackTrace': get_stack_trace()[1..1]
+    )
+}
+
 array proc _entity_event(string @entity, string @action, string @quest = null) {
     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (!array_contains(@context['entities'], @entity)) {
