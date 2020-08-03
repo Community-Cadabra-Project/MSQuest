@@ -22,8 +22,8 @@ proc _test(@qp_repo) {
     @qp['quest'] = 'test-3'
     _method(@qp_repo, 'save', array_deep_clone(@qp))
 
-    _method(@qp_repo, 'clearCash')
-    _assert_false_obj(@qp_repo['cash'])
+    _method(@qp_repo, 'clearCache')
+    _assert_false_obj(@qp_repo['cache'])
 
     @qp['quest'] = 'test-1'
     _assert_equals(@qp, _method(@qp_repo, 'get', 'test-1'))

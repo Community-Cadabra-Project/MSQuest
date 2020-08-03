@@ -30,11 +30,20 @@
 #    args: { 0 : expect_size, 1 : actually_size }
 #- id_exception
 #    args: { 0 : id }
+# - size_range_exception
+#     args: { 0 : value, 1 : less, 2 : more}
+# - keys_exception
+#     args: { 0 : key, 1 : keys}
+# - set_keys_exception
+#     args: { 0 : keys}
 
 
 
 name: core\analysis\entity\entity_checker.ms
 msg:
+  size_range_exception: "NPCException: Array size (actually - %s) must be in the range [%s, %s]"
+  keys_exception: "NPCException: Unknown key '%s', when only allowed %s"
+  set_keys_exception: "NPCException: Some keys from %s are missing"
   unknown_section_excetion: "NPCException: Unknown attributes: %s"
   id_exception: "NPCException: Already existing id: %s"
   unknown_key_exception: "NPCException: Unknown attribute"

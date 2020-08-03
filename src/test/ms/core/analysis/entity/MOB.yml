@@ -11,12 +11,27 @@ mob:
   immunity: 999
   max_air: 255
   persistence: true
-  #equipment_droprates:
-  #leashholder:
+  equipment_droprates:
+    weapon: 0.34513 
+    off_hand: 0.34513 
+    boots: 0.34513 
+    leggings: 0.34513 
+    chestplate: 0.34513 
+    helmet: 0.34513 
   max_health: 100.0
   collidable: true
-  #mob_effect:
+  effect:
+    -
+      - poison
+      - 1230401
+      - 6
+      - true
+      - false
+    -
+      - mining_fatigue
+      - 1230401
+      - 6
+      - true
+      - false
   #equipment:
   owner: Anatoliy57
-  #target:
-  #effects:

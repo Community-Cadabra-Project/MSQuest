@@ -1,45 +1,16 @@
-pickup:
+--- 
+ai: 
   check: boolean
-ai:
-  check: boolean
-air:
+air: 
   check: int
-  data:
-      less: mob.max_air
-breedable:
+  data: 
+    less: mob.max_air
+breedable: 
   check: boolean
-gliding:
+collidable: 
   check: boolean
-health:
-  check: int
-  data:
-    range:
-      - 0
-      - 100
-immunity:
-  check: int
-max_air:
-  check: int
-persistence:
-  check: boolean
-equipment_droprates:
-  check: "*"
-leashholder:
-  check: uuid
-max_health:
-  check: double
-collidable:
-  check: boolean
-mob_effect:
-  check: "*"
-equipment:
-  check: "*"
-owner:
-  check: string
-target:
-  check: "*"
-effects:
-  check: list
+effect: 
+  check: effects
   data: 
     - slowness
     - invisibility
@@ -73,3 +44,36 @@ effects:
     - instant_health
     - haste
     - saturation
+equipment: 
+  check: equipment
+equipment_droprates: 
+  check: equipment_droprates
+  data:
+    - weapon 
+    - off_hand 
+    - boots 
+    - leggings 
+    - chestplate 
+    - helmet 
+gliding: 
+  check: boolean
+health: 
+  check: int
+  data: 
+    range: 
+      - 0
+      - 100
+immunity: 
+  check: int
+max_air: 
+  check: int
+max_health: 
+  check: double
+owner: 
+  check: string
+persistence: 
+  check: boolean
+pickup: 
+  check: boolean
+target: 
+  check: string

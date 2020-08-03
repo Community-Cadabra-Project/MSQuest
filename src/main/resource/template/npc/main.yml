@@ -1,5 +1,5 @@
 id:
-  check: uuid
+  check: string
 type:
   check: list
   data:
@@ -118,3 +118,5 @@ yaw:
     range:
       - 0.0
       - 380.0
+world:
+  check: string

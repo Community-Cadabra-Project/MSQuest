@@ -5,12 +5,12 @@ gravity:
   check: boolean
 invulnerable: 
   check: boolean
-world:
-  check: string
 on_fire: 
-  check: boolean
-ride: 
-  check: uuid
+  check: int
+  data:
+    range:
+      - 0
+      - 107374182
 silent: 
   check: boolean
 name: 
@@ -19,33 +19,3 @@ visible_name:
   check: boolean
 velocity: 
   check: local
-effects: 
-  check: list
-  data:
-    - arrow_particles 
-    - rabbit_jump 
-    - death 
-    - hurt 
-    - sheep_eat 
-    - wolf_hearts 
-    - wolf_shake 
-    - wolf_smoke 
-    - iron_golem_rose 
-    - villager_heart 
-    - villager_angry 
-    - villager_happy 
-    - witch_magic 
-    - zombie_transform 
-    - firework_explode 
-    - love_hearts 
-    - squid_rotate 
-    - entity_poof 
-    - guardian_target 
-    - shield_block 
-    - shield_break 
-    - armor_stand_hit 
-    - thorns_hurt 
-    - iron_golem_sheath 
-    - totem_resurrect 
-    - hurt_drown 
-    - hurt_explosion

@@ -25,7 +25,7 @@ proc _test_npc_analysis_spec(@entities) {
 
 proc _test_npc_analysis_fail(@entities) {
     @exceptions = _pr_entity_checker_single(@entities['BAD']['entity'], true)
-    _assert_size(10, @exceptions, string(@exceptions))
+    _assert_size(11, @exceptions, string(@exceptions))
     foreach(@entry in @exceptions) {
         _assert_true(
             array_contains(

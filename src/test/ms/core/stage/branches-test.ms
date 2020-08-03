@@ -34,19 +34,19 @@ proc _test_flagBranch(@progress) {
     _method(@br, 'set', 'two')
     _assert_equals(array(), _method(@br, 'get'))
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         NotFoundException,
-        '_method', array(@br, 'set', 'four')
+        @br['set'], array(@br, 'four')
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toNext')
+        @br['toNext'], array(@br)
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toPrev')
+        @br['toPrev'], array(@br)
     )
 }
 
@@ -74,9 +74,9 @@ proc _test_linearBranch(@progress) {
         '_method', array(@br, 'toNext'), @br
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'set')
+        @br['set'], array(@br)
     )
 }
 
@@ -100,9 +100,9 @@ proc _test_cycleBranch(@progress) {
     _method(@br, 'toNext')
     _assert_equals('after', _method(@br, 'get'))
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'set')
+        @br['set'], array(@br)
     )
 }
 
@@ -120,14 +120,14 @@ proc _test_orienLinearBranch(@progress) {
         '_method', array(@br, 'toNext'), @br
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toPrev')
+        @br['toPrev'], array(@br)
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'set')
+        @br['set'], array(@br)
     )
 }
 
@@ -143,14 +143,14 @@ proc _test_orienCycleBranch(@progress) {
     _method(@br, 'toNext')
     _assert_equals('before', _method(@br, 'get'))
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'set')
+        @br['set'], array(@br)
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toPrev')
+        @br['toPrev'], array(@br)
     )
 }
 
@@ -169,29 +169,29 @@ proc _test_graphBranch(@progress) {
     _method(@br, 'set', 'five')
     _assert_equals('five', _method(@br, 'get'))
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         NotFoundException,
-        '_method', array(@br, 'set', 'zero')
+        @br['set'], array(@br, 'zero')
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         IllegalArgumentException,
-        '_method', array(@br, 'set', 'one')
+        @br['set'], array(@br, 'one')
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         IllegalArgumentException,
-        '_method', array(@br, 'set', 'four')
+        @br['set'], array(@br, 'four')
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toNext')
+        @br['toNext'], array(@br)
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toPrev')
+        @br['toPrev'], array(@br)
     )
 }
 
@@ -210,18 +210,18 @@ proc _test_setBranch(@progress) {
     _method(@br, 'set', 'three')
     _assert_equals('three', _method(@br, 'get'))
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         NotFoundException,
-        '_method', array(@br, 'set', 'zero')
+        @br['set'], array(@br, 'zero')
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toNext')
+        @br['toNext'], array(@br)
     )
 
-    _assert_proc_array_throw(
+    _assert_execute_array_throw(
         UnsupportedOperationException,
-        '_method', array(@br, 'toPrev')
+        @br['toPrev'], array(@br)
     )
 }

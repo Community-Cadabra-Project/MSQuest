@@ -1,5 +1,10 @@
 execute(closure() {
-    @root = _get_setting()['path']
+    @setting = _get_setting()
+    foreach(@path in @setting['paths']['data']) {
+        _util_make_folder(@path, '\\', 3)
+    }
+
+    @root = @setting['root']
 
     proc _init_paths(string @id, string @path, array @model) {
         if (is_file(@path)) {

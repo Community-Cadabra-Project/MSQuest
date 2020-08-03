@@ -1,25 +1,10 @@
 --- 
-paths: 
-  characters: data/character
-  dialogs: data/dialog
-  extension: data/extension/main.ms
-  scripts: data/script
-  templates: data/template
-  cache: data/.cache
-  ms: src/main/ms
-  log: data/log
-  resourse: 
-    msg: src/main/resourse/msg
-    template:
-      spec: src/main/resourse/core/npc/samples
-      entity: src/main/resourse/core/npc/entity.yml
-      mob: src/main/resourse/core/npc/mob.yml
-      main: src/main/resourse/core/npc/main.yml
-      sections: src/main/resourse/core/npc/sections.yml
-    script:
-      syntax: src/main/resourse/core/script/syntax.yml
-  test:
-    logs: src/test/logs
-    tests: src/test/ms
-    prop: src/test/setting.properties
+paths:
+  data:
+    npc: data/npc
+    dialogs: data/dialog
+    scripts: data/script
+    templates: data/template
+    cache: data/.cache
+    log: data/log
 

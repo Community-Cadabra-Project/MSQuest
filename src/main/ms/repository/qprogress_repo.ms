@@ -1,7 +1,7 @@
 array proc _qprogress_repo_init(string @path) {
     array @o = associative_array()
     @o['class'] = 'QuestsProgress'
-    @o['cash'] = associative_array()
+    @o['cache'] = associative_array()
     @o['io'] = _iof_init(@path)
     foreach(@key: @method in import('org.cadabra.msquest.qprogress')) {
         @o[@key] = @method
@@ -13,20 +13,20 @@ execute(closure() {
     @methods = associative_array()
 
     @methods['get'] = closure(array @self, string @quest) {
-        if (array_index_exists(@self['cash'], @quest) && @self['cash'][@quest]) {
-            return(@self['cash'][@quest])
+        if (array_index_exists(@self['cache'], @quest) && @self['cache'][@quest]) {
+            return(@self['cache'][@quest])
         }
         @path = "@quest.yml"
         if (!_method(@self['io'], 'has', @path)) {
             return(null)
         }
         @qprogress = _method(@self['io'], 'readYML', @path)
-        @self['cash'][@quest] = @qprogress
+        @self['cache'][@quest] = @qprogress
         return(@qprogress)
     }
 
     @methods['save'] = closure(array @self, array @qprogress) {
-        @self['cash'][@qprogress['quest']] = @qprogress
+        @self['cache'][@qprogress['quest']] = @qprogress
         _method(@self['io'], 'writeYML', @qprogress, @qprogress['quest'].'.yml')
     }
 
@@ -38,13 +38,13 @@ execute(closure() {
         } else {
             _method(@self['io'], 'delete', @path)
         }
-        @self['cash'][@quest] = null
+        @self['cache'][@quest] = null
         _log('INFO', "Delete a quest - '@quest' progress. Status: @status")
         return(@status)
     }
 
-    @methods['clearCash'] = closure(array @self) {
-        @self['cash'] = associative_array()
+    @methods['clearCache'] = closure(array @self) {
+        @self['cache'] = associative_array()
     }
 
     export('org.cadabra.msquest.qprogress', @methods)

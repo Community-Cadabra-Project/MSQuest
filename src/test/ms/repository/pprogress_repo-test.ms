@@ -25,13 +25,13 @@ proc _test2(@pprogress_repo) {
     @pprogress = _method(@progress, 'getPProgress')
     _method(@pprogress_repo, 'save', @pprogress)
 
-    @cash = _private_method(@pprogress_repo, 'getCash', @pprogress['quest'], @pprogress['player'])
-    _assert_equals(@pprogress, @cash)
+    @cache = _private_method(@pprogress_repo, 'getCache', @pprogress['quest'], @pprogress['player'])
+    _assert_equals(@pprogress, @cache)
 
-    _private_method(@pprogress_repo, 'deleteCash', @pprogress['quest'], @pprogress['player'])
+    _private_method(@pprogress_repo, 'deleteCache', @pprogress['quest'], @pprogress['player'])
 
-    @cash = _private_method(@pprogress_repo, 'getCash', @pprogress['quest'], @pprogress['player'])
-    _assert_null(@cash)
+    @cache = _private_method(@pprogress_repo, 'getCache', @pprogress['quest'], @pprogress['player'])
+    _assert_null(@cache)
 
     @get = _method(@pprogress_repo, 'get', @pprogress['quest'], @pprogress['player'])
     _assert_equals(@pprogress, @get)

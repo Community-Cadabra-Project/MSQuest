@@ -17,11 +17,120 @@ Exceptions:
     args: { 0 : value, 1 : list}
 - size_exception
     args: { 0 : expect_size, 1 : actually_size }
+- size_range_exception
+    args: { 0 : value, 1 : less, 2 : more}
+- keys_exception
+    args: { 0 : key, 1 : keys}
+- set_keys_exception
+    args: { 0 : keys}
 - id_exception
     args: { 0 : id }
 */
 
 //return (false) means that validation is successful
+
+proc _equipment_droprates(@value, array @data, array @character) {
+    if (!is_array(@value) || !is_associative(@value)) {
+        @error = _init_exception('cast_exception', array('ms.lang.array[associative]', typeof(@value)))
+        return(@error)
+    }
+    @keys = array_map(array_keys(@value), closure(@v) {
+        return(to_lower(@v))
+    })
+    @exceptions = array()
+    foreach(@key in @keys) {
+        if (!array_contains(@data, @key)) {
+            @error = _init_exception('keys_exception', array(@key, @data))
+            return(@error)
+        }
+    }
+    @res = array_intersect(@keys, @data)
+    if (array_size(@res) != array_size(@data)) {
+        @error =  _init_exception('set_keys_exception', array(@data))
+        return(@error)
+    }
+    foreach(@key in @keys) {
+        @error = _double(@value[@key], array(range: array(0, 1)), @character)
+        if (@error) {
+            @error['at'] = @key
+            return(@error)
+        }
+    }
+    return(false)
+}
+
+proc _effects(@value, array @data, array @character) {
+     if (!is_array(@value) || is_associative(@value)) {
+        @error = _init_exception('cast_exception', array('ms.lang.array[not associative]', typeof(@value)))
+        return(@error)
+    }
+    for(@i = 0, @i < array_size(@value), @i++) {
+        @v = @value[@i]
+        if (@e = _effect(@v, @data, @character)) {
+            @e['at'] = if (@e['at'], "[@i].".@e['at'], "[@i]")
+            return(@e)
+        }
+    }
+    return(false)
+}
+
+
+proc _effect(array @value, array @data, array @character) {
+    if (!is_array(@value) || is_associative(@value)) {
+        @error = _init_exception('cast_exception', array('ms.lang.array[not associative]', typeof(@value)))
+        return(@error)
+    }
+    if (array_size(@value) < 1 || array_size(@value) > 5) {
+        @error = _init_exception('size_range_exception', array(array_size(@value), 1, 5))
+        return(@error)
+    }
+
+    @error = _list(@value[0], @data, @character)
+    if (@error) {
+        @error['at'] = "[0]"
+        return(@error)
+    }
+    if (array_size(@value) > 1) {
+        @error = _int(@value[1], array(range: array(0, 107374182)), @character)
+        if (@error) {
+            @error['at'] = "[1]"
+            return(@error)
+        }
+    } else {
+        return(false)
+    }
+
+    if (array_size(@value) > 2) {
+        @error = _int(@value[2], array(more: 0), @character)
+        if (@error) {
+            @error['at'] = "[2]"
+            return(@error)
+        }
+    } else {
+        return(false)
+    }
+
+    if (array_size(@value) > 3) {
+        @error = _boolean(@value[3], null, @character)
+        if (@error) {
+            @error['at'] = "[3]"
+            return(@error)
+        }
+    } else {
+        return(false)
+    }
+
+    if (array_size(@value) > 4) {
+        @error = _boolean(@value[4], null, @character)
+        if (@error) {
+            @error['at'] = "[4]"
+            return(@error)
+        }
+    } else {
+        return(false)
+    }
+    return(false)
+}
 
 
 proc _int(mixed @value, mixed @data, array @character) {
@@ -109,7 +218,7 @@ proc _private_get_number(mixed @val, array @character) {
         } 
         return(@attr)
     } else {
-        _error('pass', array(to_upper(@character['type'])))
+        _error('pass', array(to_upper(@character['main']['type'])))
     }
 }
 
@@ -147,8 +256,8 @@ proc _list(mixed @value, array @data, array @character) {
 }
 
 proc _local(@value, mixed @data, array @character) {
-    if (!is_array(@value)) {
-        @error = _init_exception('cast_exception', array('ms.lang.array', typeof(@value)))
+    if (!is_array(@value) && is_associative(@value)) {
+        @error = _init_exception('cast_exception', array('ms.lang.array[not associative]', typeof(@value)))
         return(@error)
     }
     if (array_size(@value) != 3) {
@@ -160,14 +269,6 @@ proc _local(@value, mixed @data, array @character) {
             @error = _init_exception('cast_exception', array('ms.lang.numer', typeof(@coord)), 'Coordinates must be the numbers')
             return(@error)
         }
-    }
-    return(false)
-}
-
-proc _uuid(mixed @value, mixed @data, array @character) {
-    if (!is_string(@value)) {
-        @error = _init_exception('cast_exception', array('ms.lang.string', typeof(@value)))
-        return(@error)
     }
     return(false)
 }

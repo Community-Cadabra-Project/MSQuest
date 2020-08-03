@@ -15,8 +15,8 @@ void proc _qlog(string @type, string @key, array @args = array(), string @append
     _log(@type, _util_msg(_get_id_module(), @key, @stack + 1, @args).@append)
 }
 
-array proc _init_exception(string @type, array @args = array(), string @msg = '') {
-    return(array(type: @type, args: @args, msg: @msg))
+array proc _init_exception(string @type, array @args = array(), string @msg = '', string @at = null) {
+    return(array('class': 'Exception', type: @type, args: @args, msg: @msg, at: @at))
 }
 
 string proc _parse_exception(array @e, int @stack = 1) {
@@ -27,7 +27,7 @@ string proc _parse_exception(array @e, int @stack = 1) {
     return(@message)
 }
 
-void proc _error(string @key, array @args = array()) {
+void proc _error(string @key, array @args = array(), int @stack = 1) {
     @msg = _util_msg(_get_id_module(), @key, @stack + 1, @args)
     _log('FATAL', @msg)
     die()

@@ -7,3 +7,4 @@ main:
   type: villager
   pitch: 90.0
   yaw: 90.0
+  world: world

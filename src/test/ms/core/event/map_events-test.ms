@@ -3,7 +3,13 @@ proc _test_to_register() {
     include(_get_src('core.event.details.ms'))
     include(_get_src('core.event.events.ms'))
     include(_get_src('core.event.bind.ms'))
-    include('rewrite-ign.ms')
+
+    array proc _bind_import() {
+        return(import('org.cadabra.msquest.bind-test'))
+    }
+    proc _bind_export(array @model) {
+        export('org.cadabra.msquest.bind-test', @model)
+    }
 
     _bind_init()
     _map_events_init()

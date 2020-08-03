@@ -5,9 +5,7 @@ entity:
   glowing: true
   gravity: true
   invulnerable: true
-  world: world
-  on_fire: true
-  #ride
+  on_fire: 100000
   silent: true
   name: Сизый нос
   visible_name: true
@@ -15,4 +13,3 @@ entity:
     - 0.0
     - 0.0
     - 0.0
-  #effects:

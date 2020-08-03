@@ -212,7 +212,7 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 @entity,
                 @commander
             )) {
-               _pr_entity_checker_put_exception(@exceptions, @e, 'mob')
+               _pr_entity_checker_put_exception(@exceptions, @e, 'mob'.'.'.@e['at'], 'mob')
             } else {
                 array_push_all(@exceptions, _pr_entity_checker_params(
                     @mob_temp,
@@ -314,7 +314,8 @@ proc _entity_checker_init() {
         _util_commander_register_proc(@commander, 'string' , '_string')
         _util_commander_register_proc(@commander, 'list' , '_list')
         _util_commander_register_proc(@commander, 'local' , '_local')
-        _util_commander_register_proc(@commander, 'uuid' , '_uuid')
+        _util_commander_register_proc(@commander, 'equipment_droprates' , '_equipment_droprates')
+        _util_commander_register_proc(@commander, 'effects' , '_effects')
         _util_commander_register_proc(@commander, '*' , '_nothink')
     
         @npc_samples = _util_get_all_files(_get_resource('template.npc.spec'))
@@ -343,5 +344,5 @@ proc _entity_checker_init() {
 }
 
 proc _pr_entity_checker_put_exception(@exceptions, @e, @key) {
-    @exceptions[] = array(key: @key, e: @e)
+    @exceptions[] = array(key: if (@e['at'], @key.'.'@e['at'], @key), e: @e)
 }
