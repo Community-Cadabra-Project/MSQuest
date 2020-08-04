@@ -1,6 +1,6 @@
 array proc _pprogress_repo_init(string @path) {
     array @o = associative_array()
-    @o['class'] = 'PlayersProgress'
+    @o['class'] = 'PlayersProgressRepo'
     @o['cache'] = associative_array()
     @o['io'] = _iof_init(@path)
     foreach(@key: @method in import('org.cadabra.msquest.pprogress')) {
@@ -75,7 +75,6 @@ execute(closure() {
             _method(@self['io'], 'delete', @path)
         }
         _private_method(@self, 'deleteCache', @quest, @player)
-        _log('INFO', "Delete a player - '@player' progress in a quest - '@quest'. Status: @status")
         return(@status)
     }
 
@@ -87,7 +86,6 @@ execute(closure() {
             _method(@self['io'], 'delete', @player)
         }
         _method(@self, 'deletePlayerCache', @player)
-        _log('INFO', "Delete a player - '@player' progress in all quests. Status: @status")
         return(@status)
     }
 
@@ -101,7 +99,6 @@ execute(closure() {
             }
         }
         _method(@self, 'deleteQuestCache', @quest)
-        _log('INFO', "Delete the all players progress for quest - '@quest'. Status: @status")
         return(@status)
     }
 

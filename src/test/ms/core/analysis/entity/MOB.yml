@@ -1,37 +1,35 @@
-main:
+--- 
+main: 
   type: villager
-
-mob:
-  pickup: false
+mob: 
   ai: false
   air: 100
   breedable: false
-  gliding: false
-  health: 75
-  immunity: 999
-  max_air: 255
-  persistence: true
-  equipment_droprates:
-    weapon: 0.34513 
-    off_hand: 0.34513 
-    boots: 0.34513 
-    leggings: 0.34513 
-    chestplate: 0.34513 
-    helmet: 0.34513 
-  max_health: 100.0
   collidable: true
-  effect:
-    -
+  effects: 
+    - 
       - poison
       - 1230401
       - 6
       - true
       - false
-    -
+    - 
       - mining_fatigue
       - 1230401
       - 6
       - true
       - false
-  #equipment:
-  owner: Anatoliy57
+  equipment_droprates: 
+    boots: 0.34513
+    chestplate: 0.34513
+    helmet: 0.34513
+    leggings: 0.34513
+    off_hand: 0.34513
+    weapon: 0.34513
+  gliding: false
+  health: 75
+  immunity: 999
+  max_air: 255
+  max_health: 100.0
+  persistence: true
+  pickup: false

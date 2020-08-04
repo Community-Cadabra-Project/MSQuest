@@ -9,7 +9,7 @@ breedable:
   check: boolean
 collidable: 
   check: boolean
-effect: 
+effects: 
   check: effects
   data: 
     - slowness
@@ -48,13 +48,13 @@ equipment:
   check: equipment
 equipment_droprates: 
   check: equipment_droprates
-  data:
-    - weapon 
-    - off_hand 
-    - boots 
-    - leggings 
-    - chestplate 
-    - helmet 
+  data: 
+    - weapon
+    - off_hand
+    - boots
+    - leggings
+    - chestplate
+    - helmet
 gliding: 
   check: boolean
 health: 
@@ -69,11 +69,7 @@ max_air:
   check: int
 max_health: 
   check: double
-owner: 
-  check: string
 persistence: 
   check: boolean
 pickup: 
   check: boolean
-target: 
-  check: string

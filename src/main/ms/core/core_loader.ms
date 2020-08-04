@@ -1,3 +1,4 @@
 include('analysis/static_analys.ms')
 include('event/map_events.ms')
+include('npc/entity_creater.ms')
 include_dir('stage')

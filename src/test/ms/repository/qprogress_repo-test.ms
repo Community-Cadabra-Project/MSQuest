@@ -3,7 +3,7 @@ proc _before_each() {
 }
 
 proc _init_progress(string @player) {
-    @path = 'resource\\stage.yml'
+    @path = 'resource\\stage\\stage.yml'
     @temp = yml_decode(read(@path))
     @progress = _progress_init(@temp, _qprogress_default(@temp), _pprogress_default(@player, @temp))
     return(@progress)

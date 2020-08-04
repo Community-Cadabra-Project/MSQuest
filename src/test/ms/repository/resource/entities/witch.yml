@@ -1,0 +1,43 @@
+main:
+  type: Witch
+  id: Witch
+  location:
+    - 0
+    - 0
+    - 0
+  pitch: 45
+  yaw: 355
+  world: world
+entity:
+  glowing: true    
+  gravity: false    
+  invulnerable: true    
+  on_fire: 107374182                              
+  silent: false    
+  name: Старая карга    
+  visible_name: true
+  velocity: 
+    - 0
+    - 0
+    - 0
+mob:
+  ai: false
+  collidable: true
+  effects:
+    - 
+      - luck
+      - 5
+      - 50
+      - true
+      - false
+    - 
+      - poison
+      - 1230401
+      - 6
+      - true
+      - false
+  gliding: true
+  health: 60
+  immunity: 12345
+  max_health: 400.0
+  pickup: false

@@ -1,6 +1,6 @@
 array proc _qprogress_repo_init(string @path) {
     array @o = associative_array()
-    @o['class'] = 'QuestsProgress'
+    @o['class'] = 'QuestsProgressRepo'
     @o['cache'] = associative_array()
     @o['io'] = _iof_init(@path)
     foreach(@key: @method in import('org.cadabra.msquest.qprogress')) {
@@ -39,7 +39,6 @@ execute(closure() {
             _method(@self['io'], 'delete', @path)
         }
         @self['cache'][@quest] = null
-        _log('INFO', "Delete a quest - '@quest' progress. Status: @status")
         return(@status)
     }
 

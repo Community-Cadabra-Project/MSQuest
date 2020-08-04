@@ -16,7 +16,7 @@ execute(closure() {
     @procs['gliding'] = closure(@uuid, boolean @data) {
         set_entity_gliding(@uuid, @data)
     }
-    @procs['health'] = closure(@uuid, double @data) {
+    @procs['health'] = closure(@uuid, int @data) {
         set_entity_health(@uuid, @data)
     }
     @procs['immunity'] = closure(@uuid, int @data) {
@@ -37,9 +37,12 @@ execute(closure() {
     @procs['collidable'] = closure(@uuid, boolean @data) {
         set_mob_collidable(@uuid, @data)
     }
-    @procs['effect'] = closure(@uuid, array @data) {
-        @args = array_merge(array(@uuid), @data)
-        call_proc_array('set_mob_effect', @args)
+    @procs['effects'] = closure(@uuid, array @data) {
+        foreach(@e in @data) {
+            @args = array_merge(array(@uuid), @e)
+            set_mob_effect(@uuid, @e[0])
+            //call_proc_array('set_mob_effect', @e)
+        }
     }
     @procs['equipment'] = closure(@uuid, array @data) {
         set_mob_equipment(@uuid, @data)

@@ -26,7 +26,6 @@ execute(closure() {
     
     @methods['writeYML'] = closure(array @self, array @o, string @path) {
         @s = yml_encode(_util_delete_closures(@o))
-        console(@self['root'].@self['del'].@path)
         write_file(@self['root'].@self['del'].@path, @s, 'OVERWRITE')
     }
 
