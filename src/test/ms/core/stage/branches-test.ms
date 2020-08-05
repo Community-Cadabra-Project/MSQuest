@@ -1,5 +1,5 @@
 proc _before_each() {
-    @path = 'resource\\stage.yml'
+    @path = _unit_resource('stage.stage.yml')
     @temp = yml_decode(read(@path))
     @progress = _progress_init(@temp, _qprogress_default(@temp), _pprogress_default('player', @temp))
     return(@progress)

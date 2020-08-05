@@ -1,5 +1,5 @@
 proc _before_all() {
-    string @path_to_npc = get_absolute_path('resource\\entities')
+    string @path_to_npc = _unit_resource('npc')
 
     array @entities = array()
     int @len_npc = length(@path_to_npc)
@@ -21,7 +21,7 @@ proc _before_each(@test) {
     return(_entity_repo_init(get_absolute_path('out\\entity_repo\\'.@test)))
 }
 
-proc _test1(@all, @repo) {
+proc _test(@all, @repo) {
     @entities = @all[0]
     @creater = @all[1]
 

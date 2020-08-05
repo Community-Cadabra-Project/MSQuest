@@ -1,7 +1,5 @@
-include('loader-ign.ms')
-
 proc _before_all() {
-    return(_load_dialogs())
+    return(_sa_load_dialogs())
 }
 
 proc _test_cast_exc1(@dialogs) {

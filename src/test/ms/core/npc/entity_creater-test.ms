@@ -1,5 +1,5 @@
 proc _before_all() {
-    string @path_to_npc = get_absolute_path('entities')
+    string @path_to_npc = _unit_resource('npc')
 
     array @entities = array()
     int @len_npc = length(@path_to_npc)

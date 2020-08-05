@@ -38,10 +38,26 @@ execute(closure() {
         set_mob_collidable(@uuid, @data)
     }
     @procs['effects'] = closure(@uuid, array @data) {
-        foreach(@e in @data) {
-            @args = array_merge(array(@uuid), @e)
-            set_mob_effect(@uuid, @e[0])
-            //call_proc_array('set_mob_effect', @e)
+        foreach(@d in @data) {
+            switch(array_size(@d)) {
+                case 1:
+                    set_mob_effect(@uuid, @d[0])
+                    break()
+                case 2:
+                    set_mob_effect(@uuid, @d[0], @d[1])
+                    break()
+                case 3:
+                    set_mob_effect(@uuid, @d[0], @d[1], @d[2])
+                    break()
+                case 4:
+                    set_mob_effect(@uuid, @d[0], @d[1], @d[2], @d[3])
+                    break()
+                case 5:
+                    set_mob_effect(@uuid, @d[0], @d[1], @d[2], @d[3], @d[4])
+                    break()
+                default:
+                    throw(IllegalArgumentException, 'Array size must be in the range [1, 5]')
+            }
         }
     }
     @procs['equipment'] = closure(@uuid, array @data) {

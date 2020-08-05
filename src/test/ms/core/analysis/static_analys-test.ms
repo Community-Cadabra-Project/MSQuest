@@ -1,11 +1,9 @@
-include('loader-ign.ms')
-
 proc _before_all() {
     @data = associative_array()
-    @data['entities'] = _load_entities()
-    @data['stages'] = _load_stages()
-    @data['scripts'] = _load_scripts()
-    @data['dialogs'] = _load_dialogs()
+    @data['entities'] = _sa_load_entities()
+    @data['stages'] = _sa_load_stages()
+    @data['scripts'] = _sa_load_scripts()
+    @data['dialogs'] = _sa_load_dialogs()
     return(@data)
 }
 

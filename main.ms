@@ -5,9 +5,9 @@ proc _quest_init_module(array @setting = array(msunit: false)) {
     if (@setting['msunit']) {
         _unit_register_module(associative_array(
             id: 'msquest',
-            folder: _get_path('src.test.ms'),
-            groups: _get_path('src.test.setting.properties'),
-            outs: _unit_get_default_outs(_get_path('src.test.logs')),
+            root: _get_path('src.test'),
+            tests: 'ms',
+            groups: 'setting.properties',
             filter: '-ign'
         ))
     }

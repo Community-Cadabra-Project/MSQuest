@@ -1,7 +1,5 @@
-include('loader-ign.ms')
-
 proc _before_all() {
-    return(_load_stages())
+    return(_sa_load_stages())
 }
 
 proc _test_contain_graph_exc(@stages) {

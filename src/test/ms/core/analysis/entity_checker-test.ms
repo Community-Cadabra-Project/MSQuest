@@ -1,7 +1,5 @@
-include('loader-ign.ms')
-
 proc _before_all() {
-    return(_load_entities())
+    return(_sa_load_entities())
 }
 
 proc _test_npc_analysis_main(@entities) {

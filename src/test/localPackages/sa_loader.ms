@@ -1,5 +1,5 @@
-proc _load_dialogs() {
-    string @path = get_absolute_path('dialog')
+proc _sa_load_dialogs() {
+    string @path = _unit_resource('sa.dialog')
 
     array @entities = array()
     int @len = length(@path)
@@ -17,8 +17,8 @@ proc _load_dialogs() {
     return(@dialogs)
 }
 
-proc _load_entities() {
-    string @path_to_npc = get_absolute_path('entity')
+proc _sa_load_entities() {
+    string @path_to_npc = _unit_resource('sa.entity')
 
     array @entities = array()
     int @len_npc = length(@path_to_npc)
@@ -37,8 +37,8 @@ proc _load_entities() {
     return(@entities)
 }
 
-proc _load_scripts() {
-    string @path = get_absolute_path('script-ign')
+proc _sa_load_scripts() {
+    string @path = _unit_resource('sa.script-ign')
 
     array @scripts = array()
     int @len = length(@path)
@@ -52,8 +52,8 @@ proc _load_scripts() {
     return(@scripts)
 }
 
-proc _load_stages() {
-    string @path = get_absolute_path('stages')
+proc _sa_load_stages() {
+    string @path = _unit_resource('sa.stages')
 
     array @entities = array()
     int @len = length(@path)

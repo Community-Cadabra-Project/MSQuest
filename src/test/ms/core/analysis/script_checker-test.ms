@@ -1,7 +1,5 @@
-include('loader-ign.ms')
-
 proc _before_all() {
-    return(_load_scripts())
+    return(_sa_load_scripts())
 }
 
 proc _test_proc_not_found_exc1(@scripts) {
