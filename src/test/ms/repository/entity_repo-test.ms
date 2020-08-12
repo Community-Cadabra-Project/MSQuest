@@ -22,6 +22,8 @@ proc _before_each(@test) {
 }
 
 proc _test(@all, @repo) {
+    # Cause x_run_on_main_thread_now
+    _assert_time_limit(0.4, 0.5)
     @entities = @all[0]
     @creater = @all[1]
 
@@ -75,10 +77,19 @@ proc _test(@all, @repo) {
     _assert_null(_method(@repo, 'getID', @uuid_w))
     _assert_null(_method(@repo, 'getID', @uuid_v))
     _assert_null(_method(@repo, 'getID', @uuid_s))
-
-    entity_remove(@uuid_w)
-    entity_remove(@uuid_v)
-    entity_remove(@uuid_s)
+    try {
+        if (is_entity_living(@uuid_w)) {
+            entity_remove(@uuid_w)
+        }
+        if (is_entity_living(@uuid_v)) {
+            entity_remove(@uuid_v)
+        }
+        if (is_entity_living(@uuid_s)) {
+            entity_remove(@uuid_s)
+        }
+    } catch (BadEntityException @e) {
+        _print('Entity very dast died')
+    }
 }
 
 proc _after_all() {

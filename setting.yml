@@ -7,4 +7,6 @@ paths:
     templates: data/template
     cache: data/.cache
     log: data/log
+    localPackages: data/localPackages
+    stage: data/stage
 

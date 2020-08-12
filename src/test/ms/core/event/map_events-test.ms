@@ -12,7 +12,6 @@ proc _test_to_register() {
     }
 
     _bind_init()
-    _map_events_init()
 
     _bind_events(
         _quest_event('interactive', 'quest3'),
@@ -47,9 +46,9 @@ proc _test_to_register() {
         _method(@map, 'register', @event)
     }
 
-    array @ids = _method(@map, 'getIDEvent', array(
+    array @ids = _method(@map, 'getEvents', array(
         type: 'QUEST',
-        id: 'static_event$interactive',
+        id: '__static_event__$interactive',
         info: array(
             game: array(
                 time: 13,
@@ -69,12 +68,13 @@ proc _test_to_register() {
         array(
             _method(@evs[0], 'getUUID'), _method(@evs[2], 'getUUID'), _method(@evs[3], 'getUUID')
         ),
+        array_map(@ids, closure(@v) {return(_method(@v, 'getUUID'))}),
         @ids
     )
 
-    @ids = _method(@map, 'getIDEvent', array(
+    @ids = _method(@map, 'getEvents', array(
         type: 'QUEST',
-        id: 'static_event$interactive',
+        id: '__static_event__$interactive',
         info: array(
             game: array(
                 time: 5,
@@ -94,12 +94,12 @@ proc _test_to_register() {
         array(
             _method(@evs[2], 'getUUID'), _method(@evs[3], 'getUUID')
         ),
-        @ids
+        array_map(@ids, closure(@v) {return(_method(@v, 'getUUID'))})
     )
 
-    @ids = _method(@map, 'getIDEvent', array(
+    @ids = _method(@map, 'getEvents', array(
         type: 'QUEST',
-        id: 'static_event$interactive',
+        id: '__static_event__$interactive',
         info: array(
             game: array(
                 time: 7,
@@ -115,5 +115,5 @@ proc _test_to_register() {
             )
         )
     ))
-    _assert_equals(array(), @ids)
+    _assert_equals(array(), array_map(@ids, closure(@v) {return(_method(@v, 'getUUID'))}))
 }

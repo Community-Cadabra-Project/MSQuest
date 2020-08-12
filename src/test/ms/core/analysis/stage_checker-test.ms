@@ -3,69 +3,69 @@ proc _before_all() {
 }
 
 proc _test_contain_graph_exc(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['contain_graph_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['contain_graph_exc']['object'])
     _assert_equals(array('contain_graph_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_unreachable_points_exc(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['unreachable_points_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['unreachable_points_exc']['object'])
     _assert_equals(array('unreachable_points_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_key_not_found_exc1(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['key_not_found_exc1']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['key_not_found_exc1']['object'])
     _assert_equals(array('key_not_found_exception', 'key_not_found_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_key_not_found_exc2(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['key_not_found_exc2']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['key_not_found_exc2']['object'])
     _assert_equals(array('key_not_found_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_no_one_stage_exc(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['no_one_stage_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['no_one_stage_exc']['object'])
     _assert_equals(array('not_one_stage_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_size_graph_exc(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['size_graph_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['size_graph_exc']['object'])
     _assert_equals(array('size_graph_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_stage_dublication_exc(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['stage_dublication_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['stage_dublication_exc']['object'])
     _assert_equals(array('stage_duplicate_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_tree_head_exc(@stages) {
     _skip_test()
-    @exceptions = _pr_stage_checker_single(@stages['tree_head_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['tree_head_exc']['object'])
     _assert_equals(array('tree_head_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_tree_node_exc(@stages) {
     _skip_test()
-    @exceptions = _pr_stage_checker_single(@stages['tree_node_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['tree_node_exc']['object'])
     _assert_equals(array('tree_node_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_type_exc(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['type_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['type_exc']['object'])
     _assert_equals(array('type_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_unknown_keys_exc1(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['unknown_keys_exc1']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['unknown_keys_exc1']['object'])
     _assert_equals(array('unknown_keys_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_unknown_keys_exc2(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['unknown_keys_exc2']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['unknown_keys_exc2']['object'])
     _assert_equals(array('unknown_keys_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
 proc _test_unreachable_points_exc(@stages) {
-    @exceptions = _pr_stage_checker_single(@stages['unreachable_points_exc']['stage'])
+    @exceptions = _pr_stage_checker_single(@stages['unreachable_points_exc']['object'])
     _assert_equals(array('unreachable_points_exception'),_to_types(@exceptions), string(@exceptions))
 }
 
@@ -84,7 +84,7 @@ proc _test_quest_id_exc(@stage) {
 }
 
 proc _test_valide_stage(@stage) {
-    @exception = _pr_stage_checker_single(@stage['valid_stage']['stage'])
+    @exception = _pr_stage_checker_single(@stage['valid_stage']['object'])
     _assert_empty(@exception, string(@exception))
 }
 

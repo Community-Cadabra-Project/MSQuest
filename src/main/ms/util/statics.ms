@@ -7,7 +7,7 @@ string proc _msg(string @key, int @stack = 1, array @args = array()) {
 }
 
 void proc _log(string @type, string @msg) {
-    _util_log(_get_id_module(), @type, @msg)
+    _util_log(_get_id_module(), @type, player(), @msg)
 }
 
 # quick log = qlog
@@ -27,10 +27,26 @@ string proc _parse_exception(array @e, int @stack = 1) {
     return(@message)
 }
 
-void proc _error(string @key, array @args = array(), int @stack = 1) {
+void proc _qerror(string @key, array @args = array(), int @stack = 1) {
     @msg = _util_msg(_get_id_module(), @key, @stack + 1, @args)
     _log('FATAL', @msg)
     die()
+}
+
+void proc _error(string @msg) {
+    _log('FATAL', @msg)
+    die()
+}
+
+array proc _get_paths_of_data() {
+    return(associative_array(
+        npc: _get_data('npc'),
+        dialog: _get_data('dialog'),
+        script: _get_data('script'),
+        stage: _get_data('stage'),
+        template: _get_data('template'),
+        localPackages: _get_data('localPackages')
+    ))
 }
 
 execute(closure() {
@@ -44,8 +60,13 @@ execute(closure() {
     }
 
     # logger
-    @to_console = closure(@msg) {
+    @to_console = closure(@who, @msg) {
         console(@msg, false)
+    }
+    @to_player = closure(@who, @msg) {
+        if (@who != '~console') {
+            broadcast(@msg, array(@who))
+        }
     }
     @path_to_log = _get_data('log')
     @to_file = closure(@msg) {
@@ -55,5 +76,5 @@ execute(closure() {
         }
         write_file(@path_to_log, "@msg\n", 'APPEND')
     }
-    _util_log_register(_get_id_module(), 'MSQuest', array(@to_console, @to_file))
+    _util_log_register(_get_id_module(), 'MSQuest', array(@to_player, @to_console, @to_file))
 })

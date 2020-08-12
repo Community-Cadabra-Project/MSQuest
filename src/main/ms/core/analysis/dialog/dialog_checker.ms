@@ -27,6 +27,9 @@ Resource proc _dialog_checker_parse_exceptions(array @logs, Resource @builder = 
             string_append(@builder, _parse_exception(@e))
             string_append(@builder, '\n')
         }
+    } else {
+        string_append(@builder, 'Successfully')
+        string_append(@builder, '\n')
     }
     
     return(@builder)
@@ -35,7 +38,7 @@ Resource proc _dialog_checker_parse_exceptions(array @logs, Resource @builder = 
 array proc _dialog_checker_ids(array @entries) {
     @ids = array()
     foreach(@entry in @entries) {
-        @dialog = @entry['dialog']
+        @dialog = @entry['object']
         if (array_index_exists(@dialog, 'id') && is_string(@dialog['id'])) {
             @_id = @dialog['id']
             if (array_contains(@ids, @_id)) {
@@ -53,7 +56,7 @@ array proc _dialog_checker_analys(array @dialogs) {
     @ids = array()
     foreach(@entry in @dialogs) {
         @id = @entry['id']
-        @dialog = @entry['dialog']
+        @dialog = @entry['object']
         @exceptions = _pr_dialog_checker_single(@dialog)
         @log_exist = false
         if (@exceptions) {
@@ -95,7 +98,7 @@ array proc _pr_dialog_checker_single(array @dialog) {
         return(@exceptions)
     } 
     if (!is_associative(@dialog['message'])) {
-        @e = _init_exception('cast_exception', array('associative array', typeof(@dialog['id'])))
+        @e = _init_exception('cast_exception', array('associative array', typeof(@dialog['message'])))
         _pr_dialog_checker_put_exception(@exceptions, @e, 'message')
         return(@exceptions)
     }
@@ -109,8 +112,18 @@ array proc _pr_dialog_checker_single(array @dialog) {
     }
     foreach(@key: @v in @dialog['message']) {
         if (!is_string(@v)) {
-            @e = _init_exception('cast_exception', array(typeof(''), typeof(@dialog['message'][@key])))
-            _pr_dialog_checker_put_exception(@exceptions, @e, "message.@key")
+            if (!is_array(@v) || is_associative(@v)) {
+                @e = _init_exception('cast_exception', array(typeof('').' | '.array.'[not associative]', typeof(@dialog['message'][@key])))
+                _pr_dialog_checker_put_exception(@exceptions, @e, "message.@key")
+            } else {
+                for(@i = 0, @i < array_size(@v), @i++) {
+                    @s = @v[@i]
+                    if (!is_string(@s)) {
+                        @e = _init_exception('cast_exception', array(typeof(''), typeof(@dialog['message'][@key])))
+                        _pr_dialog_checker_put_exception(@exceptions, @e, "message.@key[@i]")
+                    }
+                }
+            }
         }
     }
     return(@exceptions)

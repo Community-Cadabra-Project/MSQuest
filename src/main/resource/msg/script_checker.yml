@@ -9,3 +9,4 @@ name: "core\\analysis\\script\\script_checker.ms"
 msg:
   proc_not_found_exception: "ScriptException: Procedure '%s()' not found"
   mismatch_number_procs_exception: "ScriptException: Expected number of r'%s()' procedures %s, but %s found"
+  include_exception: "IncludeException:\n%s"

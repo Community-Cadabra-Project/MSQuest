@@ -1,3 +1,7 @@
+string proc _entity_get_id(array @npc) {
+    return(@npc['main']['id'])
+}
+
 array proc _entity_creater_init() {
     array @self = associative_array()
     @self['class'] = 'EntityCreater'
@@ -33,9 +37,9 @@ execute(closure() {
             yaw: @main['yaw'],
             world: @main['world']
         )
-        @location[0] = @main['location'][0]
-        @location[1] = @main['location'][1]
-        @location[2] = @main['location'][2]
+        @location['x'] = @main['location'][0]
+        @location['y'] = @main['location'][1]
+        @location['z'] = @main['location'][2]
         @uuid = spawn_entity(
             @main['type'],
             1,

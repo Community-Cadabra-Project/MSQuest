@@ -23,7 +23,7 @@ array proc _quest_event(string @action, string @quest = null) {
     @self['details'] = array()
     @self['registed_id'] = null
 
-    @self['id'] = 'static_event'
+    @self['id'] = '__static_event__'
     @self['action'] = @action
     @self['quest'] = @quest
 
@@ -51,7 +51,7 @@ execute(closure() {
         return(true)
     }
     @methods['getID'] = closure(array @self) {
-        return(@self['id'].'$'.@self['action'])
+        return(_event_to_id(@self['id'], @self['action']))
     }
     @methods['getUUID'] = closure(array @self) {
         return(@self['registed_id'])

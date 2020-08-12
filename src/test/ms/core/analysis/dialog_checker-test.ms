@@ -3,37 +3,32 @@ proc _before_all() {
 }
 
 proc _test_cast_exc1(@dialogs) {
-    @exceptions = _pr_dialog_checker_single(@dialogs['cast_exc1']['dialog'])
+    @exceptions = _pr_dialog_checker_single(@dialogs['cast_exc1']['object'])
     _assert_equals(array('cast_exception', 'cast_exception'),_to_types(@exceptions), @exceptions)
 }
 
-proc _test_cast_exc1(@dialogs) {
-    @exceptions = _pr_dialog_checker_single(@dialogs['cast_exc2']['dialog'])
+proc _test_cast_exc2(@dialogs) {
+    @exceptions = _pr_dialog_checker_single(@dialogs['cast_exc2']['object'])
     _assert_equals(array('cast_exception', 'cast_exception'),_to_types(@exceptions), @exceptions)
 }
 
 proc _test_key_not_found_exc1(@dialogs) {
-    @exceptions = _pr_dialog_checker_single(@dialogs['key_not_found_exc1']['dialog'])
+    @exceptions = _pr_dialog_checker_single(@dialogs['key_not_found_exc1']['object'])
     _assert_equals(array('key_not_found_exception'),_to_types(@exceptions), @exceptions)
 }
 
 proc _test_key_not_found_exc2(@dialogs) {
-    @exceptions = _pr_dialog_checker_single(@dialogs['key_not_found_exc2']['dialog'])
+    @exceptions = _pr_dialog_checker_single(@dialogs['key_not_found_exc2']['object'])
     _assert_equals(array('key_not_found_exception'),_to_types(@exceptions), @exceptions)
 }
 
 proc _test_key_not_found_exc3(@dialogs) {
-    @exceptions = _pr_dialog_checker_single(@dialogs['key_not_found_exc3']['dialog'])
+    @exceptions = _pr_dialog_checker_single(@dialogs['key_not_found_exc3']['object'])
     _assert_equals(array('key_not_found_exception', 'key_not_found_exception'),_to_types(@exceptions), @exceptions)
 }
 
 proc _test_unknown_keys_exc(@dialogs) {
-    @exceptions = _pr_dialog_checker_single(@dialogs['unknown_keys_exc']['dialog'])
-    _assert_equals(array('unknown_keys_exception'),_to_types(@exceptions), @exceptions)
-}
-
-proc _test_unknown_keys_exc(@dialogs) {
-    @exceptions = _pr_dialog_checker_single(@dialogs['unknown_keys_exc']['dialog'])
+    @exceptions = _pr_dialog_checker_single(@dialogs['unknown_keys_exc']['object'])
     _assert_equals(array('unknown_keys_exception'),_to_types(@exceptions), @exceptions)
 }
 

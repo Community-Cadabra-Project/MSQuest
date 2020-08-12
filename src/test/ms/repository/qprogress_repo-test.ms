@@ -2,16 +2,15 @@ proc _before_each() {
     return(_qprogress_repo_init(get_absolute_path('out\\qprogress')))
 }
 
-proc _init_progress(string @player) {
+proc _init_temp() {
     @path = _unit_resource('stage.stage.yml')
     @temp = yml_decode(read(@path))
-    @progress = _progress_init(@temp, _qprogress_default(@temp), _pprogress_default(@player, @temp))
-    return(@progress)
+    return(@temp)
 }
 
 proc _test(@qp_repo) {
-    @progress = _init_progress('player')
-    @qp = _method(@progress, 'getQProgress')
+    @progress = _init_temp('player')
+    @qp = _qprogress_default(_init_temp())
     
     @qp['quest'] = 'test-1'
     _method(@qp_repo, 'save', array_deep_clone(@qp))

@@ -36,6 +36,9 @@ Resource proc _stage_checker_parse_exceptions(array @logs, Resource @builder = r
             string_append(@builder, _parse_exception(@e))
             string_append(@builder, '\n')
         }
+    } else {
+        string_append(@builder, 'Successfully')
+        string_append(@builder, '\n')
     }
     
     return(@builder)
@@ -44,7 +47,7 @@ Resource proc _stage_checker_parse_exceptions(array @logs, Resource @builder = r
 array proc _stage_checker_ids(array @entries) {
     @ids = array()
     foreach(@entry in @entries) {
-        @stage = @entry['stage']
+        @stage = @entry['object']
         if (array_index_exists(@stage, 'id') && is_string(@stage['id'])) {
             @_id = @stage['id']
             if (array_contains(@ids, @_id)) {
@@ -62,7 +65,7 @@ array proc _stage_checker_analys(array @entries) {
     @ids = array()
     foreach(@entry in @entries) {
         @id = @entry['id']
-        @stage = @entry['stage']
+        @stage = @entry['object']
 
         @exceptions = _pr_stage_checker_single(@stage)
         @log_exist = false

@@ -13,6 +13,7 @@ array proc _entity_repo_init(string @path) {
         @map_UUID_ID = _method(@self['io'], 'readYML', @self['file'])
         foreach(@uuid: @id in @map_UUID_ID) {
             @self['map_ID_UUID'][@id] = @uuid
+            @self['map_UUID_ID'][@uuid] = @id
         }
     }
 
@@ -25,24 +26,24 @@ array proc _entity_repo_init(string @path) {
 execute(closure() {
     array @methods = associative_array()
 
-    @check_id_uuid = closure(array @self, string @uuid, string @id) {
+    @methods['save'] = closure(array @self, string @uuid, string @id) {
         if (array_index_exists(@self['map_UUID_ID'], @uuid)) {
             throw(IllegalArgumentException, "This uuid @uuid already exists")
         }
         if (array_index_exists(@self['map_ID_UUID'], @id)) {
             throw(IllegalArgumentException, "This id @id already exists")
         }
-    }
-
-    @save_map = closure(array @io, string @file, array @map) {
-        _method(@io, 'writeYML', @map, @file)
-    }
-
-    @methods['save'] = closure(array @self, string @uuid, string @id) {
-        execute(@self, @uuid, @id, @check_id_uuid)
         @self['map_UUID_ID'][@uuid] = @id
         @self['map_ID_UUID'][@id] = @uuid
-        execute(@self['io'], @self['file'], @self['map_UUID_ID'], @save_map)
+        _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+    }
+
+    @methods['hasID'] = closure(array @self, string @id) {
+        return(boolean(_method(@self, 'getUUID', @id)))
+    }
+
+    @methods['hasUUID'] = closure(array @self, string @uuid) {
+        return(boolean(_method(@self, 'getID', @uuid)))
     }
 
     @methods['getUUID'] = closure(array @self, string @id) {
@@ -70,7 +71,7 @@ execute(closure() {
         if (@id != @_id) {
             throw(Exception, "Table mismatch: @id -> @uuid -> @_id")
         }
-        execute(@self['io'], @self['file'], @self['map_UUID_ID'], @save_map)
+        _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
     }
 
     @methods['deleteUUID'] = closure(array @self, string @uuid) {
@@ -82,7 +83,24 @@ execute(closure() {
         if (@_uuid != @uuid) {
             throw(Exception, "Table mismatch: @uuid -> @id -> @_uuid")
         }
-        execute(@self['io'], @self['file'], @self['map_UUID_ID'], @save_map)
+        _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+    }
+
+    @methods['clear'] = closure(array @self) {
+        @self['map_UUID_ID'] = associative_array()
+        @self['map_ID_UUID'] = associative_array()
+
+        if (_method(@self['io'], 'has', @self['file'])) {
+            _method(@self['io'], 'delete', @self['file'])
+        }
+    }
+
+    @methods['getAllUUID'] = closure(array @self) {
+        return(array_keys(@self['map_UUID_ID']))
+    }
+
+    @methods['getAllID'] = closure(array @self) {
+        return(array_keys(@self['map_ID_UUID']))
     }
 
     export('org.cadabra.msquest.entity_repo', @methods)

@@ -9,7 +9,7 @@ proc _sa_load_dialogs() {
     foreach(@file in @files) {
         @id = @file[cslice(@len+1, -5)]
         try {
-            @dialogs[@id] = array(id: @id, dialog: yml_decode(read(@file)))
+            @dialogs[@id] = array(id: @id, object: yml_decode(read(@file)))
         } catch(FormatException @e) {
             console(@file)
         }
@@ -28,7 +28,7 @@ proc _sa_load_entities() {
     foreach(@file in @files) {
         @id = @file[cslice(@len_npc+1, -5)]
         try {
-            @entities[@id] = array(is_npc: true, id: @id, entity: yml_decode(read(@file)))
+            @entities[@id] = array(is_npc: true, id: @id, object: yml_decode(read(@file)))
         } catch(FormatException @e) {
             console(@file)
         }
@@ -38,7 +38,7 @@ proc _sa_load_entities() {
 }
 
 proc _sa_load_scripts() {
-    string @path = _unit_resource('sa.script-ign')
+    string @path = _unit_resource('sa.script')
 
     array @scripts = array()
     int @len = length(@path)
@@ -46,7 +46,7 @@ proc _sa_load_scripts() {
     @files = _util_get_all_files(@path)
     foreach(@file in @files) {
         @id = @file[cslice(@len+1, -4)]
-        @scripts[@id] = array(id: @id, path: @file)
+        @scripts[@id] = array(id: @id, object: @file)
     }
     _script_checker_init()
     return(@scripts)
@@ -63,7 +63,7 @@ proc _sa_load_stages() {
     foreach(@file in @files) {
         @id = @file[cslice(@len+1, -5)]
         try {
-            @stages[@id] = array(id: @id, stage: yml_decode(read(@file)))
+            @stages[@id] = array(id: @id, object: yml_decode(read(@file)))
         } catch(FormatException @e) {
             console(@file)
         }

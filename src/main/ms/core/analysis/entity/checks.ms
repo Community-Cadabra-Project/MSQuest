@@ -218,7 +218,7 @@ proc _private_get_number(mixed @val, array @character) {
         } 
         return(@attr)
     } else {
-        _error('pass', array(to_upper(@character['main']['type'])))
+        _qerror('pass', array(to_upper(@character['main']['type'])))
     }
 }
 

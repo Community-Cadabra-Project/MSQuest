@@ -3,17 +3,17 @@ proc _before_all() {
 }
 
 proc _test_npc_analysis_main(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['SETTING']['entity'], true)
+    @exceptions = _pr_entity_checker_single(@entities['SETTING']['object'], true)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
 proc _test_npc_analysis_entity(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['ENTITY']['entity'], false)
+    @exceptions = _pr_entity_checker_single(@entities['ENTITY']['object'], false)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
 proc _test_npc_analysis_mob(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['MOB']['entity'], false)
+    @exceptions = _pr_entity_checker_single(@entities['MOB']['object'], false)
     _assert_size(0, @exceptions, string(@exceptions))
 }
 
@@ -22,7 +22,7 @@ proc _test_npc_analysis_spec(@entities) {
 }
 
 proc _test_npc_analysis_fail(@entities) {
-    @exceptions = _pr_entity_checker_single(@entities['BAD']['entity'], true)
+    @exceptions = _pr_entity_checker_single(@entities['BAD']['object'], true)
     _assert_size(11, @exceptions, string(@exceptions))
     foreach(@entry in @exceptions) {
         _assert_true(

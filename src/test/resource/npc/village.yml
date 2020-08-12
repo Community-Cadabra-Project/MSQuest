@@ -1,6 +1,6 @@
 main:
   type: villager
-  id: Сизый Нос
+  id: SizuyNoise
   location:
     - 10
     - 10

@@ -1,3 +1,9 @@
+include('game_event.ms')
+
+string proc _event_to_id(string @id, string @action) {
+    return("@id$@action")
+}
+
 array proc _map_events_init() {
     @self = array()
     @self['map_event_id'] = associative_array()
@@ -32,21 +38,21 @@ execute(closure() {
         return(@event['registed_id'])
     }
 
-    @methods['getIDEvent'] = closure(array @self, array @game_event) {
+    @methods['getEvents'] = closure(array @self, array @game_event) {
         @map = @self['map_event_id']
         if (!array_index_exists(@map, @game_event['type'])) {
-            return(null)
+            return(array())
         }
 
         @events = @map[@game_event['type']]
         if (!array_index_exists(@events, @game_event['id'])) {
-            return(null)
+            return(array())
         }
 
         @ids = array()
         foreach(@event in @events[@game_event['id']]) {
             if (_method(@event, 'test', @game_event['info'])) {
-                @ids[] = _method(@event, 'getUUID')
+                @ids[] = @event
             }
         }
         return(@ids)

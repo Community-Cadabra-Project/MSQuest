@@ -26,7 +26,13 @@ proc _test_witch(@entities, @creater) {
         closure() {return(_method(@creater, 'create', @entities['witch']))}
     )
     _assert_true_obj(@uuid)
-    entity_remove(@uuid)
+    try {
+        if (is_entity_living(@uuid)) {
+            entity_remove(@uuid)
+        }
+    } catch (BadEntityException @e) {
+        _print('Entity very dast died')
+    }
 }
 
 proc _test_slime(@entities, @creater) {
@@ -34,7 +40,13 @@ proc _test_slime(@entities, @creater) {
         closure() {return(_method(@creater, 'create', @entities['slime']))}
     )
     _assert_true_obj(@uuid)
-    entity_remove(@uuid)
+    try {
+        if (is_entity_living(@uuid)) {
+            entity_remove(@uuid)
+        }
+    } catch (BadEntityException @e) {
+        _print('Entity very dast died')
+    }
 }
 
 proc _test_village(@entities, @creater) {
@@ -42,5 +54,11 @@ proc _test_village(@entities, @creater) {
         closure() {return(_method(@creater, 'create', @entities['village']))}
     )
     _assert_true_obj(@uuid)
-    entity_remove(@uuid)
+    try {
+        if (is_entity_living(@uuid)) {
+            entity_remove(@uuid)
+        }
+    } catch (BadEntityException @e) {
+        _print('Entity very dast died')
+    }
 }

@@ -48,44 +48,47 @@ Resource proc _entity_checker_parse_exceptions(array @logs, Resource @builder = 
     @npc_logs = array_filter(@logs, closure(@k, @v) {return(@v['is_npc'])})
     @temp_logs = array_filter(@logs, closure(@k, @v) {return(!@v['is_npc'])})
 
-    if (array_size(@npc_logs) != 0) {
-        string_append(@builder, '############ NPC ############')
-        string_append(@builder, '\n')
-        foreach(@log in @npc_logs) {
-            @id = @log['id']
-            string_append(@builder, '\n############\n')
-            string_append(@builder, 'Entity at: ')
-            string_append(@builder, @id)
-            foreach(@entry in @log['exceptions']) {
-                @attr = @entry['key']
-                @e = @entry['e']
-                string_append(@builder, '\n- attribute: ')
-                string_append(@builder, @attr)
-                string_append(@builder, '\n\t')
-                string_append(@builder, _parse_exception(@e))
-                string_append(@builder, '\n')
-            }
+    string_append(@builder, '############ NPC ############')
+    string_append(@builder, '\n')
+    foreach(@log in @npc_logs) {
+        @id = @log['id']
+        string_append(@builder, '\n############\n')
+        string_append(@builder, 'Entity at: ')
+        string_append(@builder, @id)
+        foreach(@entry in @log['exceptions']) {
+            @attr = @entry['key']
+            @e = @entry['e']
+            string_append(@builder, '\n- attribute: ')
+            string_append(@builder, @attr)
+            string_append(@builder, '\n\t')
+            string_append(@builder, _parse_exception(@e))
+            string_append(@builder, '\n')
         }
+    } else {
+        string_append(@builder, 'Successfully')
+        string_append(@builder, '\n')
     }
     
-    if (array_size(@temp_logs) != 0) {
-        string_append(@builder, '######### TEMPLATES #########')
-        string_append(@builder, '\n')
-        foreach(@log in @temp_logs) {
-            @id = @log['id']
-            string_append(@builder, '\n############\n')
-            string_append(@builder, 'Entity at: ')
-            string_append(@builder, @id)
-            foreach(@entry in @log['exceptions']) {
-                @attr = @entry['key']
-                @e = @entry['e']
-                string_append(@builder, '\n- attribute: ')
-                string_append(@builder, @attr)
-                string_append(@builder, '\n\t')
-                string_append(@builder, _parse_exception(@e))
-                string_append(@builder, '\n')
-            }
+    string_append(@builder, '\n')
+    string_append(@builder, '######### TEMPLATES #########')
+    string_append(@builder, '\n')
+    foreach(@log in @temp_logs) {
+        @id = @log['id']
+        string_append(@builder, '\n############\n')
+        string_append(@builder, 'Entity at: ')
+        string_append(@builder, @id)
+        foreach(@entry in @log['exceptions']) {
+            @attr = @entry['key']
+            @e = @entry['e']
+            string_append(@builder, '\n- attribute: ')
+            string_append(@builder, @attr)
+            string_append(@builder, '\n\t')
+            string_append(@builder, _parse_exception(@e))
+            string_append(@builder, '\n')
         }
+    } else {
+        string_append(@builder, 'Successfully')
+        string_append(@builder, '\n')
     }
     return(@builder)
 }
@@ -93,7 +96,7 @@ Resource proc _entity_checker_parse_exceptions(array @logs, Resource @builder = 
 array proc _entity_checker_ids(array @entries) {
     @ids = array()
     foreach(@entry in @entries) {
-        @entity = @entry['entity']
+        @entity = @entry['object']
         if (array_index_exists(@entity, 'main') && array_index_exists(@entity['main'], 'id') && is_string(@entity['main']['id'])) {
             @_id = @entity['main']['id']
             if (array_contains(@ids, @_id)) {
@@ -112,7 +115,7 @@ array proc _entity_checker_analys(array @entities) {
     foreach(@info_entity in @entities) {
         @is_npc = @info_entity['is_npc']
         @id = @info_entity['id']
-        @entity = @info_entity['entity']
+        @entity = @info_entity['object']
 
         @exceptions = _pr_entity_checker_single(@entity, @is_npc)
         @log_exist = false

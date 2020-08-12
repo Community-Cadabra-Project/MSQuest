@@ -1,17 +1,17 @@
 proc _before_each() {
     @path = _unit_resource('stage.stage.yml')
     @temp = yml_decode(read(@path))
-    @progress = _progress_init(@temp, _qprogress_default(@temp), _pprogress_default('player', @temp))
+    @progress = _pprogress_init(@temp, _pprogress_default_data('player', @temp))
     return(@progress)
 }
 
 proc _test_getBranch(@progress) {
-    @branch = _method(@progress, 'getBranch', 'main')
+    @branch = _private_method(@progress, 'getBranch', 'main')
     _assert_equals(@branch['class'], 'FlagBranch')
 }
 
 proc _test_flagBranch(@progress) {
-    @br = _method(@progress, 'getBranch', 'main')
+    @br = _private_method(@progress, 'getBranch', 'main')
     _assert_equals(@br['class'], 'FlagBranch')
 
     _method(@br, 'set', 'one')
@@ -51,7 +51,7 @@ proc _test_flagBranch(@progress) {
 }
 
 proc _test_linearBranch(@progress) {
-    @br = _method(@progress, 'getBranch', 'linear')
+    @br = _private_method(@progress, 'getBranch', 'linear')
     _assert_equals(@br['class'], 'LinearBranch')
     _assert_equals(0, _method(@br, 'getCurrent'))
     _assert_equals('before', _method(@br, 'get'))
@@ -81,7 +81,7 @@ proc _test_linearBranch(@progress) {
 }
 
 proc _test_cycleBranch(@progress) {
-    @br = _method(@progress, 'getBranch', 'cycle')
+    @br = _private_method(@progress, 'getBranch', 'cycle')
     _assert_equals(@br['class'], 'CycleBranch')
     _assert_equals(0, _method(@br, 'getCurrent'))
     _assert_equals('before', _method(@br, 'get'))
@@ -107,7 +107,7 @@ proc _test_cycleBranch(@progress) {
 }
 
 proc _test_orienLinearBranch(@progress) {
-    @br = _method(@progress, 'getBranch', 'orien_linear')
+    @br = _private_method(@progress, 'getBranch', 'orien_linear')
     _assert_equals(@br['class'], 'OrienLinearBranch')
     _assert_equals(0, _method(@br, 'getCurrent'))
     _assert_equals('before', _method(@br, 'get'))
@@ -132,7 +132,7 @@ proc _test_orienLinearBranch(@progress) {
 }
 
 proc _test_orienCycleBranch(@progress) {
-    @br = _method(@progress, 'getBranch', 'orien_cycle')
+    @br = _private_method(@progress, 'getBranch', 'orien_cycle')
     _assert_equals(@br['class'], 'OrienCycleBranch')
     _assert_equals(0, _method(@br, 'getCurrent'))
     _assert_equals('before', _method(@br, 'get'))
@@ -155,7 +155,7 @@ proc _test_orienCycleBranch(@progress) {
 }
 
 proc _test_graphBranch(@progress) {
-    @br = _method(@progress, 'getBranch', 'graph')
+    @br = _private_method(@progress, 'getBranch', 'graph')
     _assert_equals(@br['class'], 'GraphBranch')
     _assert_equals(0, _method(@br, 'getCurrent'))
     _assert_equals('one', _method(@br, 'get'))
@@ -196,7 +196,7 @@ proc _test_graphBranch(@progress) {
 }
 
 proc _test_setBranch(@progress) {
-    @br = _method(@progress, 'getBranch', 'set')
+    @br = _private_method(@progress, 'getBranch', 'set')
     _assert_equals(@br['class'], 'SetBranch')
     _assert_equals(0, _method(@br, 'getCurrent'))
     _assert_equals('one', _method(@br, 'get'))

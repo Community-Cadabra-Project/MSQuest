@@ -1,4 +1,4 @@
 id: 123
 message:
   hello: "Hello!"
-  hi: ['Hi!']
+  hi: ['Hi!', 123]

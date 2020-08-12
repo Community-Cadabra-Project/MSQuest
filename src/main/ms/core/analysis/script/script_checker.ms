@@ -31,6 +31,9 @@ Resource proc _script_checker_parse_exceptions(array @log, Resource @builder = r
             string_append(@builder, _util_parse_exception(@e))
             string_append(@builder, '\n\n')
         }
+    } else {
+        string_append(@builder, 'Successfully')
+        string_append(@builder, '\n')
     }
     return(@builder)
 }
@@ -39,12 +42,12 @@ array proc _script_checker_analys(array @scripts, array @context) {
     @log = array()
     @context = _pr_script_checker_init_context(@context)
     foreach(@script in @scripts) {
-        @path = @script['path']
+        @path = @script['object']
         @id = @script['id']
         @exceptions = _pr_script_checker_single(@path)
         @running_exceptions = _pr_script_checker_run(@path, @context)
         if (@exceptions || @running_exceptions) {
-            @log[@id] = array('static': @exceptions, running: @running_exceptions)
+            @log[@id] = array(static: @exceptions, running: @running_exceptions)
         }
     }
     return(@log)
@@ -80,7 +83,16 @@ array proc _pr_script_checker_run(@path, @context) {
         @context = import('TEMP')[1]
     }
     include('local_procs.ms')
-    include(@path)
+    try {
+        include(@path)
+    } catch (IncludeException @e) {
+        @exceptions[] = array(
+                'classType': @e['classType'],
+                'message': @e['message'],
+                'stackTrace': @e['stackTrace'][0..0]
+        )
+        return(@exceptions)
+    }
     if (!is_proc('_register_as')) {
         return(@exceptions)
     }
@@ -113,7 +125,11 @@ array proc _pr_script_checker_single(string @path) {
         @procs = array()
     } else {
         @old_procs = get_procedures()
-        include(@path)
+        try {
+            include(@path)
+        } catch(IncludeException @e) {
+            return(@exceptions)
+        }
         @new_procs = get_procedures()
         @procs = _util_array_minus(@new_procs, @old_procs)
     }
