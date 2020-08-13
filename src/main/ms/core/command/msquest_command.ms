@@ -32,6 +32,8 @@ proc _msquest_load_model(@args) {
     @model = _model_init(@response['data']) 
 
     include('register_script.ms')
+    x_recompile_includes(@paths_data['script'])
+    x_recompile_includes(@paths_data['localPackages'])
     _register_scripts(
         @model,
         _get_src('core.event.api_register.ms'),
