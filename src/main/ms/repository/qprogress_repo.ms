@@ -2,7 +2,7 @@ array proc _qprogress_repo_init(string @path) {
     array @o = associative_array()
     @o['class'] = 'QuestsProgressRepo'
     @o['cache'] = associative_array()
-    @o['io'] = _iof_init(@path)
+    @o['io'] = _iof_init(@path, _util_sdn())
     foreach(@key: @method in import('org.cadabra.msquest.qprogress')) {
         @o[@key] = @method
     }

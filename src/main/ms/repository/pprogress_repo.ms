@@ -2,7 +2,7 @@ array proc _pprogress_repo_init(string @path) {
     array @o = associative_array()
     @o['class'] = 'PlayersProgressRepo'
     @o['cache'] = associative_array()
-    @o['io'] = _iof_init(@path)
+    @o['io'] = _iof_init(@path, _util_sdn())
     foreach(@key: @method in import('org.cadabra.msquest.pprogress')) {
         @o[@key] = @method
     }
@@ -43,7 +43,7 @@ execute(closure() {
         if (@cache) {
             return(@cache)
         }
-        @path = @player.'\\'.@quest.'.yml'
+        @path = @player._util_sdn().@quest.'.yml'
         if (!_method(@self['io'], 'has', @path)) {
             return(null)
         }
@@ -63,11 +63,11 @@ execute(closure() {
         if (!_method(@self['io'], 'has', @player_progress['player'])) {
             _method(@self['io'], 'createDir', @player_progress['player'])
         }
-        _method(@self['io'], 'writeYML', @player_progress, @player_progress['player'].'\\'.@player_progress['quest'].'.yml')
+        _method(@self['io'], 'writeYML', @player_progress, @player_progress['player']._util_sdn().@player_progress['quest'].'.yml')
     }
 
     @methods['delete'] = closure(array @self, string @quest, string @player) {
-        string @path = @player.'\\'.@quest.'.yml'
+        string @path = @player._util_sdn().@quest.'.yml'
         boolean @status = true
         if (!_method(@self['io'], 'has', @path)) {
             @status = false
@@ -92,7 +92,7 @@ execute(closure() {
     @methods['deleteQuest'] = closure(array @self, string @quest) {
         boolean @status = false
         foreach(@player in _method(@self['io'], 'list')) {
-            @path = @player.'\\'.@quest.'.yml'
+            @path = @player._util_sdn().@quest.'.yml'
             if (@status || _method(@self['io'], 'has', @path)) {
                 _method(@self['io'], 'delete', @path)
                 @status = true

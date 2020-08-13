@@ -6,7 +6,7 @@ array proc _entity_repo_init(string @path) {
     @self['map_ID_UUID'] = associative_array()
 
     @self['file'] = 'entity_map.yml'
-    @self['io'] = _iof_init(@path)
+    @self['io'] = _iof_init(@path, _util_sdn())
     if (!_method(@self['io'], 'has', @self['file'])) {
         _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
     } else {

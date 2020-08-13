@@ -70,9 +70,9 @@ execute(closure() {
     }
     @path_to_log = _get_data('log')
     @to_file = closure(@msg) {
-        @path_to_log .= '\\'.simple_date('yyyy.MM.dd').'txt'
+        @path_to_log .= _util_sdn().simple_date('yyyy.MM.dd').'txt'
         if (!file_exists(@path_to_log)) {
-            _util_make_file(@path_to_log, '\\', 3)
+            _util_make_file(@path_to_log, _util_sdn(), _util_ign())
         }
         write_file(@path_to_log, "@msg\n", 'APPEND')
     }

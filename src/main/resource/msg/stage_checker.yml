@@ -31,7 +31,7 @@
 #     args: [type]
 
 ---
-name: core\analysis\stage\stage_checker.ms
+name: core.analysis.stage.stage_checker.ms
 msg:
   cast_exception: "CastException: expect type - %s, actually - %s"
   key_not_found_exception: "StageException: not found attribute"

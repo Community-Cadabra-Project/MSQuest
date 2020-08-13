@@ -1,5 +1,5 @@
 proc _before_each() {
-    return(_qprogress_repo_init(get_absolute_path('out\\qprogress')))
+    return(_qprogress_repo_init(get_absolute_path('out'._util_sdn().'qprogress')))
 }
 
 proc _init_temp() {

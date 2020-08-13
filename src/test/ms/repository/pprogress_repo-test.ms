@@ -1,5 +1,5 @@
 proc _before_each() {
-    return(_pprogress_repo_init(get_absolute_path('out\\pprogress')))
+    return(_pprogress_repo_init(get_absolute_path('out'._util_sdn().'pprogress')))
 }
 
 proc _init_progress(string @player) {

@@ -1,6 +1,6 @@
-array proc _iof_init(string @root, string @path_del = '\\') {
+array proc _iof_init(string @root, string @path_del) {
     array @self = associative_array()
-    _util_make_folder(@root, '\\', 3)
+    _util_make_folder(@root, @path_del, _util_ign())
     @self['class'] = 'IOFile'
     @self['root'] = @root
     @self['del'] = @path_del

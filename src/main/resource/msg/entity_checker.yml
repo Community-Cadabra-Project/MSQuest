@@ -39,7 +39,7 @@
 
 
 
-name: core\analysis\entity\entity_checker.ms
+name: core.analysis.entity.entity_checker.ms
 msg:
   size_range_exception: "NPCException: Array size (actually - %s) must be in the range [%s, %s]"
   keys_exception: "NPCException: Unknown key '%s', when only allowed %s"

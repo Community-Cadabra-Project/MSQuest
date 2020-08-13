@@ -54,7 +54,7 @@ bind('entity_damage', array(id: 'msquest:entity_damage-lowest', priority: 'LOWES
         
         _api_model_init(array(
             quest: @user_event['quest'],
-            player: if (array_index_exists(@event, 'player'), @event['player'], null),
+            player: if (array_index_exists(@event, 'damager') && array_contains(all_players(), @event['damager']), @event['damager'], null),
             entity: @event['id'],
             model: @model,
             action: 'entity_damage',

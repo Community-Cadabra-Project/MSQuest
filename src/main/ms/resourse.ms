@@ -1,7 +1,7 @@
 execute(closure() {
     @setting = _get_setting()
     foreach(@path in @setting['paths']['data']) {
-        _util_make_folder(@path, '\\', 3)
+        _util_make_folder(@path, _util_sdn(), _util_ign())
     }
 
     @root = @setting['root']
@@ -12,7 +12,7 @@ execute(closure() {
         }
         @files = list_files(@path)
         foreach(@file in @files) {
-            @full_path = @path.'\\'.@file
+            @full_path = @path._util_sdn().@file
             @key = if (@id, "@id.@file", @file)
             @model[@key] = @full_path
             _init_paths(@key, @full_path, @model)

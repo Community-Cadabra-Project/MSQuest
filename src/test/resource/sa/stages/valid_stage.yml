@@ -4,7 +4,7 @@ global:
 branches:
   main:
     type: cycle
-    data: [one, tow, tree]
+    data: [one, two, tree]
   sub:
     type: linear
     data: [before, after]

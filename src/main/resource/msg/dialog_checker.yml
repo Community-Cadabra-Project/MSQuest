@@ -9,7 +9,7 @@
 #     args: [expect_type, actually_type]
 
 
-name: "core\\analysis\\dialog\\dialog_checker.ms"
+name: "core.analysis.dialog.dialog_checker.ms"
 msg:
   cast_exception: "CastException: expect type - %s, actually - %s"
   key_not_found_exception: "DialogException: not found attribute - %s"

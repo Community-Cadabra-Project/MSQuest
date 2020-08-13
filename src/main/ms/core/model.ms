@@ -30,9 +30,9 @@ proc _model_init(array @data) {
     @model['dialogs']['mapID'] = @dialogs
 
     @repos = associative_array()
-    @repos['quest'] = _qprogress_repo_init(_get_data('.cache').'\\repo\\quest')
-    @repos['player'] = _pprogress_repo_init(_get_data('.cache').'\\repo\\player')
-    @repos['entity'] = _entity_repo_init(_get_data('.cache').'\\repo\\entity')
+    @repos['quest'] = _qprogress_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'quest')
+    @repos['player'] = _pprogress_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'player')
+    @repos['entity'] = _entity_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'entity')
     @model['repo'] = @repos
 
     @entity = associative_array()

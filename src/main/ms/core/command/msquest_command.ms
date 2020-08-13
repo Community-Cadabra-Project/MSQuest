@@ -37,7 +37,7 @@ proc _msquest_load_model(@args) {
         _get_src('core.event.api_register.ms'),
         _get_src('api.api_loader.ms'),
         array_map(@model['data']['scripts'], closure(@v) {return(@v['object'])}),
-        @paths_data['localPackages'].'\\main.ms'
+        @paths_data['localPackages']._util_sdn().'main.ms'
     )
 
     include('create_npc.ms')
