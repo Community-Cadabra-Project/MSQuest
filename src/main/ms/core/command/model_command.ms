@@ -7,7 +7,7 @@ proc _bind_model(@args, @model) {
 }
 
 proc _npc_edit(@args, @model) {
-    @modes = array('rm', 'bind', 'unbind', 'create', 'attchange')
+    @modes = array('rm', 'bind', 'unbind', 'create', 'attchange', 'move')
     if (array_size(@args) == 0) {
         _error("No arguments for npc, @modes")
     }
@@ -32,6 +32,59 @@ proc _npc_edit(@args, @model) {
         case 'attchange':
             _npc_edit_attchange(@sub_args, @model)
             break();
+        case 'move':
+            _npc_edit_move(@sub_args, @model)
+            break();
+    }
+}
+
+proc _npc_edit_move(@args, @model) {
+
+    number proc _to_coord(string @arg, string @coord) {
+        if (length(@arg) == 1) {
+            return(ploc()[@coord])
+        }
+        if (length(@arg) < 3) {
+            throw(FormatException, 'Invalid coordinate format: '.@coord)
+        }
+        @op = @arg[1]
+        @number = double(@arg[2..])
+        switch(@op) {
+            case '-':
+                return(ploc()[@coord] - @number)
+            case '+':
+                return(ploc()[@coord] + @number)
+            default:
+                throw(FormatException, "Unknown operand @op at @coord")
+        }
+    }
+    string @id = @args[0]
+    number @x
+    number @y
+    number @z
+    try {
+        @x = if (@args[1][0] != '~', double(@args[1]), _to_coord(@args[1], 'x'))
+        @y = if (@args[2][0] != '~', double(@args[2]), _to_coord(@args[2], 'y'))
+        @z = if (@args[3][0] != '~', double(@args[3]), _to_coord(@args[3], 'z'))
+    } catch(Exception @e) {
+        _error(@e['message'])
+    }
+    if (array_size(@args) != 4) {
+        _error("Invalid number of arguments for attchange, must be x, y, z")
+    }
+    @entity_repo = @model['repo']['entity']
+    if (!(@uuid = _method(@entity_repo, 'getUUID', @id))) {
+        _error('This npc doesn\'t exist')
+    } else {
+        if (!is_entity_living(@uuid)) {
+            _error('This npc is dead')
+        } else {
+            @location = entity_loc(@uuid)
+            @location['x'] = @x
+            @location['y'] = @y
+            @location['z'] = @z
+            set_entity_loc(@uuid, @location)
+        }
     }
 }
 
@@ -210,7 +263,7 @@ execute(closure() {
     		@completions = array('npc', 'stage', 'bind');
     	} else if(array_size(@args) == 2) {
             if (@args[0] == 'npc') {
-                @completions = array('rm', 'bind', 'unbind', 'create', 'attchange');
+                @completions = array('rm', 'bind', 'unbind', 'create', 'attchange', 'move');
             } else if (@args[0] == 'stage') {
                 @completions = array('reset');
             } else if (@args[0] == 'bind') {
@@ -218,7 +271,7 @@ execute(closure() {
             }
     	} else if(array_size(@args) == 3) {
             if (@args[0] == 'npc') {
-                if (array_contains(array('unbind', 'rm', 'bind', 'create', 'attchange'), @args[1])) {
+                if (array_contains(array('unbind', 'rm', 'bind', 'create', 'attchange', 'move'), @args[1])) {
                     @completions = _method(@model['repo']['entity'], 'getAllID');
                 }
             } else if (@args[0] == 'stage') {
@@ -232,6 +285,8 @@ execute(closure() {
                 if (@args[1] == 'rm') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
                     array_remove_values(@completions, @args[2..])
+                } else if (@args[1] == 'move') {
+                    @completions = array('~ ~ ~')
                 }
             } else if (@args[0] == 'stage') {
                 if (@args[1] == 'reset') {
@@ -243,7 +298,25 @@ execute(closure() {
                     }
                 }
             }
-        } else if (array_size(@args) > 5) {
+        } else if (array_size(@args) == 5) {
+            if (@args[0] == 'npc') {
+                if (@args[1] == 'rm') {
+                    @completions = _method(@model['repo']['entity'], 'getAllID')
+                    array_remove_values(@completions, @args[2..])
+                } else if (@args[1] == 'move') {
+                    @completions = array('~ ~')
+                }
+            }
+        } else if (array_size(@args) == 6) {
+            if (@args[0] == 'npc') {
+                if (@args[1] == 'rm') {
+                    @completions = _method(@model['repo']['entity'], 'getAllID')
+                    array_remove_values(@completions, @args[2..])
+                } else if (@args[1] == 'move') {
+                    @completions = array('~')
+                }
+            }
+        } else {
             if (@args[0] == 'npc') {
                 if (@args[1] == 'rm') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
