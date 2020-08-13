@@ -7,7 +7,7 @@ proc _bind_model(@args, @model) {
 }
 
 proc _npc_edit(@args, @model) {
-    @modes = array('rm', 'bind', 'unbind', 'create', 'attchange', 'move')
+    @modes = array('rm', 'bind', 'unbind', 'create', 'attchange', 'move', 'setbind', 'set')
     if (array_size(@args) == 0) {
         _error("No arguments for npc, @modes")
     }
@@ -35,6 +35,70 @@ proc _npc_edit(@args, @model) {
         case 'move':
             _npc_edit_move(@sub_args, @model)
             break();
+        case 'setbind':
+            _npc_edit_setbind(@sub_args, @model)
+            break();
+        case 'set':
+            _npc_edit_set(@sub_args, @model)
+            break();
+    }
+}
+
+proc _npc_edit_setbind(@args, @model) {
+    if (array_size(@args) > 2) {
+        _error('To many arguments, must be only id and [uuid]')
+    }
+    if (array_size(@args) == 0) {
+        _error('No arguments, must be only id and [uuid]')
+    }
+    @id = @args[0]
+    string @uuid
+    if (array_size(@args) == 2) {
+        @uuid = @args[1]
+    } else {
+        @uuids = ray_trace()['entities']
+        if (!@uuids) {
+            _error('No entity found')
+        }
+        @uuid = @uuids[0]['uuid']
+    }
+    _method(@model, 'unbindNPC', @id)
+    if (_method(@model, 'bindNPC', @id, @uuid)) {
+        _log('INFO', "Successful setbind NPC @id")
+    } else {
+        _log('INFO', "Fail setbind NPC @id")
+    }
+}
+
+proc _npc_edit_set(@args, @model) {
+    if (array_size(@args) == 0) {
+        _error('No arguments, must be only id and [json]')
+    }
+    @id = @args[0]
+    @data = array()
+    if (array_size(@args) > 1) {
+        @json = array_implode(@args[1..])
+        try {
+            @data = json_decode(@json)
+        } catch(FormatException @e) {
+            _error(@e['message'])
+        } catch (CastException @e) {
+            _error(@e['message'])
+        }
+    }
+    @creater = @model['entity']['creater']
+    if (array_contains(array_keys(@model['entities']), @id)) {
+        @entity = @model['entities'][@id]
+        @uuid = _method(@model, 'setNPC', @entity)
+        _log('INFO', "Successful set NPC @id - @uuid")
+        try {
+            _method(@creater, 'change', @uuid, @data)
+        } catch(Exception @e) {
+            _method(@model, 'removeNPC', @id)
+            _error('Delete NPC cause: '.@e['message'])
+        }
+    } else {
+        _error("Not found entity with id: @id")
     }
 }
 
@@ -70,7 +134,7 @@ proc _npc_edit_move(@args, @model) {
         _error(@e['message'])
     }
     if (array_size(@args) != 4) {
-        _error("Invalid number of arguments for attchange, must be x, y, z")
+        _error("Invalid number of arguments, must be x, y, z")
     }
     @entity_repo = @model['repo']['entity']
     if (!(@uuid = _method(@entity_repo, 'getUUID', @id))) {
@@ -90,7 +154,7 @@ proc _npc_edit_move(@args, @model) {
 
 proc _npc_edit_attchange(@args, @model) {
     if (array_size(@args) < 2) {
-        _error("Invalid number of arguments for attchange, must be id and json")
+        _error("Invalid number of arguments, must be id and json")
     }
     @id = @args[0]
     @json = array_implode(@args[1..])
@@ -112,8 +176,8 @@ proc _npc_edit_attchange(@args, @model) {
         } else {
             try {
                 _method(@creater, 'change', @uuid, @data)
+                _log('INFO', "The attributes for @id have been changed")
             } catch(Exception @e) {
-                console(@e)
                 _error(@e['message'])
             }
         }
@@ -123,7 +187,7 @@ proc _npc_edit_attchange(@args, @model) {
 proc _npc_edit_rm(@args, @model) {
     if (array_size(@args) == 0) {
         @ids = _method(@model['repo']['entity'], 'getAllID')
-        _error("No arguments for rm, possible @ids")
+        _error("No arguments, possible @ids")
     }
     foreach(@arg in @args) {
         if (_method(@model, 'removeNPC', @arg)) {
@@ -135,7 +199,7 @@ proc _npc_edit_rm(@args, @model) {
 proc _npc_edit_unbind(@args, @model) {
     if (array_size(@args) == 0) {
         @ids = _method(@model['repo']['entity'], 'getAllID')
-        _error("No arguments for unbind, possible @ids")
+        _error("No arguments, possible @ids")
     }
     foreach(@arg in @args) {
         if (_method(@model, 'unbindNPC', @arg)) {
@@ -146,13 +210,22 @@ proc _npc_edit_unbind(@args, @model) {
 
 proc _npc_edit_bind(@args, @model) {
     if (array_size(@args) > 2) {
-        _error('To many arguments, must be only \'id\' and \'uuid\'')
+        _error('To many arguments, must be only id and [uuid]')
     }
     if (array_size(@args) == 0) {
-        _error("No arguments for bind, must be only 'id' and 'uuid'")
+        _error('No arguments, must be only id and [uuid]')
     }
     @id = @args[0]
-    @uuid = @args[1]
+    string @uuid
+    if (array_size(@args) == 2) {
+        @uuid = @args[1]
+    } else {
+        @uuids = ray_trace()['entities']
+        if (!@uuids) {
+            _error('No entity found')
+        }
+        @uuid = @uuids[0]['uuid']
+    }
     if (_method(@model, 'bindNPC', @id, @uuid)) {
         _log('INFO', "Successful bind NPC @id")
     } else {
@@ -161,17 +234,32 @@ proc _npc_edit_bind(@args, @model) {
 }
 
 proc _npc_edit_create(@args, @model) {
-    if (array_size(@args) > 1) {
-        _error('To many arguments, must be only \'id\'')
-    }
     if (array_size(@args) == 0) {
-        _error("No arguments for bind, must be only 'id'")
+        _error('No arguments, must be only id and [json]')
     }
     @id = @args[0]
+    @data = array()
+    if (array_size(@args) > 1) {
+        @json = array_implode(@args[1..])
+        try {
+            @data = json_decode(@json)
+        } catch(FormatException @e) {
+            _error(@e['message'])
+        } catch (CastException @e) {
+            _error(@e['message'])
+        }
+    }
+    @creater = @model['entity']['creater']
     if (array_contains(array_keys(@model['entities']), @id)) {
         @entity = @model['entities'][@id]
         if (@uuid = _method(@model, 'addNPCIfAbsent', @entity)) {
-            _log("INFO', 'Successful create NPC @id - @uuid")
+            _log('INFO', "Successful create NPC @id - @uuid")
+            try {
+                _method(@creater, 'change', @uuid, @data)
+            } catch(Exception @e) {
+                _method(@model, 'removeNPC', @id)
+                _error('Delete NPC cause: '.@e['message'])
+            }
         } else {
             _error("This id: @id is already taken")
         }
@@ -182,7 +270,7 @@ proc _npc_edit_create(@args, @model) {
 
 proc _stage_edit(@args, @model) {
     if (array_size(@args) == 0) {
-        _error("No arguments for stage, possible 'reset'")
+        _error("No arguments, possible 'reset'")
     }
     @mode = @args[0]
     @sub_args = if (array_size(@args) == 1, array(), @args[1..])
@@ -202,7 +290,7 @@ proc _stage_edit_reset(@args, @model) {
         _error('To many arguments, must be only \'player\' and \'quest\'')
     }
     if (array_size(@args) == 0) {
-        _error("No arguments for bind, must be only 'player' and 'quest'")
+        _error("No arguments, must be only 'player' and 'quest'")
     }
     @player = @args[0]
     @quest = @args[1]
@@ -263,7 +351,7 @@ execute(closure() {
     		@completions = array('npc', 'stage', 'bind');
     	} else if(array_size(@args) == 2) {
             if (@args[0] == 'npc') {
-                @completions = array('rm', 'bind', 'unbind', 'create', 'attchange', 'move');
+                @completions = array('setbind', 'bind', 'unbind', 'set', 'create', 'remove', 'move', 'attchange');
             } else if (@args[0] == 'stage') {
                 @completions = array('reset');
             } else if (@args[0] == 'bind') {
@@ -271,7 +359,7 @@ execute(closure() {
             }
     	} else if(array_size(@args) == 3) {
             if (@args[0] == 'npc') {
-                if (array_contains(array('unbind', 'rm', 'bind', 'create', 'attchange', 'move'), @args[1])) {
+                if (array_contains(array('setbind', 'bind', 'unbind', 'set', 'create', 'remove', 'move', 'attchange'), @args[1])) {
                     @completions = _method(@model['repo']['entity'], 'getAllID');
                 }
             } else if (@args[0] == 'stage') {
@@ -284,9 +372,13 @@ execute(closure() {
             if (@args[0] == 'npc') {
                 if (@args[1] == 'rm') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
-                    array_remove_values(@completions, @args[2..])
+                    foreach(@id in @args[2..]) {
+                        array_remove_values(@completions, @id)
+                    }
                 } else if (@args[1] == 'move') {
                     @completions = array('~ ~ ~')
+                } else if (array_contains(array('bind', 'setbind'), @args[1])) {
+                    @completions = all_entities()
                 }
             } else if (@args[0] == 'stage') {
                 if (@args[1] == 'reset') {
@@ -302,7 +394,9 @@ execute(closure() {
             if (@args[0] == 'npc') {
                 if (@args[1] == 'rm') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
-                    array_remove_values(@completions, @args[2..])
+                    foreach(@id in @args[2..]) {
+                        array_remove_values(@completions, @id)
+                    }
                 } else if (@args[1] == 'move') {
                     @completions = array('~ ~')
                 }
@@ -311,7 +405,9 @@ execute(closure() {
             if (@args[0] == 'npc') {
                 if (@args[1] == 'rm') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
-                    array_remove_values(@completions, @args[2..])
+                    foreach(@id in @args[2..]) {
+                        array_remove_values(@completions, @id)
+                    }
                 } else if (@args[1] == 'move') {
                     @completions = array('~')
                 }
@@ -320,7 +416,9 @@ execute(closure() {
             if (@args[0] == 'npc') {
                 if (@args[1] == 'rm') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
-                    array_remove_values(@completions, @args[2..])
+                    foreach(@id in @args[2..]) {
+                        array_remove_values(@completions, @id)
+                    }
                 }
             }
         }

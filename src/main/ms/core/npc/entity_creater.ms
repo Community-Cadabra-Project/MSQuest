@@ -2,6 +2,10 @@ string proc _entity_get_id(array @npc) {
     return(@npc['main']['id'])
 }
 
+boolean proc _entity_on_start(array @npc) {
+    return(@npc['main']['on_start'])
+}
+
 array proc _entity_creater_init() {
     array @self = associative_array()
     @self['class'] = 'EntityCreater'

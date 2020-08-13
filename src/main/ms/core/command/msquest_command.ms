@@ -79,6 +79,7 @@ execute(closure() {
                     break();
                 case 'load':
                     _msquest_load_model(@args)
+                    run('/quest bind')
                     break();
             }
         }

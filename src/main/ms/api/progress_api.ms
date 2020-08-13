@@ -7,15 +7,17 @@ int proc _time_stage(string @branch) {
     return(time() - _method(@progress, 'getTime', @branch))
 }
 
-int proc _last_time() {
+int proc _last_time(boolean @reset = false) {
     @api_model = import('org.cadabra.msquest.api')
     @progress = @api_model['current']['progress']
     if (!@progress) {
         throw(NotFoundException, 'Progress not found')
     }
-    @last_time = _method(@progress, 'getLastTime')
-    @model = @api_model['main_model']
-    _method(@model, 'savePProgress', @progress)
+    @last_time = _method(@progress, 'getLastTime', @reset)
+    if (@reset) {
+        @model = @api_model['main_model']
+        _method(@model, 'savePProgress', @progress)
+    }
     return(time() - @last_time)
 }
 

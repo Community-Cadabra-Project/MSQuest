@@ -99,9 +99,11 @@ execute(closure() {
         return(@self['player'])
     }
 
-    @methods['getLastTime'] = closure(array @self) {
+    @methods['getLastTime'] = closure(array @self, boolean @reset) {
         @last_time = @self['last_time']
-        @self['last_time'] = time()
+        if (@reset) {
+            @self['last_time'] = time()
+        }
         return(@last_time)
     }
 

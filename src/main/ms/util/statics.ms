@@ -34,6 +34,11 @@ void proc _qerror(string @key, array @args = array(), int @stack = 1) {
 }
 
 void proc _error(string @msg) {
+    _log('ERROR', @msg)
+    die()
+}
+
+void proc _fatal(string @msg) {
     _log('FATAL', @msg)
     die()
 }
