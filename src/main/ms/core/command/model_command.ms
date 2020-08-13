@@ -7,12 +7,12 @@ proc _bind_model(@args, @model) {
 }
 
 proc _npc_edit(@args, @model) {
+    @modes = array('rm', 'bind', 'unbind', 'create', 'attchange')
     if (array_size(@args) == 0) {
-        _error("No arguments for npc, possible 'rm', 'bind', 'unbind'")
+        _error("No arguments for npc, @modes")
     }
     @mode = @args[0]
     @sub_args = if (array_size(@args) == 1, array(), @args[1..])
-    @modes = array('rm', 'bind', 'unbind', 'create')
     if (!array_contains(@modes, @mode)) {
         _error("Unknown argument: @mode, possible @modes")
     }
@@ -29,6 +29,41 @@ proc _npc_edit(@args, @model) {
         case 'create':
             _npc_edit_create(@sub_args, @model)
             break();
+        case 'attchange':
+            _npc_edit_attchange(@sub_args, @model)
+            break();
+    }
+}
+
+proc _npc_edit_attchange(@args, @model) {
+    if (array_size(@args) < 2) {
+        _error("Invalid number of arguments for attchange, must be id and json")
+    }
+    @id = @args[0]
+    @json = array_implode(@args[1..])
+    array @data = array()
+    try {
+        @data = json_decode(@json)
+    } catch(FormatException @e) {
+        _error(@e['message'])
+    } catch (CastException @e) {
+        _error(@e['message'])
+    }
+    @entity_repo = @model['repo']['entity']
+    @creater = @model['entity']['creater']
+    if (!(@uuid = _method(@entity_repo, 'getUUID', @id))) {
+        _error('This npc doesn\'t exist')
+    } else {
+        if (!is_entity_living(@uuid)) {
+            _error('This npc is dead')
+        } else {
+            try {
+                _method(@creater, 'change', @uuid, @data)
+            } catch(Exception @e) {
+                console(@e)
+                _error(@e['message'])
+            }
+        }
     }
 }
 
@@ -175,7 +210,7 @@ execute(closure() {
     		@completions = array('npc', 'stage', 'bind');
     	} else if(array_size(@args) == 2) {
             if (@args[0] == 'npc') {
-                @completions = array('rm', 'bind', 'unbind', 'create');
+                @completions = array('rm', 'bind', 'unbind', 'create', 'attchange');
             } else if (@args[0] == 'stage') {
                 @completions = array('reset');
             } else if (@args[0] == 'bind') {
@@ -183,7 +218,7 @@ execute(closure() {
             }
     	} else if(array_size(@args) == 3) {
             if (@args[0] == 'npc') {
-                if (array_contains(array('npc', 'stage', 'bind'), @args[0])) {
+                if (array_contains(array('unbind', 'rm', 'bind', 'create', 'attchange'), @args[1])) {
                     @completions = _method(@model['repo']['entity'], 'getAllID');
                 }
             } else if (@args[0] == 'stage') {

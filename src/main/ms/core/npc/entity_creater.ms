@@ -17,20 +17,55 @@ execute(closure() {
     @entity_commander = _util_commander_init_self()
     include('entity_procs.ms')
     foreach(@key: @proc in @procs) {
-        _util_commander_register(@entity_commander, @key, @proc)
+        _util_commander_register(@entity_commander, "entity.@key", @proc)
     }
 
     @mob_commander = _util_commander_init_self()
     include('mob_procs.ms')
     foreach(@key: @proc in @procs) {
-        _util_commander_register(@mob_commander, @key, @proc)
+        _util_commander_register(@mob_commander, "mob.@key", @proc)
     }
 
-    @entity_spec = closure(@uuid, array @data) {
-        set_entity_spec(@uuid, @data)
+    @main_commander = _util_commander_init_self()
+    include('main_procs.ms')
+    foreach(@key: @proc in @procs) {
+        _util_commander_register(@main_commander, "main.@key", @proc)
     }
 
-    @methods['create'] = closure(@self, array @data) {
+    @methods['change'] = closure(array @self, string @id, array @data) {
+        string @path
+        try {
+            if (array_index_exists(@data, 'main')) {
+                foreach(@key: @d in @data['main']) {
+                    @path = "main.@key"
+                    _util_commander_execute(@main_commander, @path, @id, @d)
+                }
+            }
+            if (array_index_exists(@data, 'entity')) {
+                foreach(@key: @d in @data['entity']) {
+                    @path = "entity.@key"
+                    _util_commander_execute(@entity_commander, @path, @id, @d)
+                }
+            }
+            if (array_index_exists(@data, 'mob')) {
+                foreach(@key: @d in @data['mob']) {
+                    @path = "mob.@key"
+                    _util_commander_execute(@mob_commander, @path, @id, @d)
+                }
+            }
+            if (array_index_exists(@data, 'spec')) {
+                set_entity_spec(@id, @data['spec'])
+            }
+            @unknown_keys = _util_array_minus(array_keys(@data), array('mob', 'entity', 'main', 'spec'))
+            if (@unknown_keys) {
+                throw(FormatException, "Unknown keys: @unknown_keys")
+            }
+        } catch (CastException @e) {
+            throw(CastException, @path.': '.@e['message'], @e)
+        }
+    }
+
+    @methods['create'] = closure(array @self, array @data) {
         @main = @data['main']
         @location = associative_array(
             pitch: @main['pitch'],
@@ -45,18 +80,29 @@ execute(closure() {
             1,
             @location,
             closure(@id){
-                if (array_index_exists(@data, 'entity')) {
-                    foreach(@key: @d in @data['entity']) {
-                        _util_commander_execute(@entity_commander, @key, @id, @d)
+                string @path
+                try {
+                    if (array_index_exists(@data, 'entity')) {
+                        foreach(@key: @d in @data['entity']) {
+                            @path = "entity.@key"
+                            _util_commander_execute(@entity_commander, @path, @id, @d)
+                        }
                     }
-                }
-                if (array_index_exists(@data, 'mob')) {
-                    foreach(@key: @d in @data['mob']) {
-                        _util_commander_execute(@mob_commander, @key, @id, @d)
+                    if (array_index_exists(@data, 'mob')) {
+                        foreach(@key: @d in @data['mob']) {
+                            @path = "mob.@key"
+                            _util_commander_execute(@mob_commander, @path, @id, @d)
+                        }
                     }
-                }
-                if (array_index_exists(@data, 'spec')) {
-                    set_entity_spec(@id, @data['spec'])
+                    if (array_index_exists(@data, 'spec')) {
+                        set_entity_spec(@id, @data['spec'])
+                    }
+                    @unknown_keys = _util_array_minus(array_keys(@data), array('mob', 'entity', 'main', 'spec'))
+                    if (@unknown_keys) {
+                        throw(FormatException, "Unknown keys: @unknown_keys")
+                    }
+                } catch (CastException @e) {
+                    throw(CastException, @path.': '.@e['message'], @e)
                 }
             }
         )[0]
