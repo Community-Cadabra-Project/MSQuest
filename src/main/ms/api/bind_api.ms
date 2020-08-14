@@ -8,12 +8,12 @@ void proc _cancel() {
     @api_model['bind']['cancel'] = true
 }
 
-boolean proc _is_consume() {
+boolean proc _is_consumed() {
     @api_model = import('org.cadabra.msquest.api')
     return(@api_model['bind']['consume'])
 }
 
-boolean proc _is_cancel() {
+boolean proc _is_cancelled() {
     @api_model = import('org.cadabra.msquest.api')
     return(@api_model['bind']['cancel'])
 }

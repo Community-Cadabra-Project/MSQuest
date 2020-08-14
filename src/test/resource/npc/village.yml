@@ -1,6 +1,7 @@
 main:
   type: villager
   id: SizuyNoise
+  group: ['2']
   location:
     - 10
     - 10

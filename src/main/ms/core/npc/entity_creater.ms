@@ -2,8 +2,8 @@ string proc _entity_get_id(array @npc) {
     return(@npc['main']['id'])
 }
 
-boolean proc _entity_on_start(array @npc) {
-    return(@npc['main']['on_start'])
+array proc _entity_get_group(array @npc) {
+    return(if(array_index_exists(@npc['main'], 'group'), @npc['main']['group'], array()))
 }
 
 array proc _entity_creater_init() {

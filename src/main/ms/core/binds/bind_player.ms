@@ -1,12 +1,12 @@
-unbind('msquest:player_death-lowest')
-bind('player_death', array(id: 'msquest:player_death-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_death-lowest')
+bind('player_death', array(id: 'msquest:quest:player_death-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: ploc(@event['player'])['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_death')
+            id: _quest_event_get_id('QUEST', 'player_death')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -30,15 +30,15 @@ bind('player_death', array(id: 'msquest:player_death-lowest', priority: 'LOWEST'
     }
 }
 
-unbind('msquest:player_enter_bed-lowest')
-bind('player_enter_bed', array(id: 'msquest:player_enter_bed-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_enter_bed-lowest')
+bind('player_enter_bed', array(id: 'msquest:quest:player_enter_bed-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_enter_bed')
+            id: _quest_event_get_id('QUEST', 'player_enter_bed')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -62,15 +62,15 @@ bind('player_enter_bed', array(id: 'msquest:player_enter_bed-lowest', priority: 
     }
 }
 
-unbind('msquest:player_join-lowest')
-bind('player_join', array(id: 'msquest:player_join-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_join-lowest')
+bind('player_join', array(id: 'msquest:quest:player_join-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_join')
+            id: _quest_event_get_id('QUEST', 'player_join')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -94,15 +94,15 @@ bind('player_join', array(id: 'msquest:player_join-lowest', priority: 'LOWEST'),
     }
 }
 
-unbind('msquest:player_kick-lowest')
-bind('player_kick', array(id: 'msquest:player_kick-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_kick-lowest')
+bind('player_kick', array(id: 'msquest:quest:player_kick-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: ploc(@event['player'])['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_kick')
+            id: _quest_event_get_id('QUEST', 'player_kick')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -126,15 +126,15 @@ bind('player_kick', array(id: 'msquest:player_kick-lowest', priority: 'LOWEST'),
     }
 }
 
-unbind('msquest:player_leave_bed-lowest')
-bind('player_leave_bed', array(id: 'msquest:player_leave_bed-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_leave_bed-lowest')
+bind('player_leave_bed', array(id: 'msquest:quest:player_leave_bed-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_leave_bed')
+            id: _quest_event_get_id('QUEST', 'player_leave_bed')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -158,15 +158,15 @@ bind('player_leave_bed', array(id: 'msquest:player_leave_bed-lowest', priority: 
     }
 }
 
-unbind('msquest:player_portal_travel-lowest')
-bind('player_portal_travel', array(id: 'msquest:player_portal_travel-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_portal_travel-lowest')
+bind('player_portal_travel', array(id: 'msquest:quest:player_portal_travel-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['from']['world'],
             biome: get_biome(@event['from']),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_portal_travel')
+            id: _quest_event_get_id('QUEST', 'player_portal_travel')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -190,15 +190,15 @@ bind('player_portal_travel', array(id: 'msquest:player_portal_travel-lowest', pr
     }
 }
 
-unbind('msquest:player_quit-lowest')
-bind('player_quit', array(id: 'msquest:player_quit-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_quit-lowest')
+bind('player_quit', array(id: 'msquest:quest:player_quit-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: ploc(@event['player'])['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_quit')
+            id: _quest_event_get_id('QUEST', 'player_quit')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -222,15 +222,15 @@ bind('player_quit', array(id: 'msquest:player_quit-lowest', priority: 'LOWEST'),
     }
 }
 
-unbind('msquest:player_spawn-lowest')
-bind('player_spawn', array(id: 'msquest:player_spawn-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_spawn-lowest')
+bind('player_spawn', array(id: 'msquest:quest:player_spawn-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_spawn')
+            id: _quest_event_get_id('QUEST', 'player_spawn')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -254,15 +254,15 @@ bind('player_spawn', array(id: 'msquest:player_spawn-lowest', priority: 'LOWEST'
     }
 }
 
-unbind('msquest:player_teleport-lowest')
-bind('player_teleport', array(id: 'msquest:player_teleport-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:player_teleport-lowest')
+bind('player_teleport', array(id: 'msquest:quest:player_teleport-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['from']['world'],
             biome: get_biome(@event['from']),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'player_teleport')
+            id: _quest_event_get_id('QUEST', 'player_teleport')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -286,15 +286,15 @@ bind('player_teleport', array(id: 'msquest:player_teleport-lowest', priority: 'L
     }
 }
 
-unbind('msquest:world_changed-lowest')
-bind('world_changed', array(id: 'msquest:world_changed-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:world_changed-lowest')
+bind('world_changed', array(id: 'msquest:quest:world_changed-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['from']['world'],
             biome: get_biome(@event['from']),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'world_changed')
+            id: _quest_event_get_id('QUEST', 'world_changed')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -318,15 +318,15 @@ bind('world_changed', array(id: 'msquest:world_changed-lowest', priority: 'LOWES
     }
 }
 
-unbind('msquest:item_despawn-lowest')
-bind('item_despawn', array(id: 'msquest:item_despawn-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:quest:item_despawn-lowest')
+bind('item_despawn', array(id: 'msquest:quest:item_despawn-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     @game_event = _init_game_event(
         associative_array(
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _event_to_id('__static_event__', 'item_despawn')
+            id: _quest_event_get_id('QUEST', 'item_despawn')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)

@@ -89,7 +89,7 @@ execute(closure() {
         @player_progress['time'] = @times
         @player_progress['player'] = _method(@self, 'getPlayer')
         @player_progress['quest'] = _method(@self, 'getQuest')
-        @player_progress['last_time'] = _method(@self, 'getLastTime')
+        @player_progress['last_time'] = _method(@self, 'getLastTime', false)
         return(@player_progress)
     }
     @methods['getQuest'] = closure(array @self) {

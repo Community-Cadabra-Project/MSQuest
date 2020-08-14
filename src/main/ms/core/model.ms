@@ -11,16 +11,16 @@ proc _model_init(array @data) {
     @model['template_progress'] = @temp_rpogress
 
     @templates_entity = associative_array()
-    foreach(@temp in array_filter(@data['entities'], closure(@k, @v) {return(!@v['is_npc'])})) {
-        @templates_entity[@temp['id']] = @temp['object']
+    foreach(@temp in @data['entities']) {
+        @templates_entity[_entity_get_id(@temp['object'])] = @temp['object']
     }
-    @model['template_entity'] = @templates_entity
+    @model['entities'] = @templates_entity
 
     @entities = associative_array()
     foreach(@entity in array_filter(@data['entities'], closure(@k, @v) {return(@v['is_npc'])})) {
         @entities[_entity_get_id(@entity['object'])] = @entity['object']
     }
-    @model['entities'] = @entities
+    @model['npc'] = @entities
 
     @dialogs = associative_array()
     foreach(@dialog in array_map(@data['dialogs'], closure(@v) {return(@v['object'])})) {
@@ -33,6 +33,7 @@ proc _model_init(array @data) {
     @repos['quest'] = _qprogress_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'quest')
     @repos['player'] = _pprogress_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'player')
     @repos['entity'] = _entity_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'entity')
+    @repos['group'] = _group_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'group')
     @model['repo'] = @repos
 
     @entity = associative_array()
@@ -56,8 +57,12 @@ execute(closure() {
     @methods['addNPCIfAbsent'] = closure(array @self, array @npc) {
         @creater = @self['entity']['creater']
         @entity_repo = @self['repo']['entity']
+        @group_repo = @self['repo']['group']
         if (!_method(@entity_repo, 'hasID', _entity_get_id(@npc))) {
             @uuid = _method(@creater, 'create', @npc)
+            if (@groups = _entity_get_group(@npc)) {
+                _method(@group_repo, 'save', array(@uuid), @groups)
+            }
             _method(@entity_repo, 'save', @uuid, _entity_get_id(@npc))
             return(@uuid)
         }
@@ -67,10 +72,14 @@ execute(closure() {
     @methods['setNPC'] = closure(array @self, array @npc) {
         @creater = @self['entity']['creater']
         @entity_repo = @self['repo']['entity']
+        @group_repo = @self['repo']['group']
         @id = _entity_get_id(@npc)
         @uuid = _method(@entity_repo, 'getUUID', @id)
         if (!@uuid) {
             @uuid = _method(@creater, 'create', @npc)
+            if (@groups = _entity_get_group(@npc)) {
+                _method(@group_repo, 'save', array(@uuid), @groups)
+            }
             _method(@entity_repo, 'save', @uuid, @id)
             return(@uuid)
         } else {
@@ -78,8 +87,12 @@ execute(closure() {
             if (is_entity_living(@uuid)) {
                 entity_remove(@uuid)
             }
-            _method(@entity_repo, 'deleteUUID', @uuid)
+            _method(@entity_repo, 'deleteUUID', @uuid, false)
+            _method(@group_repo, 'deleteUUID', @uuid)
             @uuid = _method(@creater, 'create', @npc)
+            if (@groups = _entity_get_group(@npc)) {
+                _method(@group_repo, 'save', array(@uuid), @groups)
+            }
             _method(@entity_repo, 'save', @uuid, @id)
             return(@uuid)
         }
@@ -87,34 +100,31 @@ execute(closure() {
 
     @methods['removeNPC'] = closure(array @self, string @id) {
         @entity_repo = @self['repo']['entity']
+        @group_repo = @self['repo']['group']
         @uuid = _method(@entity_repo, 'getUUID', @id)
         if (@uuid) {
             if (is_entity_living(@uuid)) {
                 entity_remove(@uuid)
             }
             _method(@entity_repo, 'deleteUUID', @uuid)
+            _method(@group_repo, 'deleteUUID', @uuid)
         }
         return(@uuid)
     }
 
-    @methods['unbindNPC'] = closure(array @self, string @id) {
+    @methods['removeGroup'] = closure(array @self, string @group) {
         @entity_repo = @self['repo']['entity']
-        @uuid = _method(@entity_repo, 'getUUID', @id)
-        if (@uuid) {
-            _method(@entity_repo, 'deleteUUID', @uuid)
-            return(true)
+        @group_repo = @self['repo']['group']
+        @uuids = _method(@group_repo, 'getUUIDs', @group)
+        foreach(@uuid in @uuids) {
+            if (is_entity_living(@uuid)) {
+                entity_remove(@uuid)
+            }
+            _method(@entity_repo, 'deleteUUID', @uuid, false)
         }
-        return(false)
-    }
-
-   @methods['bindNPC'] = closure(array @self, string @id, string @uuid) {
-        @entity_repo = @self['repo']['entity']
-        if (_method(@entity_repo, 'hasID', @id) || _method(@entity_repo, 'hasUUID', @uuid)) {
-            return(false)
-        } else {
-            _method(@entity_repo, 'save', @uuid, @id)
-            return(true)
-        }
+        _method(@entity_repo, 'write')
+        _method(@group_repo, 'deleteGroup', @group)
+        return(@uuids)
     }
 
     @methods['getPProgress'] = closure(array @self, string @quest, string @player) {

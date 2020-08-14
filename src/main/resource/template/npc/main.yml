@@ -1,5 +1,9 @@
 id:
   check: string
+  exist: true
+group:
+  check: list_string
+  exist: false
 type:
   check: list
   data:

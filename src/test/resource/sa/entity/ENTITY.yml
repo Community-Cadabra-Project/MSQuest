@@ -1,4 +1,5 @@
 main:
+  id: TEMP_1
   type: villager
 
 entity:

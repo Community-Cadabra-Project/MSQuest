@@ -1,5 +1,5 @@
-unbind('msquest:player_interact_entity-lowest')
-bind('player_interact_entity', array(id: 'msquest:player_interact_entity-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:player_interact_entity-lowest')
+bind('player_interact_entity', array(id: 'msquest:entity:player_interact_entity-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -9,7 +9,7 @@ bind('player_interact_entity', array(id: 'msquest:player_interact_entity-lowest'
             world: entity_loc(@event['id'])['world'],
             biome: get_biome(entity_loc(@event['id'])),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'player_interact_entity')
+            id: _entity_event_get_id('ENTITY', @id, 'player_interact_entity')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -33,8 +33,8 @@ bind('player_interact_entity', array(id: 'msquest:player_interact_entity-lowest'
     }
 }
 
-unbind('msquest:entity_damage-lowest')
-bind('entity_damage', array(id: 'msquest:entity_damage-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:entity_damage-lowest')
+bind('entity_damage', array(id: 'msquest:entity:entity_damage-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -44,7 +44,7 @@ bind('entity_damage', array(id: 'msquest:entity_damage-lowest', priority: 'LOWES
             world: @event['world'],
             biome: get_biome(entity_loc(@event['id'])),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'entity_damage')
+            id: _entity_event_get_id('ENTITY', @id, 'entity_damage')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -68,8 +68,8 @@ bind('entity_damage', array(id: 'msquest:entity_damage-lowest', priority: 'LOWES
     }
 }
 
-unbind('msquest:entity_damage_player-lowest')
-bind('entity_damage_player', array(id: 'msquest:entity_damage_player-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:entity_damage_player-lowest')
+bind('entity_damage_player', array(id: 'msquest:entity:entity_damage_player-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -79,7 +79,7 @@ bind('entity_damage_player', array(id: 'msquest:entity_damage_player-lowest', pr
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'entity_damage_player')
+            id: _entity_event_get_id('ENTITY', @id, 'entity_damage_player')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -103,8 +103,8 @@ bind('entity_damage_player', array(id: 'msquest:entity_damage_player-lowest', pr
     }
 }
 
-unbind('msquest:entity_death-lowest')
-bind('entity_death', array(id: 'msquest:entity_death-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:entity_death-lowest')
+bind('entity_death', array(id: 'msquest:entity:entity_death-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -114,7 +114,7 @@ bind('entity_death', array(id: 'msquest:entity_death-lowest', priority: 'LOWEST'
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'entity_death')
+            id: _entity_event_get_id('ENTITY', @id, 'entity_death')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -124,7 +124,7 @@ bind('entity_death', array(id: 'msquest:entity_death-lowest', priority: 'LOWEST'
         
         _api_model_init(array(
             quest: @user_event['quest'],
-            player: null,
+            player: if (array_index_exists(@event['cause'], 'damager') && array_contains(all_players(), @event['cause']['damager']), @event['cause']['damager'], null),
             entity: @event['id'],
             model: @model,
             action: 'entity_death',
@@ -138,8 +138,8 @@ bind('entity_death', array(id: 'msquest:entity_death-lowest', priority: 'LOWEST'
     }
 }
 
-unbind('msquest:entity_explode-lowest')
-bind('entity_explode', array(id: 'msquest:entity_explode-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:entity_explode-lowest')
+bind('entity_explode', array(id: 'msquest:entity:entity_explode-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -149,7 +149,7 @@ bind('entity_explode', array(id: 'msquest:entity_explode-lowest', priority: 'LOW
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'entity_explode')
+            id: _entity_event_get_id('ENTITY', @id, 'entity_explode')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -173,8 +173,8 @@ bind('entity_explode', array(id: 'msquest:entity_explode-lowest', priority: 'LOW
     }
 }
 
-unbind('msquest:entity_regain_health-lowest')
-bind('entity_regain_health', array(id: 'msquest:entity_regain_health-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:entity_regain_health-lowest')
+bind('entity_regain_health', array(id: 'msquest:entity:entity_regain_health-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -185,7 +185,7 @@ bind('entity_regain_health', array(id: 'msquest:entity_regain_health-lowest', pr
             world: @location['world'],
             biome: get_biome(@location),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'entity_regain_health')
+            id: _entity_event_get_id('ENTITY', @id, 'entity_regain_health')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -209,8 +209,8 @@ bind('entity_regain_health', array(id: 'msquest:entity_regain_health-lowest', pr
     }
 }
 
-unbind('msquest:entity_portal_travel-lowest')
-bind('entity_portal_travel', array(id: 'msquest:entity_portal_travel-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:entity_portal_travel-lowest')
+bind('entity_portal_travel', array(id: 'msquest:entity:entity_portal_travel-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -220,7 +220,7 @@ bind('entity_portal_travel', array(id: 'msquest:entity_portal_travel-lowest', pr
             world: @event['from']['world'],
             biome: get_biome(@event['from']),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'entity_portal_travel')
+            id: _entity_event_get_id('ENTITY', @id, 'entity_portal_travel')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -244,8 +244,8 @@ bind('entity_portal_travel', array(id: 'msquest:entity_portal_travel-lowest', pr
     }
 }
 
-unbind('msquest:projectile_hit-lowest')
-bind('projectile_hit', array(id: 'msquest:projectile_hit-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:projectile_hit-lowest')
+bind('projectile_hit', array(id: 'msquest:entity:projectile_hit-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['shooter']))) {
         return()
@@ -255,7 +255,7 @@ bind('projectile_hit', array(id: 'msquest:projectile_hit-lowest', priority: 'LOW
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'projectile_hit')
+            id: _entity_event_get_id('ENTITY', @id, 'projectile_hit')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -279,8 +279,8 @@ bind('projectile_hit', array(id: 'msquest:projectile_hit-lowest', priority: 'LOW
     }
 }
 
-unbind('msquest:projectile_launch-lowest')
-bind('projectile_launch', array(id: 'msquest:projectile_launch-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:projectile_launch-lowest')
+bind('projectile_launch', array(id: 'msquest:entity:projectile_launch-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['shooter']))) {
         return()
@@ -290,7 +290,7 @@ bind('projectile_launch', array(id: 'msquest:projectile_launch-lowest', priority
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'projectile_launch')
+            id: _entity_event_get_id('ENTITY', @id, 'projectile_launch')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -314,8 +314,8 @@ bind('projectile_launch', array(id: 'msquest:projectile_launch-lowest', priority
     }
 }
 
-unbind('msquest:target_player-lowest')
-bind('target_player', array(id: 'msquest:target_player-lowest', priority: 'LOWEST'), null, @event, @model) {
+unbind('msquest:entity:target_player-lowest')
+bind('target_player', array(id: 'msquest:entity:target_player-lowest', priority: 'LOWEST'), null, @event, @model) {
     @entity_repo = @model['repo']['entity']
     if (!(@id = _method(@entity_repo, 'getID', @event['id']))) {
         return()
@@ -325,7 +325,7 @@ bind('target_player', array(id: 'msquest:target_player-lowest', priority: 'LOWES
             world: entity_loc(@event['id'])['world'],
             biome: get_biome(entity_loc(@event['id'])),
             type: 'ENTITY',
-            id: _event_to_id(@id, 'target_player')
+            id: _entity_event_get_id('ENTITY', @id, 'target_player')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)

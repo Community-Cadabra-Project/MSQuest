@@ -14,11 +14,12 @@ proc _bind_init() {
 }
 
 proc _bind_events() {
+    @class_events = _events_get_all_classes()
     if (array_size(@arguments) < 1) {
         throw(IllegalArgumentException, 'Procedure parameter signature is {events|[details...]}')
     }
     @events = array_filter(@arguments, closure(@k, @v){
-        return(@v['class'] == 'Event')
+        return(array_contains(@class_events, @v['class']))
     })
     @details = array_sort(
         array_filter(

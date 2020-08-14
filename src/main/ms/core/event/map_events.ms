@@ -1,8 +1,5 @@
 include('game_event.ms')
-
-string proc _event_to_id(string @id, string @action) {
-    return("@id$@action")
-}
+include('event_id_procs.ms')
 
 array proc _map_events_init() {
     @self = array()
@@ -20,7 +17,7 @@ execute(closure() {
     @methods['register'] = closure(array @self, array @event) {
         @map = @self['map_event_id']
         if (!array_index_exists(@map, @event['type'])) {
-            @events = array()
+            @events = associative_array()
             @map[@event['type']] = @events
             @events[_method(@event, 'getID')] = array(@event)
         } else {

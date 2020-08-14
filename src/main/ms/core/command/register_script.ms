@@ -33,7 +33,9 @@ proc _register_scripts(array @model, string @api_register, string @api_run, arra
     foreach(@path in @paths) {
         @response = _register(@model, @path)
         foreach(@id in @response['ids']) {
-            @dialogs[@id] = @model['dialogs']['mapID'][@response['dialog']]
+            if (@response['dialog']) {
+                @dialogs[@id] = @model['dialogs']['mapID'][@response['dialog']]
+            }
         }
         _register_run(@c, @response['ids'], @path)
         _log('INFO', "Registered script @path")

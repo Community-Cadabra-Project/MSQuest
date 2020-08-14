@@ -123,7 +123,11 @@ array proc _entity_checker_analys(array @entities) {
             @logs[] = array(is_npc: @is_npc, id: @id, exceptions: @exceptions)
             @log_exist = true
         }
-        if (array_index_exists(@entity, 'main') && array_index_exists(@entity['main'], 'id') && is_string(@entity['main']['id'])) {
+        if (
+            array_index_exists(@entity, 'main')
+            && array_index_exists(@entity['main'], 'id')
+            && is_string(@entity['main']['id'])
+        ) {
             @_id = @entity['main']['id']
             if (array_contains(@ids, @_id)) {
                 @e = _init_exception('id_exception', array(@_id))
@@ -151,30 +155,19 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
 
     @exceptions = array()
 
-    if (@is_npc) {
-        if (!array_index_exists(@entity, 'main')) {
-            @e = _init_exception('key_not_found_exception')
-            _pr_entity_checker_put_exception(@exceptions, @e, 'main')
-            return(@exceptions)
-        }
-        array_push_all(@exceptions, _pr_entity_checker_sparams(
-            @main_temp,
-            @entity['main'],
-            @entity,
-            'main',
-            @commander
-        ))
-    } else {
-        if (array_index_exists(@entity, 'main')) {
-            array_push_all(@exceptions, _pr_entity_checker_params(
-                @main_temp,
-                @entity['main'],
-                @entity,
-                'main',
-                @commander
-            ))
-        }
+    if (!array_index_exists(@entity, 'main')) {
+        @e = _init_exception('key_not_found_exception')
+        _pr_entity_checker_put_exception(@exceptions, @e, 'main')
+        return(@exceptions)
     }
+    array_push_all(@exceptions, _pr_entity_checker_params(
+        @is_npc,
+        @main_temp,
+        @entity['main'],
+        @entity,
+        'main',
+        @commander
+    ))
 
     @keys_entity = array_keys(@entity)
     @keys_sections = array_keys(@sections_temp)
@@ -199,6 +192,7 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 _pr_entity_checker_put_exception(@exceptions, @e, 'entity')
             } else {
                 array_push_all(@exceptions, _pr_entity_checker_params(
+                    false,
                     @entity_temp,
                     @entity['entity'],
                     @entity,
@@ -218,6 +212,7 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                _pr_entity_checker_put_exception(@exceptions, @e, 'mob'.'.'.@e['at'], 'mob')
             } else {
                 array_push_all(@exceptions, _pr_entity_checker_params(
+                    false,
                     @mob_temp,
                     @entity['mob'],
                     @entity,
@@ -237,6 +232,7 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
                 _pr_entity_checker_put_exception(@exceptions, @e, 'spec')
             } else {
                 array_push_all(@exceptions, _pr_entity_checker_params(
+                    false,
                     @spec_temp[@entity['main']['type']],
                     @entity['spec'],
                     @entity,
@@ -249,7 +245,7 @@ array proc _pr_entity_checker_single(array @entity, boolean @is_npc) {
     return(@exceptions)
 }
 
-array proc _pr_entity_checker_params(array @temp, array @params, array @npc, string @section, array @commander) {
+array proc _pr_entity_checker_params(boolean @strict, array @temp, array @params, array @npc, string @section, array @commander) {
     @exceptions = array()
     foreach(@key: @value in @params) {
         if (!array_index_exists(@temp, @key)) {
@@ -268,32 +264,13 @@ array proc _pr_entity_checker_params(array @temp, array @params, array @npc, str
             }
         }
     }
-    return(@exceptions)
-}
-
-array proc _pr_entity_checker_sparams(array @temp, array @params, array @npc, string @section, array @commander) {
-    @exceptions = array()
     foreach(@key: @value in @temp) {
-        if (!array_index_exists(@params, @key)) {
-            @e = _init_exception('key_not_found_exception')
-            _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
-        } else {
-            @data = if (array_index_exists(@value, 'data'), @value['data'], null)
-            if (@e = _pr_entity_checker_param(
-                @value['check'],
-                @params[@key],
-                @data,
-                @npc,
-                @commander
-            )) {
+        @exist = if(array_index_exists(@value, 'exist'), @value['exist'], @strict)
+        if (@exist) {
+            if (!array_index_exists(@params, @key)) {
+                @e = _init_exception('key_not_found_exception')
                 _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
             }
-        }
-    }
-    foreach(@key: @value in @params) {
-        if (!array_index_exists(@temp, @key)) {
-            @e = _init_exception('unknown_key_exception')
-            _pr_entity_checker_put_exception(@exceptions, @e, "@section.@key")
         }
     }
     return(@exceptions)
@@ -316,6 +293,7 @@ proc _entity_checker_init() {
         _util_commander_register_proc(@commander, 'boolean' , '_boolean')
         _util_commander_register_proc(@commander, 'string' , '_string')
         _util_commander_register_proc(@commander, 'list' , '_list')
+        _util_commander_register_proc(@commander, 'list_string' , '_list_string')
         _util_commander_register_proc(@commander, 'local' , '_local')
         _util_commander_register_proc(@commander, 'equipment_droprates' , '_equipment_droprates')
         _util_commander_register_proc(@commander, 'effects' , '_effects')

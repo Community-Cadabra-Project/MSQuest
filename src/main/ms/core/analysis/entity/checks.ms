@@ -29,6 +29,20 @@ Exceptions:
 
 //return (false) means that validation is successful
 
+proc _list_string(@value, array @data, array @character) {
+    if (!is_array(@value) || is_associative(@value)) {
+        @error = _init_exception('cast_exception', array('ms.lang.array[not associative]', typeof(@value)))
+        return(@error)
+    }
+    foreach(@v in @value) {
+        if (!is_string(@v)) {
+            @error = _init_exception('cast_exception', array('ms.lang.string', typeof(@v)))
+            return(@error)
+        }
+    }
+    return(false)
+}
+
 proc _equipment_droprates(@value, array @data, array @character) {
     if (!is_array(@value) || !is_associative(@value)) {
         @error = _init_exception('cast_exception', array('ms.lang.array[associative]', typeof(@value)))

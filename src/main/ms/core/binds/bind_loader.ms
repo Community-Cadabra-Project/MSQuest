@@ -1,3 +1,5 @@
 include('api_model.ms')
 include('bind_npc.ms')
 include('bind_player.ms')
+include('bind_group.ms')
+include('bind_model.ms')

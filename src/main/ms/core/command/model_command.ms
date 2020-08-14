@@ -1,3 +1,81 @@
+array proc _argument_key_val(string @arg, string @del = '=') {
+    @index = string_position(@arg, @del)
+    if (@index == -1) {
+        return(null)
+    }
+    @key = @arg[cslice(0, @index-1)]
+    @val = if((@index == (length(@arg)-1)), '', @arg[cslice(@index+1, -1)])
+    return(array(@key, @val))
+}
+
+string proc _trace_entity() {
+    @uuids = ray_trace()['entities']
+    if (!@uuids) {
+        _error('No entity found front of you')
+    }
+    return(@uuids[0]['uuid'])
+}
+
+string proc _get_uuid_entity(@arg, @model) {
+    @uuid = null
+    @entry = _argument_key_val(@arg)
+    if (@entry) {
+        switch(@entry[0]) {
+            case 'id':
+                @entity_repo = @model['repo']['entity']
+                @id = @entry[1]
+                @uuid = _method(@entity_repo, 'getUUID', @id)
+                if (!@uuid) {
+                    _error("This npc: @id doesn\'t bind")
+                } else if (!is_entity_living(@uuid)) {
+                    _error("This npc: @id is dead")
+                }
+            case 'uuid':
+                @uuid = @entry[1] 
+                if(!is_entity_living(@uuid)) {
+                    _error("This npc: @id is dead")
+                }
+            default:
+                _error('Unknown key: '.@entry[0])
+        }
+    }
+    return(@uuid)
+}
+
+proc _attrchange_edit(@args, @model) {
+    if (array_size(@args) < 1) {
+        _error("Invalid number of arguments, must be [id|uuid] and json")
+    }
+    @uuid = _get_uuid_entity(@args[0], @model)
+    @json_start = 0
+    if (!@uuid) {
+        @uuid = _trace_entity()
+    } else {
+        if (array_size(@args) < 2) {
+            _error('Not found argument: json')
+        }
+        @json_start = 1
+    }
+    
+    @json = if ((array_size(@args) == @json_start+1), @args[@json_start], array_implode(@args[cslice(@json_start, -1)]))
+    msg(@args.' - '.@json_start)
+    array @data = array()
+    try {
+        @data = json_decode(@json)
+    } catch(FormatException @e) {
+        _error(@e['message'])
+    } catch (CastException @e) {
+        _error(@e['message'])
+    }
+    @creater = @model['entity']['creater']
+    try {
+        _method(@creater, 'change', @uuid, @data)
+        _log('INFO', "The attributes for @uuid have been changed")
+    } catch(Exception @e) {
+        _error(@e['message'])
+    }
+}
+
 proc _bind_model(@args, @model) {
     if (array_size(@args) > 0) {
         _error('To many arguments')
@@ -6,10 +84,66 @@ proc _bind_model(@args, @model) {
     _log('INFO', 'Binds complete')
 }
 
-proc _npc_edit(@args, @model) {
-    @modes = array('rm', 'bind', 'unbind', 'create', 'attchange', 'move', 'setbind', 'set')
+proc _info(@args, @model) {
+    @modes = array('id', 'group', 'uuid')
+    if (array_size(@args) < 1) {
+        _error("Invalid number of arguments, must be [id|uuid] and 'group'|'id', ...")
+    }
+    @uuid = _get_uuid_entity(@args[0], @model)
+    array @attrs
+    if (!@uuid) {
+        @uuid = _trace_entity()
+        @attrs = @args[0..]
+    } else {
+        if (array_size(@args) < 2) {
+            _error('Not found arguments: \'group\'|\'id\', ...')
+        } else {
+            @attrs = @args[1..]
+        }
+    }
+    @entity_repo = @model['repo']['entity']
+    @group_repo = @model['repo']['group']
+    @builder = res_create_resource('STRING_BUILDER')
+    string_append(@builder, 'Informations:\n')
+    foreach(@mode in @attrs) {
+        if (!array_contains(@modes, @mode)) {
+            _error("Unknown argument: @mode, possible @modes")
+        }
+        switch(@mode) {
+            case 'id':
+                @id = _method(@entity_repo, 'getID', @uuid)
+                string_append(@builder, 'ID: ')
+                if (@id) {
+                    string_append(@builder, @id)
+                } else {
+                    string_append(@builder, 'not found')
+                }
+                string_append(@builder, '\n')
+                break();
+            case 'group':
+                @groups = _method(@group_repo, 'getGroups', @uuid)
+                string_append(@builder, 'Groups: ')
+                if (@groups) {
+                    string_append(@builder, array_implode(@groups, ', '))
+                } else {
+                    string_append(@builder, 'not found')
+                }
+                string_append(@builder, '\n')
+                break();
+            case 'uuid':
+                string_append(@builder, 'UUID: ')
+                string_append(@builder, @uuid)
+                string_append(@builder, '\n')
+                break();
+        }
+    }
+    _log('INFO', string(@builder))
+}
+
+proc _group_edit(@args, @model) {
+    @modes = array('remove', 'unbind', 'bind', 'setbind', 'delete')
     if (array_size(@args) == 0) {
-        _error("No arguments for npc, @modes")
+        _error("No arguments, possible: @modes")
     }
     @mode = @args[0]
     @sub_args = if (array_size(@args) == 1, array(), @args[1..])
@@ -17,20 +151,209 @@ proc _npc_edit(@args, @model) {
         _error("Unknown argument: @mode, possible @modes")
     }
     switch(@mode) {
-        case 'rm':
-            _npc_edit_rm(@sub_args, @model)
+        case 'remove':
+            _group_remove(@sub_args, @model)
             break();
         case 'unbind':
-            _npc_edit_unbind(@sub_args, @model)
+            _group_unbind(@sub_args, @model)
             break();
         case 'bind':
-            _npc_edit_bind(@sub_args, @model)
+            _group_bind(@sub_args, @model)
+            break();
+        case 'setbind':
+            _group_setbind(@sub_args, @model)
+            break();
+        case 'delete':
+            _group_delete(@sub_args, @model)
+            break();
+    }
+}
+
+proc _group_delete(@args, @model) {
+    if (array_size(@args) == 0) {
+        @uuid = _trace_entity()
+        if (@uuid) {
+
+        } else if (!is_entity_living(@uuid)) {
+            _log('WARNING', "This entity: @uuid is dead")
+        } else if (_method(@group_repo, 'hasUUID')) {
+            @groups = _method(@group_repo, 'getGroups', @uuid)
+            _method(@group_repo, 'deleteUUID', @uuid)
+            @id = _method(@entity_repo, 'getID', @id)
+            if (@id) {
+                _log('INFO', "Clear groups: @groups for NPC: @id - @uuid")
+            } else {
+                _log('INFO', "Clear groups: @groups for entity: @uuid")
+            }
+        } else {
+            _log('WARNING', "This entity: @uuid doesn't have groups")
+        }
+    }
+    @entity_repo = @model['repo']['entity']
+    @group_repo = @model['repo']['group']
+    foreach(@arg in @args) {
+        @entry = _argument_key_val(@arg)
+        @key = @entry[0]
+        @val = @entry[1]
+        switch(@key) {
+            case 'id':
+                @entity_repo = @model['repo']['entity']
+                @id = @entry[1]
+                @uuid = _method(@entity_repo, 'getUUID', @id)
+                if (!@uuid) {
+                    _log('WARNING', "This npc: @id doesn\'t bind")
+                } else if (!is_entity_living(@uuid)) {
+                    _log('WARNING', "This npc: @id is dead")
+                } else if(_method(@group_repo, 'hasUUID', @uuid)) {
+                    @groups = _method(@group_repo, 'getGroups', @uuid)
+                    _method(@group_repo, 'deleteUUID', @uuid)
+                    _log('INFO', "Clear groups: @groups for NPC: @id - @uuid")
+                } else {
+                    _log('WARNING', "This npc: @id doesn't have groups")
+                }
+            case 'uuid':
+                @uuid = @entry[1] 
+                if(!is_entity_living(@uuid)) {
+                    _log('WARNING', "This entity: @uuid is dead")
+                } else if (_method(@group_repo, 'hasUUID', @uuid)) {
+                    @groups = _method(@group_repo, 'getGroups', @uuid)
+                    _method(@group_repo, 'deleteUUID', @uuid)
+                    @id = _method(@entity_repo, 'getID', @id)
+                    if (@id) {
+                        _log('INFO', "Clear groups: @groups for NPC: @id - @uuid")
+                    } else {
+                        _log('INFO', "Clear groups: @groups for entity: @uuid")
+                    }
+                } else {
+                    _log('WARNING', "This entity: @uuid doesn't have groups")
+                }
+            case 'g':
+                if (_method(@group_repo, 'hasGroup', @val)) {
+                    @uuids = _method(@model['repo']['group'], 'getUUIDs', @val)
+                    @ids = array_map(@uuids, closure(@uuid){return(if((@id=_method(@entity_repo, 'getID', @uuid)), @id, null))})
+                    _method(@group_repo, 'deleteGroup', @val)
+                    for(@i = 0, @i < array_size(@ids), @i++) {
+                        @id = @ids[@i]
+                        @uuid = @uuids[@i]
+                        if (@id) {
+                            _log('INFO', "Delete group: @val of NPC: @id - @uuid")
+                        } else {
+                            _log('INFO', "Delete group: @val of entity: @uuid")
+                        }
+                    } else {
+                        _log('WARNING', "Group: @val not have entities")
+                    }
+                } else {
+                    _log('WARNING', "Group: @val not have entities")
+                }
+            default:
+                _log('ERROR', 'Unknown key: '.@key)
+        }
+    }
+}
+
+proc _group_remove(@args, @model) {
+    if (array_size(@args) == 0) {
+        _error('No arguments, possible groups...')
+    }
+    @entity_repo = @model['repo']['entity']
+    foreach(@group in @args) {
+        _log('INFO', '### Group: '.@group.' ###')
+        @uuids = _method(@model['repo']['group'], 'getUUIDs', @group)
+        @ids = array_map(@uuids, closure(@uuid){return(if((@id=_method(@entity_repo, 'getID', @uuid)), @id, null))})
+        _method(@model, 'removeGroup', @group)
+        for(@i = 0, @i < array_size(@ids), @i++) {
+            @id = @ids[@i]
+            @uuid = @uuids[@i]
+            if (@id) {
+                _log('INFO', "Remove NPC: @id - @uuid")
+            } else {
+                _log('INFO', "Remove entity: @uuid")
+            }
+        }
+    }
+}
+
+proc _group_unbind(@args, @model) {
+    if (array_size(@args) < 1) {
+        _error("Invalid number of arguments, must be [id|uuid] and groups...")
+    }
+    @uuid = _get_uuid_entity(@args[0], @model)
+    @start = 0
+    if (!@uuid) {
+        @uuid = _trace_entity()
+    } else {
+        if (array_size(@args) < 2) {
+            _error('Not found arguments: groups...')
+        }
+        @start = 1
+    }
+    @groups = @args[cslice(@start, -1)]
+    @group_repo = @model['repo']['group']
+    _method(@group_repo, 'unbindGroups', @uuid, @groups)
+    _log('INFO', 'Successful unbind groups: '.@groups)
+}
+
+proc _group_bind(@args, @model) {
+    if (array_size(@args) < 1) {
+        _error("Invalid number of arguments, must be [id|uuid] and groups...")
+    }
+    @uuid = _get_uuid_entity(@args[0], @model)
+    @start = 0
+    if (!@uuid) {
+        @uuid = _trace_entity()
+    } else {
+        if (array_size(@args) < 2) {
+            _error('Not found arguments: groups...')
+        }
+        @start = 1
+    }
+    @groups = @args[cslice(@start, -1)]
+    @group_repo = @model['repo']['group']
+    _method(@group_repo, 'save', array(@uuid), @groups)
+    _log('INFO', 'Successful bind groups: '.@groups)
+}
+
+proc _group_setbind(@args, @model) {
+    if (array_size(@args) < 1) {
+        _error("Invalid number of arguments, must be [id|uuid] and groups...")
+    }
+    @uuid = _get_uuid_entity(@args[0], @model)
+    @start = 0
+    if (!@uuid) {
+        @uuid = _trace_entity()
+    } else {
+        if (array_size(@args) < 2) {
+            _error('Not found arguments: groups...')
+        }
+        @start = 1
+    }
+    @groups = @args[cslice(@start, -1)]
+    @group_repo = @model['repo']['group']
+    _method(@group_repo, 'deleteUUID', @uuid, false)
+    _method(@group_repo, 'save', array(@uuid), @groups)
+    _log('INFO', 'Successful bind groups: '.@groups)
+}
+
+proc _npc_edit(@args, @model) {
+    @modes = array('remove', 'bind', 'unbind', 'create', 'attchange', 'move', 'setbind', 'set')
+    if (array_size(@args) == 0) {
+        _error("No arguments, possible: @modes")
+    }
+    @mode = @args[0]
+    @sub_args = if (array_size(@args) == 1, array(), @args[1..])
+    if (!array_contains(@modes, @mode)) {
+        _error("Unknown argument: @mode, possible @modes")
+    }
+    switch(@mode) {
+        case 'remove':
+            _npc_edit_rm(@sub_args, @model)
             break();
         case 'create':
             _npc_edit_create(@sub_args, @model)
             break();
-        case 'attchange':
-            _npc_edit_attchange(@sub_args, @model)
+        case 'set':
+            _npc_edit_set(@sub_args, @model)
             break();
         case 'move':
             _npc_edit_move(@sub_args, @model)
@@ -38,10 +361,17 @@ proc _npc_edit(@args, @model) {
         case 'setbind':
             _npc_edit_setbind(@sub_args, @model)
             break();
-        case 'set':
-            _npc_edit_set(@sub_args, @model)
+        case 'unbind':
+            _npc_edit_unbind(@sub_args, @model)
+            break();
+        case 'bind':
+            _npc_edit_bind(@sub_args, @model)
             break();
     }
+}
+
+proc _is_as(@arg) {
+    return(@arg == 'as')
 }
 
 proc _npc_edit_setbind(@args, @model) {
@@ -56,28 +386,32 @@ proc _npc_edit_setbind(@args, @model) {
     if (array_size(@args) == 2) {
         @uuid = @args[1]
     } else {
-        @uuids = ray_trace()['entities']
-        if (!@uuids) {
-            _error('No entity found')
-        }
-        @uuid = @uuids[0]['uuid']
+        @uuid = _trace_entity()
     }
-    _method(@model, 'unbindNPC', @id)
-    if (_method(@model, 'bindNPC', @id, @uuid)) {
-        _log('INFO', "Successful setbind NPC @id")
-    } else {
-        _log('INFO', "Fail setbind NPC @id")
-    }
+    @entity_repo = @model['repo']['entity']
+    _method(@entity_repo, 'deleteID', @id, false)
+    _method(@entity_repo, 'save', @uuid, @id)
+    _log('INFO', "Successful setbind NPC @id")
 }
 
 proc _npc_edit_set(@args, @model) {
-    if (array_size(@args) == 0) {
-        _error('No arguments, must be only id and [json]')
+    if (array_size(@args) < 2) {
+        _error('Invalid number of arguments, must be only id [as customID] and [json]')
     }
     @id = @args[0]
+    @custom_id = null
     @data = array()
-    if (array_size(@args) > 1) {
-        @json = array_implode(@args[1..])
+    @json_start = 1
+    if (_is_as(@args[1])) {
+        if (array_size(@args) < 3) {
+            _error('As what? Write your custom id')
+        } else {
+            @custom_id = @args[2]
+            @json_start = 3
+        }
+    }
+    if ((@custom_id && array_size(@args) > 3) || (!@custom_id && array_size(@args) > 1)) {
+        @json = if ((array_size(@args) == @json_start+1), @args[@json_start], array_implode(@args[cslice(@json_start, -1)]))
         try {
             @data = json_decode(@json)
         } catch(FormatException @e) {
@@ -86,16 +420,25 @@ proc _npc_edit_set(@args, @model) {
             _error(@e['message'])
         }
     }
+    if (@custom_id) {
+        if (array_index_exists(@data, 'main')) {
+            @data['main']['id'] = @custom_id
+        } else {
+            @data['main'] = associative_array()
+            @data['main']['id'] = @custom_id
+        }
+    }
     @creater = @model['entity']['creater']
     if (array_contains(array_keys(@model['entities']), @id)) {
         @entity = @model['entities'][@id]
-        @uuid = _method(@model, 'setNPC', @entity)
-        _log('INFO', "Successful set NPC @id - @uuid")
+        @entity = _util_array_deap_push(@entity, @data)
+        string @uuid
+        @id = @entity['main']['id']
         try {
-            _method(@creater, 'change', @uuid, @data)
+            @uuid = _method(@model, 'setNPC', @entity)
+            _log('INFO', "Successful set NPC @id - @uuid")
         } catch(Exception @e) {
-            _method(@model, 'removeNPC', @id)
-            _error('Delete NPC cause: '.@e['message'])
+            _error(@e['message'])
         }
     } else {
         _error("Not found entity with id: @id")
@@ -152,38 +495,6 @@ proc _npc_edit_move(@args, @model) {
     }
 }
 
-proc _npc_edit_attchange(@args, @model) {
-    if (array_size(@args) < 2) {
-        _error("Invalid number of arguments, must be id and json")
-    }
-    @id = @args[0]
-    @json = array_implode(@args[1..])
-    array @data = array()
-    try {
-        @data = json_decode(@json)
-    } catch(FormatException @e) {
-        _error(@e['message'])
-    } catch (CastException @e) {
-        _error(@e['message'])
-    }
-    @entity_repo = @model['repo']['entity']
-    @creater = @model['entity']['creater']
-    if (!(@uuid = _method(@entity_repo, 'getUUID', @id))) {
-        _error('This npc doesn\'t exist')
-    } else {
-        if (!is_entity_living(@uuid)) {
-            _error('This npc is dead')
-        } else {
-            try {
-                _method(@creater, 'change', @uuid, @data)
-                _log('INFO', "The attributes for @id have been changed")
-            } catch(Exception @e) {
-                _error(@e['message'])
-            }
-        }
-    }
-}
-
 proc _npc_edit_rm(@args, @model) {
     if (array_size(@args) == 0) {
         @ids = _method(@model['repo']['entity'], 'getAllID')
@@ -201,11 +512,16 @@ proc _npc_edit_unbind(@args, @model) {
         @ids = _method(@model['repo']['entity'], 'getAllID')
         _error("No arguments, possible @ids")
     }
+    @entity_repo = @model['repo']['entity']
+    @successful = array()
+    @id = @args[0]
     foreach(@arg in @args) {
-        if (_method(@model, 'unbindNPC', @arg)) {
-            _log('INFO', "Successful unbind NPC @arg")
+        if (_method(@entity_repo, 'deleteID', @id, false)) {
+            @successful[] = @arg
         }
     }
+    _method(@entity_repo, 'write')
+    _log('INFO', "Successful unbind NPC @successful")
 }
 
 proc _npc_edit_bind(@args, @model) {
@@ -220,28 +536,37 @@ proc _npc_edit_bind(@args, @model) {
     if (array_size(@args) == 2) {
         @uuid = @args[1]
     } else {
-        @uuids = ray_trace()['entities']
-        if (!@uuids) {
-            _error('No entity found')
-        }
-        @uuid = @uuids[0]['uuid']
+        @uuid = _trace_entity() 
     }
-    if (_method(@model, 'bindNPC', @id, @uuid)) {
+    @entity_repo = @model['repo']['entity']
+    if (!_method(@entity_repo, 'hasID', @id)) {
+        _method(@entity_repo, 'save', @uuid, @id)
         _log('INFO', "Successful bind NPC @id")
     } else {
-        _log('INFO', "Fail bind NPC @id")
+        _log('INFO', "Fail bind, cause @id already taken")
     }
 }
 
 proc _npc_edit_create(@args, @model) {
-    if (array_size(@args) == 0) {
-        _error('No arguments, must be only id and [json]')
+    if (array_size(@args) < 1) {
+        _error('No arguments, must be only id [as customID] and [json]')
     }
     @id = @args[0]
+    @custom_id = null
     @data = array()
-    if (array_size(@args) > 1) {
-        @json = array_implode(@args[1..])
+    @json_start = 1
+    if (array_size(@args) > 1 && _is_as(@args[1])) {
+        if (array_size(@args) < 3) {
+            _error('As what? Write your custom id')
+        } else {
+            @custom_id = @args[2]
+            @json_start = 3
+        }
+    }
+    if ((@custom_id && array_size(@args) > 3) || (!@custom_id && array_size(@args) > 1)) {
+        @json = if ((array_size(@args) == @json_start+1), @args[@json_start], array_implode(@args[cslice(@json_start, -1)]))
         try {
+            msg(@json)
             @data = json_decode(@json)
         } catch(FormatException @e) {
             _error(@e['message'])
@@ -249,19 +574,28 @@ proc _npc_edit_create(@args, @model) {
             _error(@e['message'])
         }
     }
+    if (@custom_id) {
+        if (array_index_exists(@data, 'main')) {
+            @data['main']['id'] = @custom_id
+        } else {
+            @data['main'] = associative_array()
+            @data['main']['id'] = @custom_id
+        }
+    }
     @creater = @model['entity']['creater']
     if (array_contains(array_keys(@model['entities']), @id)) {
         @entity = @model['entities'][@id]
-        if (@uuid = _method(@model, 'addNPCIfAbsent', @entity)) {
-            _log('INFO', "Successful create NPC @id - @uuid")
-            try {
-                _method(@creater, 'change', @uuid, @data)
-            } catch(Exception @e) {
-                _method(@model, 'removeNPC', @id)
-                _error('Delete NPC cause: '.@e['message'])
+        @entity = _util_array_deap_push(@entity, @data)
+        @id = @entity['main']['id']
+        try {
+            if (@uuid = _method(@model, 'addNPCIfAbsent', @entity)) {
+                _log('INFO', "Successful create NPC @id - @uuid")
+            } else {
+                _error("This id: @id is already taken")
             }
-        } else {
-            _error("This id: @id is already taken")
+        } catch(Exception @e) {
+            console(@e)
+            _error(@e['message'])
         }
     } else {
         _error("Not found entity with id: @id")
@@ -327,7 +661,7 @@ execute(closure() {
             }
             @args = if(array_size(@arguments[2]) > 1, @arguments[2][1..], array())
             @mode = @arguments[2][0]
-            @modes = array('npc', 'bind', 'stage')
+            @modes = array('npc', 'bind', 'stage', 'group', 'info', 'attrchange')
             if (!array_contains(@modes, @mode)) {
                 _error("Unknown argument: @mode, possible @modes")
             }
@@ -341,6 +675,15 @@ execute(closure() {
                 case 'stage':
                     _stage_edit(@args, @model)
                     break();
+                case 'attrchange':
+                    _attrchange_edit(@args, @model)
+                    break();
+                case 'group':
+                    _group_edit(@args, @model)
+                    break();
+                case 'info':
+                    _info(@args, @model)
+                    break();
             }
         }
     ))
@@ -348,29 +691,63 @@ execute(closure() {
     	@input = @args[-1];
     	@completions = array();
     	if(array_size(@args) == 1) {
-    		@completions = array('npc', 'stage', 'bind');
+    		@completions = array('npc', 'stage', 'bind', 'attrchange', 'group', 'info');
     	} else if(array_size(@args) == 2) {
             if (@args[0] == 'npc') {
-                @completions = array('setbind', 'bind', 'unbind', 'set', 'create', 'remove', 'move', 'attchange');
+                @completions = array('setbind', 'bind', 'unbind', 'set', 'create', 'remove', 'move');
             } else if (@args[0] == 'stage') {
                 @completions = array('reset');
-            } else if (@args[0] == 'bind') {
-
+            } else if (@args[0] == 'info') {
+                @completions = array_map(_method(@model['repo']['entity'], 'getAllID'), closure(@v) {return('id='.@v)})
+                array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+            } else if (@args[0] == 'attrchange') {
+                @completions = array_map(_method(@model['repo']['entity'], 'getAllID'), closure(@v) {return('id='.@v)})
+                array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+                array_push_all(@completions, array('group', 'id', 'uuid'))
+            } else if (@args[0] == 'group') {
+                @completions = array('remove', 'bind', 'unbind', 'setbind', 'delete');
             }
     	} else if(array_size(@args) == 3) {
             if (@args[0] == 'npc') {
-                if (array_contains(array('setbind', 'bind', 'unbind', 'set', 'create', 'remove', 'move', 'attchange'), @args[1])) {
+                if (array_contains(array('setbind', 'bind', 'unbind', 'remove', 'move'), @args[1])) {
                     @completions = _method(@model['repo']['entity'], 'getAllID');
+                } else if(array_contains(array('set', 'create'), @args[1])) {
+                    @completions = array_keys(@model['entities'])
                 }
             } else if (@args[0] == 'stage') {
                 if (@args[1] == 'reset') {
                     @completions = all_players()
                     @completions[] = '*'
                 }
+            } else if (@args[0] == 'group') {
+                if (array_contains(array('bind', 'unbind', 'setbind'), @args[1])) {
+                    @completions = array_map(_method(@model['repo']['entity'], 'getAllID'), closure(@v) {return('id='.@v)})
+                    array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+                } else if (@args[1] == 'remove') {
+                    @group_repo = @model['repo']['group']
+                    @completions = _method(@group_repo, 'getAllGroup')
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                } else if (@args[1] == 'delete') {
+                    @group_repo = @model['repo']['group']
+                    @entity_repo = @model['repo']['entity']
+                    @completions = array_map(_method(@group_repo, 'getAllGroup'), closure(@v) {return('g='.@v)})
+                    array_push_all(@completions, array_map(_method(@entity_repo, 'getAllID'), closure(@v) {return('id='.@v)}))
+                    array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }
+            } else if (@args[0] == 'info') {
+                @completions = array('group', 'id', 'uuid')
+                foreach(@arg in @args[1..]) {
+                    array_remove_values(@completions, @arg)
+                }
             }
         } else if (array_size(@args) == 4) {
             if (@args[0] == 'npc') {
-                if (@args[1] == 'rm') {
+                if (@args[1] == 'remove') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
                     foreach(@id in @args[2..]) {
                         array_remove_values(@completions, @id)
@@ -379,6 +756,8 @@ execute(closure() {
                     @completions = array('~ ~ ~')
                 } else if (array_contains(array('bind', 'setbind'), @args[1])) {
                     @completions = all_entities()
+                } else if(array_contains(array('set', 'create'), @args[1])) {
+                    @completions = array('as')
                 }
             } else if (@args[0] == 'stage') {
                 if (@args[1] == 'reset') {
@@ -389,21 +768,65 @@ execute(closure() {
                         @completions[] = '*'
                     }
                 }
+            } else if (@args[0] == 'group') {
+                if (@args[1] == 'remove') {
+                    @group_repo = @model['repo']['group']
+                    @completions = _method(@group_repo, 'getAllGroup')
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }  else if (@args[1] == 'delete') {
+                    @group_repo = @model['repo']['group']
+                    @entity_repo = @model['repo']['entity']
+                    @completions = array_map(_method(@group_repo, 'getAllGroup'), closure(@v) {return('g='.@v)})
+                    array_push_all(@completions, array_map(_method(@entity_repo, 'getAllID'), closure(@v) {return('id='.@v)}))
+                    array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }
+            } else if (@args[0] == 'info') {
+                @completions = array('group', 'id', 'uuid')
+                foreach(@arg in @args[1..]) {
+                    array_remove_values(@completions, @arg)
+                }
             }
         } else if (array_size(@args) == 5) {
             if (@args[0] == 'npc') {
-                if (@args[1] == 'rm') {
+                if (@args[1] == 'remove') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
                     foreach(@id in @args[2..]) {
                         array_remove_values(@completions, @id)
                     }
                 } else if (@args[1] == 'move') {
                     @completions = array('~ ~')
+                } else if(array_contains(array('set', 'create'), @args[1])) {
+                    if (@args[3] == 'as') {
+                        @completions = array_keys(@model['entities'])
+                        array_remove_values(@completions, @args[2])
+                    }
+                }
+            } else if (@args[0] == 'group') {
+                if (@args[1] == 'remove') {
+                    @group_repo = @model['repo']['group']
+                    @completions = _method(@group_repo, 'getAllGroup')
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }  else if (@args[1] == 'delete') {
+                    @group_repo = @model['repo']['group']
+                    @entity_repo = @model['repo']['entity']
+                    @completions = array_map(_method(@group_repo, 'getAllGroup'), closure(@v) {return('g='.@v)})
+                    array_push_all(@completions, array_map(_method(@entity_repo, 'getAllID'), closure(@v) {return('id='.@v)}))
+                    array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
                 }
             }
         } else if (array_size(@args) == 6) {
             if (@args[0] == 'npc') {
-                if (@args[1] == 'rm') {
+                if (@args[1] == 'remove') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
                     foreach(@id in @args[2..]) {
                         array_remove_values(@completions, @id)
@@ -411,14 +834,58 @@ execute(closure() {
                 } else if (@args[1] == 'move') {
                     @completions = array('~')
                 }
+            } else if (@args[0] == 'group') {
+                if (@args[1] == 'remove') {
+                    @group_repo = @model['repo']['group']
+                    @completions = _method(@group_repo, 'getAllGroup')
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }  else if (@args[1] == 'delete') {
+                    @group_repo = @model['repo']['group']
+                    @entity_repo = @model['repo']['entity']
+                    @completions = array_map(_method(@group_repo, 'getAllGroup'), closure(@v) {return('g='.@v)})
+                    array_push_all(@completions, array_map(_method(@entity_repo, 'getAllID'), closure(@v) {return('id='.@v)}))
+                    array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }
+            } else if (@args[0] == 'info') {
+                @completions = array('group', 'id', 'uuid')
+                foreach(@arg in @args[1..]) {
+                    array_remove_values(@completions, @arg)
+                }
             }
         } else {
             if (@args[0] == 'npc') {
-                if (@args[1] == 'rm') {
+                if (@args[1] == 'remove') {
                     @completions = _method(@model['repo']['entity'], 'getAllID')
                     foreach(@id in @args[2..]) {
                         array_remove_values(@completions, @id)
                     }
+                }
+            } else if (@args[0] == 'group') {
+                if (@args[1] == 'remove') {
+                    @group_repo = @model['repo']['group']
+                    @completions = _method(@group_repo, 'getAllGroup')
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }  else if (@args[1] == 'delete') {
+                    @group_repo = @model['repo']['group']
+                    @entity_repo = @model['repo']['entity']
+                    @completions = array_map(_method(@group_repo, 'getAllGroup'), closure(@v) {return('g='.@v)})
+                    array_push_all(@completions, array_map(_method(@entity_repo, 'getAllID'), closure(@v) {return('id='.@v)}))
+                    array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
+                    foreach(@arg in @args[2..]) {
+                        array_remove_values(@completions, @arg)
+                    }
+                }
+            } else if (@args[0] == 'info') {
+                @completions = array('group', 'id', 'uuid')
+                foreach(@arg in @args[1..]) {
+                    array_remove_values(@completions, @arg)
                 }
             }
         }

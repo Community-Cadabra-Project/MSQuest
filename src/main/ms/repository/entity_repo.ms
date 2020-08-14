@@ -26,16 +26,22 @@ array proc _entity_repo_init(string @path) {
 execute(closure() {
     array @methods = associative_array()
 
-    @methods['save'] = closure(array @self, string @uuid, string @id) {
+    @methods['write'] = closure(array @self) {
+        _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+    }
+
+    @methods['save'] = closure(array @self, string @uuid, string @id, boolean @save = true) {
         if (array_index_exists(@self['map_UUID_ID'], @uuid)) {
-            throw(IllegalArgumentException, "This uuid @uuid already exists")
+            throw(IllegalArgumentException, "This uuid @uuid already saved")
         }
         if (array_index_exists(@self['map_ID_UUID'], @id)) {
-            throw(IllegalArgumentException, "This id @id already exists")
+            throw(IllegalArgumentException, "This id @id already saved")
         }
         @self['map_UUID_ID'][@uuid] = @id
         @self['map_ID_UUID'][@id] = @uuid
-        _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+        if (@save) {
+            _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+        }
     }
 
     @methods['hasID'] = closure(array @self, string @id) {
@@ -62,7 +68,7 @@ execute(closure() {
         }
     }
 
-    @methods['deleteID'] = closure(array @self, string @id) {
+    @methods['deleteID'] = closure(array @self, string @id, boolean @save = true) {
         @uuid = array_remove(@self['map_ID_UUID'], @id)
         if (!@uuid) {
             return(false)
@@ -71,10 +77,13 @@ execute(closure() {
         if (@id != @_id) {
             throw(Exception, "Table mismatch: @id -> @uuid -> @_id")
         }
-        _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+        if (@save) {
+            _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+        }
+        return(true)
     }
 
-    @methods['deleteUUID'] = closure(array @self, string @uuid) {
+    @methods['deleteUUID'] = closure(array @self, string @uuid, boolean @save = true) {
         @id = array_remove(@self['map_UUID_ID'], @uuid)
         if (!@id) {
             return(false)
@@ -83,7 +92,10 @@ execute(closure() {
         if (@_uuid != @uuid) {
             throw(Exception, "Table mismatch: @uuid -> @id -> @_uuid")
         }
-        _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+        if (@save) {
+            _method(@self['io'], 'writeYML', @self['map_UUID_ID'], @self['file'])
+        }
+        return(true)
     }
 
     @methods['clear'] = closure(array @self) {

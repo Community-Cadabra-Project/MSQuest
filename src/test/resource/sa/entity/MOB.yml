@@ -1,5 +1,6 @@
 --- 
-main: 
+main:
+  id: TEMP_2
   type: villager
 mob: 
   ai: false

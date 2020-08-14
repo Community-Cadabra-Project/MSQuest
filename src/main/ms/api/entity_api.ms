@@ -43,6 +43,18 @@ string proc _get_msg(string @key) {
     return(@msg)
 }
 
+array proc _get_uuids_of_group(string @group) {
+    @api_model = import('org.cadabra.msquest.api')
+    @model = @api_model['main_model']
+    return(_method(@model['repo']['group'], 'getUUIDs', @group))
+}
+
+array proc _get_groups_of_uuid(string @uuid) {
+    @api_model = import('org.cadabra.msquest.api')
+    @model = @api_model['main_model']
+    return(_method(@model['repo']['group'], 'getGroups', @group))
+}
+
 proc _npc_say_msg(string @msg, string @id = null) {
     @api_model = import('org.cadabra.msquest.api')
     @player = @api_model['current']['player']

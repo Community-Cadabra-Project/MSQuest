@@ -1,6 +1,7 @@
 main:
   type: Witch
   id: Witch
+  group: ['1']
   location:
     - 0
     - 0

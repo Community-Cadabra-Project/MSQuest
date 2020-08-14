@@ -59,13 +59,6 @@ proc _bind_export() {
 
 array proc _entity_event(string @entity, string @action, string @quest = null) {
     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
-    if (!array_contains(@context['entities'], @entity)) {
-        @context['exceptions'][] = array(
-            'classType': IllegalArgumentException,
-            'message': "Unknown entity - @entity",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
     if (@quest != null && !array_contains(@context['quests'], @quest)) {
         @context['exceptions'][] = array(
             'classType': IllegalArgumentException,
@@ -77,6 +70,18 @@ array proc _entity_event(string @entity, string @action, string @quest = null) {
 }
 
 array proc _quest_event(string @action, string @quest = null) {
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+    if (@quest != null && !array_contains(@context['quests'], @quest)) {
+        @context['exceptions'][] = array(
+            'classType': IllegalArgumentException,
+            'message': "Unknown quest - @quest",
+            'stackTrace': get_stack_trace()[1..1]
+        )
+    }
+    return(@context['fakeEvent'])
+}
+
+array proc _group_event(string @group, string @action, string @quest = null) {
     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@quest != null && !array_contains(@context['quests'], @quest)) {
         @context['exceptions'][] = array(
@@ -141,132 +146,137 @@ array proc _game_time(int @from, int @to) {
     return(@context['fakeDetail'])
 }
 
-array proc _year_time(int @from, int @to) {
+proc _fail() {
     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
-    if (@from < 0) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Year time must be in [0, +infinity], but 'from' is @from",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@to < 0) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Year time must be in [0, +infinity], but 'to' is @to",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@from > @to) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "'from' more that 'to'",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
     return(@context['fakeDetail'])
 }
 
-array proc _month_time(int @from, int @to) {
-    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
-    if (@from < 0 || @from > 12) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Month time must be in [0, 12], but 'from' is @from",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@to < 0 || @to > 12) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Month time must be in [0, 12], but 'to' is @to",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@from > @to) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "'from' more that 'to'",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    return(@context['fakeDetail'])
-}
+// array proc _year_time(int @from, int @to) {
+//     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+//     if (@from < 0) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Year time must be in [0, +infinity], but 'from' is @from",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@to < 0) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Year time must be in [0, +infinity], but 'to' is @to",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@from > @to) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "'from' more that 'to'",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     return(@context['fakeDetail'])
+// }
 
-array proc _day_time(int @from, int @to) {
-    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
-    if (@from < 0 || @from > 31) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Day time must be in [0, 31], but 'from' is @from",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@to < 0 || @to > 31) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Day time must be in [0, 31], but 'to' is @to",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@from > @to) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "'from' more that 'to'",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    return(@context['fakeDetail'])
-}
+// array proc _month_time(int @from, int @to) {
+//     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+//     if (@from < 0 || @from > 12) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Month time must be in [0, 12], but 'from' is @from",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@to < 0 || @to > 12) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Month time must be in [0, 12], but 'to' is @to",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@from > @to) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "'from' more that 'to'",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     return(@context['fakeDetail'])
+// }
 
-array proc _week_time(int @from, int @to) {
-    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
-    if (@from < 0 || @from > 7) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Week time must be in [0, 7], but 'from' is @from",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@to < 0 || @to > 7) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Week time must be in [0, 7], but 'to' is @to",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@from > @to) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "'from' more that 'to'",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    return(@context['fakeDetail'])
-}
+// array proc _day_time(int @from, int @to) {
+//     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+//     if (@from < 0 || @from > 31) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Day time must be in [0, 31], but 'from' is @from",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@to < 0 || @to > 31) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Day time must be in [0, 31], but 'to' is @to",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@from > @to) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "'from' more that 'to'",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     return(@context['fakeDetail'])
+// }
 
-array proc _hour_time(int @from, int @to) {
-    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
-    if (@from < 0 || @from > 24) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Hour time must be in [0, 24], but 'from' is @from",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@to < 0 || @to > 24) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "Hour time must be in [0, 24], but 'to' is @to",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    if (@from > @to) {
-        @context['exceptions'][] = array(
-            'classType': RangeException,
-            'message': "'from' more that 'to'",
-            'stackTrace': get_stack_trace()[1..1]
-        )
-    }
-    return(@context['fakeDetail'])
-}
+// array proc _week_time(int @from, int @to) {
+//     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+//     if (@from < 0 || @from > 7) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Week time must be in [0, 7], but 'from' is @from",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@to < 0 || @to > 7) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Week time must be in [0, 7], but 'to' is @to",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@from > @to) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "'from' more that 'to'",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     return(@context['fakeDetail'])
+// }
+
+// array proc _hour_time(int @from, int @to) {
+//     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+//     if (@from < 0 || @from > 24) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Hour time must be in [0, 24], but 'from' is @from",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@to < 0 || @to > 24) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "Hour time must be in [0, 24], but 'to' is @to",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     if (@from > @to) {
+//         @context['exceptions'][] = array(
+//             'classType': RangeException,
+//             'message': "'from' more that 'to'",
+//             'stackTrace': get_stack_trace()[1..1]
+//         )
+//     }
+//     return(@context['fakeDetail'])
+// }
