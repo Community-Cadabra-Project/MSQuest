@@ -1,5 +1,7 @@
 proc _before_each() {
-    return(_qprogress_repo_init(get_absolute_path('out'._util_sdn().'qprogress')))
+    @path = get_absolute_path('out'._util_sdn().'qprogress')
+    _util_make_folder(@path, -3)
+    return(_qprogress_repo_init(@path))
 }
 
 proc _init_temp() {

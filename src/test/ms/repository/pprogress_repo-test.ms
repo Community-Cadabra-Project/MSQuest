@@ -1,5 +1,7 @@
 proc _before_each() {
-    return(_pprogress_repo_init(get_absolute_path('out'._util_sdn().'pprogress')))
+    @path = get_absolute_path('out'._util_sdn().'pprogress')
+    _util_make_folder(@path, -3)
+    return(_pprogress_repo_init(@path))
 }
 
 proc _init_progress(string @player) {

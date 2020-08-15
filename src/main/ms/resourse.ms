@@ -1,7 +1,7 @@
 execute(closure() {
     @setting = _get_setting()
     foreach(@path in @setting['paths']['data']) {
-        _util_make_folder(@path, _util_sdn(), _util_ign())
+        _util_make_folder(@path, -3)
     }
 
     @root = @setting['root']

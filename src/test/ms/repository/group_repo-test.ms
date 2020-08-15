@@ -18,7 +18,9 @@ proc _before_all() {
 }
 
 proc _before_each(@test) {
-    return(_group_repo_init(get_absolute_path('out'._util_sdn().'group_repo'._util_sdn().@test)))
+    @path = get_absolute_path('out'._util_sdn().'group_repo'._util_sdn().@test)
+    _util_make_folder(@path, -4)
+    return(_group_repo_init(@path))
 }
 
 proc _test(@all, @repo) {
@@ -77,7 +79,9 @@ proc _test(@all, @repo) {
     _assert_empty(_method(@repo, 'getGroups', @uuid_v_2))
     _assert_empty(_method(@repo, 'getGroups', @uuid_s))
 
-    @repo = _group_repo_init(get_absolute_path('out'._util_sdn().'group_repo'._util_sdn().'_test1'))
+    @path = get_absolute_path('out'._util_sdn().'group_repo'._util_sdn().'_test1')
+    _util_make_folder(@path, -4)
+    @repo = _group_repo_init(@path)
 
     _assert_empty(_method(@repo, 'getUUIDs', @group_w[0]))
     _assert_empty(_method(@repo, 'getUUIDs', @group_v[0]))

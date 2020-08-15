@@ -30,10 +30,23 @@ proc _model_init(array @data) {
     @model['dialogs']['mapID'] = @dialogs
 
     @repos = associative_array()
-    @repos['quest'] = _qprogress_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'quest')
-    @repos['player'] = _pprogress_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'player')
-    @repos['entity'] = _entity_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'entity')
-    @repos['group'] = _group_repo_init(_get_data('.cache')._util_sdn().'repo'._util_sdn().'group')
+    
+    @cache_path = _get_data('.cache')._util_sdn().'repo'._util_sdn().'quest'
+    _util_make_folder(@cache_path, -3)
+    @repos['quest'] = _qprogress_repo_init(@cache_path)
+    
+    @cache_path = _get_data('.cache')._util_sdn().'repo'._util_sdn().'player'
+    _util_make_folder(@cache_path, -3)
+    @repos['player'] = _pprogress_repo_init(@cache_path)
+    
+    @cache_path = _get_data('.cache')._util_sdn().'repo'._util_sdn().'entity'
+    _util_make_folder(@cache_path, -3)
+    @repos['entity'] = _entity_repo_init(@cache_path)
+    
+    @cache_path = _get_data('.cache')._util_sdn().'repo'._util_sdn().'group'
+    _util_make_folder(@cache_path, -3)
+    @repos['group'] = _group_repo_init(@cache_path)
+   
     @model['repo'] = @repos
 
     @entity = associative_array()

@@ -18,7 +18,9 @@ proc _before_all() {
 }
 
 proc _before_each(@test) {
-    return(_entity_repo_init(get_absolute_path('out'._util_sdn().'entity_repo'._util_sdn().@test)))
+    @path = get_absolute_path('out'._util_sdn().'entity_repo'._util_sdn().@test)
+    _util_make_folder(@path, -4)
+    return(_entity_repo_init(@path))
 }
 
 proc _test(@all, @repo) {
@@ -68,7 +70,9 @@ proc _test(@all, @repo) {
     _assert_null(_method(@repo, 'getID', @uuid_v))
     _assert_null(_method(@repo, 'getID', @uuid_s))
 
-    @repo = _entity_repo_init(get_absolute_path('out'._util_sdn().'entity_repo'._util_sdn().'_test1'))
+    @path = get_absolute_path('out'._util_sdn().'entity_repo'._util_sdn().'_test1')
+    _util_make_folder(@path, -4)
+    @repo = _entity_repo_init(@path)
 
     _assert_null(_method(@repo, 'getUUID', @id_w))
     _assert_null(_method(@repo, 'getUUID', @id_v))
