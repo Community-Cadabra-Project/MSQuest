@@ -123,8 +123,7 @@ array proc _static_analys_data(array @data) {
 
 Resource proc _static_analys_parse_log(array @log) {
     Resource @builder = res_create_resource('STRING_BUILDER')
-    string_append(@builder, '\n')
-    string_append(@builder, 'Static Analys:\n--------------------------------\n')
+    string_append(@builder, 'Static Analys\n')
     @builder = _dialog_checker_parse_exceptions(@log['dialog'], @builder)
     string_append(@builder, '\n')  
     @builder = _stage_checker_parse_exceptions(@log['stage'], @builder)
@@ -132,6 +131,5 @@ Resource proc _static_analys_parse_log(array @log) {
     @builder = _entity_checker_parse_exceptions(@log['entity'], @builder)
     string_append(@builder, '\n')
     @builder = _script_checker_parse_exceptions(@log['script'], @builder)
-    string_append(@builder, '\n')
     return(@builder)
 }

@@ -58,7 +58,6 @@ proc _attrchange_edit(@args, @model) {
     }
     
     @json = if ((array_size(@args) == @json_start+1), @args[@json_start], array_implode(@args[cslice(@json_start, -1)]))
-    msg(@args.' - '.@json_start)
     array @data = array()
     try {
         @data = json_decode(@json)
@@ -257,8 +256,9 @@ proc _group_remove(@args, @model) {
         _error('No arguments, possible groups...')
     }
     @entity_repo = @model['repo']['entity']
+    @builder = res_create_resource('STRING_BUILDER')
     foreach(@group in @args) {
-        _log('INFO', '### Group: '.@group.' ###')
+        string_append(@builder, "### Group: @group ###\n")
         @uuids = _method(@model['repo']['group'], 'getUUIDs', @group)
         @ids = array_map(@uuids, closure(@uuid){return(if((@id=_method(@entity_repo, 'getID', @uuid)), @id, null))})
         _method(@model, 'removeGroup', @group)
@@ -266,12 +266,15 @@ proc _group_remove(@args, @model) {
             @id = @ids[@i]
             @uuid = @uuids[@i]
             if (@id) {
-                _log('INFO', "Remove NPC: @id - @uuid")
+                string_append(@builder, "Remove NPC: @id - @uuid\n")
             } else {
-                _log('INFO', "Remove entity: @uuid")
+                string_append(@builder, "Remove entity: @uuid\n")
             }
+        } else {
+            string_append(@builder, 'Entities not found\n')
         }
     }
+    _log('INFO', string(@builder))
 }
 
 proc _group_unbind(@args, @model) {
@@ -602,15 +605,41 @@ proc _npc_edit_create(@args, @model) {
     }
 }
 
-proc _stage_edit(@args, @model) {
+proc _data_edit(@args, @model) {
+    @modes = array('reset')
     if (array_size(@args) == 0) {
-        _error("No arguments, possible 'reset'")
+        _error("No arguments, possible @modes")
     }
     @mode = @args[0]
     @sub_args = if (array_size(@args) == 1, array(), @args[1..])
-    @modes = array('reset')
     if (!array_contains(@modes, @mode)) {
-        _error("Unknown argument: @mode, possible 'reset'")
+        _error("Unknown argument: @mode, possible @modes")
+    }
+    switch(@mode) {
+        case 'reset':
+            _data_edit_reset(@sub_args, @model)
+            break();
+    }
+}
+
+proc _data_edit_reset(@args, @model) {
+    if (array_size(@args) != 1) {
+        _error('Invalid number of arguments, must be quest')
+    }
+    @quest = @args[0]
+    _method(@model['repo']['quest'], 'delete', @quest)
+    _log('INFO', "Data of quest @quest deleted")
+}
+
+proc _stage_edit(@args, @model) {
+    @modes = array('reset')
+    if (array_size(@args) == 0) {
+        _error("No arguments, possible @modes")
+    }
+    @mode = @args[0]
+    @sub_args = if (array_size(@args) == 1, array(), @args[1..])
+    if (!array_contains(@modes, @mode)) {
+        _error("Unknown argument: @mode, possible @modes")
     }
     switch(@mode) {
         case 'reset':
@@ -656,12 +685,13 @@ execute(closure() {
         'description': 'Quest module control',
         'usage': '/quest',
         'executor': closure() {
+            _log('INFO', 'Command execute: "/'.@arguments[0].' '.array_implode(@arguments[2]).'"', array(console: false, player: false))
             if (array_size(@arguments[2]) == 0) {
                 _error('No arguments')
             }
             @args = if(array_size(@arguments[2]) > 1, @arguments[2][1..], array())
             @mode = @arguments[2][0]
-            @modes = array('npc', 'bind', 'stage', 'group', 'info', 'attrchange')
+            @modes = array('npc', 'bind', 'stage', 'group', 'info', 'attrchange', 'data')
             if (!array_contains(@modes, @mode)) {
                 _error("Unknown argument: @mode, possible @modes")
             }
@@ -684,6 +714,9 @@ execute(closure() {
                 case 'info':
                     _info(@args, @model)
                     break();
+                case 'data':
+                    _data_edit(@args, @model)
+                    break();
             }
         }
     ))
@@ -691,20 +724,20 @@ execute(closure() {
     	@input = @args[-1];
     	@completions = array();
     	if(array_size(@args) == 1) {
-    		@completions = array('npc', 'stage', 'bind', 'attrchange', 'group', 'info');
+    		@completions = array('npc', 'stage', 'bind', 'attrchange', 'group', 'info', 'data');
     	} else if(array_size(@args) == 2) {
             if (@args[0] == 'npc') {
                 @completions = array('setbind', 'bind', 'unbind', 'set', 'create', 'remove', 'move');
             } else if (@args[0] == 'stage') {
+                @completions = array('reset');
+            } else if (@args[0] == 'data') {
                 @completions = array('reset');
             } else if (@args[0] == 'info') {
                 @completions = array_map(_method(@model['repo']['entity'], 'getAllID'), closure(@v) {return('id='.@v)})
                 array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
             } else if (@args[0] == 'attrchange') {
                 @completions = array_map(_method(@model['repo']['entity'], 'getAllID'), closure(@v) {return('id='.@v)})
-                array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))
-                array_push_all(@completions, array('group', 'id', 'uuid'))
-            } else if (@args[0] == 'group') {
+                array_push_all(@completions, array_map(all_entities(), closure(@v) {return('uuid='.@v)}))            } else if (@args[0] == 'group') {
                 @completions = array('remove', 'bind', 'unbind', 'setbind', 'delete');
             }
     	} else if(array_size(@args) == 3) {

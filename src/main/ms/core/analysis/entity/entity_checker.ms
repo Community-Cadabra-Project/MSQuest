@@ -52,7 +52,7 @@ Resource proc _entity_checker_parse_exceptions(array @logs, Resource @builder = 
     string_append(@builder, '\n')
     foreach(@log in @npc_logs) {
         @id = @log['id']
-        string_append(@builder, '\n############\n')
+        string_append(@builder, '\n=============\n')
         string_append(@builder, 'Entity at: ')
         string_append(@builder, @id)
         foreach(@entry in @log['exceptions']) {
@@ -74,7 +74,7 @@ Resource proc _entity_checker_parse_exceptions(array @logs, Resource @builder = 
     string_append(@builder, '\n')
     foreach(@log in @temp_logs) {
         @id = @log['id']
-        string_append(@builder, '\n############\n')
+        string_append(@builder, '\n=============\n')
         string_append(@builder, 'Entity at: ')
         string_append(@builder, @id)
         foreach(@entry in @log['exceptions']) {

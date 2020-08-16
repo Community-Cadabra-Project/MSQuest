@@ -72,7 +72,7 @@ boolean proc _is_stage(string @branch, mixed @stage) {
     return(_method(@progress, 'isStage', @branch, @stage))
 }
 
-mixed proc _get_quest_progress(string @quest = null) {
+mixed proc _get_quest_progress(string @quest = null, boolean @touched = true) {
     @api_model = import('org.cadabra.msquest.api')
     if (@quest == null) {
         @quest = @api_model['current']['quest']
@@ -81,7 +81,9 @@ mixed proc _get_quest_progress(string @quest = null) {
         throw(NotFoundException, 'Progress not found')
     }
     @qp = _method(@api_model['main_model'], 'getQProgress', @quest)
-    @api_model['user']['touched_quests'][] = @qp 
+    if (@touched) {
+        @api_model['user']['touched_quests'][] = @qp
+    }
     return(@qp['data'])
 }
 
@@ -91,6 +93,4 @@ void proc _switch_progress(string @quest, string @player) {
     @api_model['current']['progress'] = _method(@model, 'getPProgress', @quest, @player) 
     @api_model['current']['player'] = @player
     @api_model['current']['quest'] = @quest
-
-    @api_model['user']['touched_progress'] = @api_model['current']['progress']
 }

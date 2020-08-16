@@ -152,7 +152,7 @@ execute(closure() {
 
     @methods['getQProgress'] = closure(array @self, string @quest) {
         @qp = _method(@self['repo']['quest'], 'get', @quest)
-        if (@qp) {
+        if (@qp == null) {
             @temp = @self['template_progress'][@quest]
             @qp = _qprogress_default(@temp)
         }

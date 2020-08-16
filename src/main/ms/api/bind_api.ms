@@ -23,7 +23,7 @@ array proc _get_event_meta() {
     return(@api_model['bind']['event_meta'])
 }
 
-array proc _get_event() {
+mixed proc _get_event() {
     @api_model = import('org.cadabra.msquest.api')
     return(@api_model['current']['event'])
 }

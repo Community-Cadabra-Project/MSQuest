@@ -2,10 +2,10 @@ void proc _api_model_init(array @params) {
 
     @api_model = associative_array()
 
-    @action = @params['action']
     @model = @params['model']
     @event = @params['event']
 
+    @action = if (array_index_exists(@params, 'action'), @params['action'], null)
     @quest = if (array_index_exists(@params, 'quest'), @params['quest'], null)
     @player = if (array_index_exists(@params, 'player'), @params['player'], null)
     @entity = if (array_index_exists(@params, 'entity'), @params['entity'], null)
@@ -14,6 +14,7 @@ void proc _api_model_init(array @params) {
 
     @current = associative_array()
     @current['event'] = @event
+    @current['quest'] = @quest
     @current['action'] = @action
     @current['player'] = @player
     @current['entity'] = @entity
@@ -22,14 +23,25 @@ void proc _api_model_init(array @params) {
     @api_model['current'] = @current
 
     @binding = associative_array()
-    @binding['cancel'] = is_cancelled()
-    @binding['consume'] = false
-    @binding['event_meta'] = event_meta()
+    if (array_index_exists(@params, 'bind')) {
+        if (@params['bind']) {
+            @binding['cancel'] = is_cancelled()
+            @binding['consume'] = false
+            @binding['event_meta'] = event_meta()
+        } else {
+            @binding['cancel'] = false
+            @binding['consume'] = false
+            @binding['event_meta'] = null
+        }
+    } else {
+        @binding['cancel'] = is_cancelled()
+        @binding['consume'] = false
+        @binding['event_meta'] = event_meta()
+    }
     @api_model['bind'] = @binding
 
     @user = associative_array()
     @user['touched_quests'] = array()
-    @user['touched_progress'] = array()
     @api_model['user'] = @user
 
     @api_model['main_model'] = @model

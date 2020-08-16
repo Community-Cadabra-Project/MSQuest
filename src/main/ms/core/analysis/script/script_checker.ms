@@ -11,12 +11,12 @@ Resource proc _script_checker_parse_exceptions(array @log, Resource @builder = r
     string_append(@builder, '########## SCRIPTS ##########')
     string_append(@builder, '\n')
     foreach(@id: @entry in @log) {
-        string_append(@builder,'\n##########\n')
+        string_append(@builder,'\n===========\n')
         string_append(@builder, 'Script at: ')
         string_append(@builder, @id)
         string_append(@builder, '\n')
         if (@entry['static']) {
-            string_append(@builder, '\n===== Static exceptions\n')
+            string_append(@builder, '\nStatic exceptions\n')
         }
         foreach(@e in @entry['static']) {
             string_append(@builder, '- ')
@@ -24,7 +24,7 @@ Resource proc _script_checker_parse_exceptions(array @log, Resource @builder = r
             string_append(@builder, '\n\n')
         }
         if (@entry['running']) {
-            string_append(@builder, '\n===== Running exceptions\n')
+            string_append(@builder, '\nRunning exceptions\n')
         }
         foreach(@e in @entry['running']) {
             string_append(@builder, '- ')

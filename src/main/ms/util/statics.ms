@@ -6,8 +6,8 @@ string proc _msg(string @key, int @stack = 1, array @args = array()) {
     return(_util_msg(_get_id_module(), @key, @stack + 1, @args))
 }
 
-void proc _log(string @type, string @msg) {
-    _util_log(_get_id_module(), @type, player(), @msg)
+void proc _log(string @type, string @msg, mixed @args = null) {
+    _util_log(_get_id_module(), @type, player(), @msg, @args)
 }
 
 # quick log = qlog
@@ -33,13 +33,13 @@ void proc _qerror(string @key, array @args = array(), int @stack = 1) {
     die()
 }
 
-void proc _error(string @msg) {
-    _log('ERROR', @msg)
+void proc _error(string @msg, mixed @args = null) {
+    _log('ERROR', @msg, @args)
     die()
 }
 
-void proc _fatal(string @msg) {
-    _log('FATAL', @msg)
+void proc _fatal(string @msg, mixed @args = null) {
+    _log('FATAL', @msg, @args)
     die()
 }
 
@@ -65,21 +65,48 @@ execute(closure() {
     }
 
     # logger
-    @to_console = closure(@who, @msg) {
-        console(@msg, false)
-    }
-    @to_player = closure(@who, @msg) {
-        if (@who != '~console') {
-            broadcast(@msg, array(@who))
-        }
-    }
+    @to_console = associative_array(
+        write: closure(@params) {
+            if (@params['who'] == '~console') {
+                @args = @params['args']
+                if (@args && array_index_exists(@args, 'console')) {
+                    if (@args['console']) {
+                        console(sprintf('[%s] [%s] %s', @params['type'], @params['prefix'], @params['msg']), false)
+                    }
+                } else {
+                    console(sprintf('[%s] [%s] %s', @params['type'], @params['prefix'], @params['msg']), false)
+                }
+            }
+        },
+        level: 0
+    )
+    @to_player = associative_array(
+        write: closure(@params) {
+            @who = @params['who']
+            if (@who != '~console') {
+                @args = @params['args']
+                if (@args && array_index_exists(@args, 'player')) {
+                    if (@args['player']) {
+                        broadcast(sprintf('[%s] %s: %s', @params['type'], @params['prefix'], @params['msg']), array(@who))
+                    }
+                } else {
+                    broadcast(sprintf('[%s] %s: %s', @params['type'], @params['prefix'], @params['msg']), array(@who))
+                }
+            }
+        },
+        level: 2000
+    )
     @path_to_log = _get_data('log')
-    @to_file = closure(@msg) {
-        @path_to_log .= _util_sdn().simple_date('yyyy.MM.dd').'log'
-        if (!file_exists(@path_to_log)) {
-            _util_make_file(@path_to_log, -3)
-        }
-        write_file(@path_to_log, "@msg\n", 'APPEND')
-    }
+    @to_file = associative_array(
+        write: closure(@params) {
+            @path_to_log .= _util_sdn().simple_date('yyyy.MM.dd').'.log'
+            @msg = sprintf('[%s] [%s/%s]: [%s] %s\n', simple_date('yyyy.MM.dd HH:mm:ss,S'), @params['who'], @params['type'], @params['prefix'], @params['msg'])
+            if (!file_exists(@path_to_log)) {
+                _util_make_file(@path_to_log, -3)
+            }
+            write_file(@path_to_log, @msg, 'APPEND')
+        },
+        level: 0
+    )
     _util_log_register(_get_id_module(), 'MSQuest', array(@to_player, @to_console, @to_file))
 })

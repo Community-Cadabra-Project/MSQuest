@@ -69,6 +69,18 @@ array proc _entity_event(string @entity, string @action, string @quest = null) {
     return(@context['fakeEvent'])
 }
 
+array proc _custom_event(string @id, string @quest = null) {
+    @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
+    if (@quest != null && !array_contains(@context['quests'], @quest)) {
+        @context['exceptions'][] = array(
+            'classType': IllegalArgumentException,
+            'message': "Unknown quest - @quest",
+            'stackTrace': get_stack_trace()[1..1]
+        )
+    }
+    return(@context['fakeEvent'])
+}
+
 array proc _quest_event(string @action, string @quest = null) {
     @context = import(x_get_current_thread().' - '.'org.cadabra.msquest.script_checker.local_procs')
     if (@quest != null && !array_contains(@context['quests'], @quest)) {

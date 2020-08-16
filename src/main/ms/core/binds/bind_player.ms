@@ -6,7 +6,7 @@ bind('player_death', array(id: 'msquest:quest:player_death-lowest', priority: 'L
             world: ploc(@event['player'])['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_death')
+            id: _quest_event_get_id('player_death')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -38,7 +38,7 @@ bind('player_enter_bed', array(id: 'msquest:quest:player_enter_bed-lowest', prio
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_enter_bed')
+            id: _quest_event_get_id('player_enter_bed')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -70,7 +70,7 @@ bind('player_join', array(id: 'msquest:quest:player_join-lowest', priority: 'LOW
             world: @event['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_join')
+            id: _quest_event_get_id('player_join')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -102,7 +102,7 @@ bind('player_kick', array(id: 'msquest:quest:player_kick-lowest', priority: 'LOW
             world: ploc(@event['player'])['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_kick')
+            id: _quest_event_get_id('player_kick')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -134,7 +134,7 @@ bind('player_leave_bed', array(id: 'msquest:quest:player_leave_bed-lowest', prio
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_leave_bed')
+            id: _quest_event_get_id('player_leave_bed')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -166,7 +166,7 @@ bind('player_portal_travel', array(id: 'msquest:quest:player_portal_travel-lowes
             world: @event['from']['world'],
             biome: get_biome(@event['from']),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_portal_travel')
+            id: _quest_event_get_id('player_portal_travel')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -198,7 +198,7 @@ bind('player_quit', array(id: 'msquest:quest:player_quit-lowest', priority: 'LOW
             world: ploc(@event['player'])['world'],
             biome: get_biome(ploc(@event['player'])),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_quit')
+            id: _quest_event_get_id('player_quit')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -230,7 +230,7 @@ bind('player_spawn', array(id: 'msquest:quest:player_spawn-lowest', priority: 'L
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_spawn')
+            id: _quest_event_get_id('player_spawn')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -262,7 +262,7 @@ bind('player_teleport', array(id: 'msquest:quest:player_teleport-lowest', priori
             world: @event['from']['world'],
             biome: get_biome(@event['from']),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'player_teleport')
+            id: _quest_event_get_id('player_teleport')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -294,7 +294,7 @@ bind('world_changed', array(id: 'msquest:quest:world_changed-lowest', priority: 
             world: @event['from']['world'],
             biome: get_biome(@event['from']),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'world_changed')
+            id: _quest_event_get_id('world_changed')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -326,7 +326,7 @@ bind('item_despawn', array(id: 'msquest:quest:item_despawn-lowest', priority: 'L
             world: @event['location']['world'],
             biome: get_biome(@event['location']),
             type: 'QUEST',
-            id: _quest_event_get_id('QUEST', 'item_despawn')
+            id: _quest_event_get_id('item_despawn')
         )
     )
     @events = _method(@model['event']['map'], 'getEvents', @game_event)

@@ -24,7 +24,7 @@ Resource proc _stage_checker_parse_exceptions(array @logs, Resource @builder = r
     string_append(@builder, '\n')
     foreach(@log in @logs) {
         @id = @log['id']
-        string_append(@builder, '\n############\n')
+        string_append(@builder, '\n************\n')
         string_append(@builder, 'Stage at: ')
         string_append(@builder, @id)
         foreach(@entry in @log['exceptions']) {

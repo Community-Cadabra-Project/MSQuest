@@ -36,7 +36,7 @@ string proc _get_msg(string @key) {
     }
     string @msg
     if (is_array(@dialog[@key])) {
-        @msg = @dialog[@key][rand(array_size(@dialog[@key])-1)]
+        @msg = @dialog[@key][rand(array_size(@dialog[@key]))]
     } else {
         @msg = @dialog[@key]
     }

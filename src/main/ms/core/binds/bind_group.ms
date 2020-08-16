@@ -10,7 +10,7 @@ bind('player_interact_entity', array(id: 'msquest:group:player_interact_entity-l
                 world: entity_loc(@event['id'])['world'],
                 biome: get_biome(entity_loc(@event['id'])),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'player_interact_entity')
+                id: _group_event_get_id(@group, 'player_interact_entity')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -47,7 +47,7 @@ bind('entity_damage', array(id: 'msquest:group:entity_damage-lowest', priority: 
                 world: @event['world'],
                 biome: get_biome(entity_loc(@event['id'])),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'entity_damage')
+                id: _group_event_get_id(@group, 'entity_damage')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -84,7 +84,7 @@ bind('entity_damage_player', array(id: 'msquest:group:entity_damage_player-lowes
                 world: @event['location']['world'],
                 biome: get_biome(@event['location']),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'entity_damage_player')
+                id: _group_event_get_id(@group, 'entity_damage_player')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -121,7 +121,7 @@ bind('entity_death', array(id: 'msquest:group:entity_death-lowest', priority: 'L
                 world: @event['location']['world'],
                 biome: get_biome(@event['location']),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'entity_death')
+                id: _group_event_get_id(@group, 'entity_death')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -158,7 +158,7 @@ bind('entity_explode', array(id: 'msquest:group:entity_explode-lowest', priority
                 world: @event['location']['world'],
                 biome: get_biome(@event['location']),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'entity_explode')
+                id: _group_event_get_id(@group, 'entity_explode')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -196,7 +196,7 @@ bind('entity_regain_health', array(id: 'msquest:group:entity_regain_health-lowes
                 world: @location['world'],
                 biome: get_biome(@location),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'entity_regain_health')
+                id: _group_event_get_id(@group, 'entity_regain_health')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -233,7 +233,7 @@ bind('entity_portal_travel', array(id: 'msquest:group:entity_portal_travel-lowes
                 world: @event['from']['world'],
                 biome: get_biome(@event['from']),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'entity_portal_travel')
+                id: _group_event_get_id(@group, 'entity_portal_travel')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -270,7 +270,7 @@ bind('projectile_hit', array(id: 'msquest:group:projectile_hit-lowest', priority
                 world: @event['location']['world'],
                 biome: get_biome(@event['location']),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'projectile_hit')
+                id: _group_event_get_id(@group, 'projectile_hit')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -307,7 +307,7 @@ bind('projectile_launch', array(id: 'msquest:group:projectile_launch-lowest', pr
                 world: @event['location']['world'],
                 biome: get_biome(@event['location']),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'projectile_launch')
+                id: _group_event_get_id(@group, 'projectile_launch')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)
@@ -344,7 +344,7 @@ bind('target_player', array(id: 'msquest:group:target_player-lowest', priority: 
                 world: entity_loc(@event['id'])['world'],
                 biome: get_biome(entity_loc(@event['id'])),
                 type: 'GROUP',
-                id: _group_event_get_id('GROUP', @group, 'target_player')
+                id: _group_event_get_id(@group, 'target_player')
             )
         )
         @events = _method(@model['event']['map'], 'getEvents', @game_event)

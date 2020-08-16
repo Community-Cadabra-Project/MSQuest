@@ -2,8 +2,13 @@ proc _msquest_SA(@args) {
     if (array_size(@args) > 0) {
         _error('To many arguments')
     }
-    @msg = _static_analys(_get_paths_of_data())['message']
-    _log('INFO', @msg)
+    @response = _static_analys(_get_paths_of_data())
+    if (@response['status']) {
+        _log('DEBUG', 'Successful analys')
+    } else {
+        _log('INFO', 'Fail analys')
+        _log('WARN', @response['message'])
+    }
 }
 
 proc _msquest_load_model(@args) {
@@ -23,10 +28,11 @@ proc _msquest_load_model(@args) {
     @paths_data = _get_paths_of_data()
 
     @response = _static_analys(@paths_data)
-    if (!@response['status']) {
-        _error(@response['message'])
+    if (@response['status']) {
+        _log('DEBUG', 'Successful analys')
     } else {
-        _log('INFO', @response['message'])
+        _log('INFO', 'Fail analys')
+        _error(@response['message'])
     }
 
     @model = _model_init(@response['data']) 
@@ -53,7 +59,6 @@ proc _msquest_load_model(@args) {
     }
 
     _log('INFO', 'Finish load model')
-    _log('INFO', 'Registration command "quest"')
     include('model_command.ms')
 }
 
@@ -64,6 +69,7 @@ execute(closure() {
         'aliases':array('msq'),
 
         'executor': closure() {
+            _log('INFO', 'Command execute: "/'.@arguments[0].' '.array_implode(@arguments[2]).'"', array(console: false, player: false))
             if (array_size(@arguments[2]) == 0) {
                 _error("No arguments, possible 'analys', 'load'")
             }

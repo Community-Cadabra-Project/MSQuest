@@ -38,7 +38,7 @@ proc _register_scripts(array @model, string @api_register, string @api_run, arra
             }
         }
         _register_run(@c, @response['ids'], @path)
-        _log('INFO', "Registered script @path")
+        _log('DEBUG', "Registered script @path")
     }
     @model['dialogs']['mapUUID'] = @dialogs
     @model['scripts']['commander'] = @c
