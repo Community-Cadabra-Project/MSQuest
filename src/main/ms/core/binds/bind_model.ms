@@ -20,5 +20,6 @@ bind('entity_death', array(id: 'msquest:entity_death-monitor', priority: 'MONITO
 unbind('msquest:player_quit-monitor')
 bind('player_quit', array(id: 'msquest:player_quit-monitor', priority: 'LOWEST'), null, @event, @model) {
     @player_repo = @model['repo']['player']
+    @player = @event['player']
     _method(@player, 'deletePlayerCache', @event['player'])
 }
